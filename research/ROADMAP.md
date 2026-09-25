@@ -44,7 +44,7 @@ planned estimator registrations.
 
 ## M3 — Comparator protocol freeze
 
-**State:** protocol frozen; implementation and CD feasibility preflight active
+**State:** complete
 
 Goal: define and implement the paper-level comparator set before comparator outcomes or the
 primary known-GT outcome can influence method selection.
@@ -56,14 +56,20 @@ Frozen direct local set:
 3. same-modality absolute post-registration residual;
 4. ensemble-mean Jacobian deviation `abs(J - 1)`.
 
-Contrastive Discrepancy is frozen as a separate case-level model-selection
-comparator only if a non-result-bearing audit can reproduce its released method
-faithfully. Transformation-equivariance UQ and CONReg remain related work rather
-than forced direct baselines because their demonstrated model/training setting
-does not match the classical B-spline study.
+Contrastive Discrepancy was prospectively audited and is excluded from the
+current confirmatory study because its authors' released Anonymous-GitHub
+snapshot cannot be retrieved reproducibly from clean hosted runners: both
+current/legacy public API requests returned HTTP 403 and hosted Chrome received
+only Cloudflare security verification. No bespoke analogue is substituted.
 
-M3 completes only when implementation identities, tests, and the CD feasibility
-decision are pinned before result-bearing execution.
+Transformation-equivariance UQ and CONReg remain related work rather than forced
+direct baselines because their demonstrated model/training setting does not
+match the classical B-spline study.
+
+The direct-comparator primitives, orchestration, method-specific failure
+handling, anatomy aggregation, Holm correction, paired bootstrap summaries, and
+result-bearing authorization guard are implemented and tested before outcomes.
+The frozen result-bearing budget is 540 registrations.
 
 ## M4 — Primary known-ground-truth experiment
 
