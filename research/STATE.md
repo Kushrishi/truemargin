@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; two geometry-preflight attempts failed before geometry (first: legacy-NBIA timeout; second: overly strict IDC legacy-folder/UID translation); exact full DICOM series identities are now frozen and a technical-only retry is authorized; result-bearing study remains unauthorized.
+**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; three geometry-preflight attempts failed before geometry (legacy-NBIA timeout; overly strict IDC legacy-folder/UID translation; then an idc-index CLI argument error before the first DICOM download); exact full DICOM series identities remain frozen and another technical-only retry is authorized; result-bearing study remains unauthorized.
 
 Primary design:
 
