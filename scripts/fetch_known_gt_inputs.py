@@ -366,7 +366,9 @@ def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
         "idc_rest_base": IDC_REST_BASE,
         "idc_release": idc_version,
         "idc_index_version": installed_idc_index,
-        "series_identity_path": str(SERIES_IDENTITY_PATH.relative_to(Path(__file__).resolve().parents[1])),
+        "series_identity_path": str(
+            SERIES_IDENTITY_PATH.relative_to(Path(__file__).resolve().parents[1])
+        ),
         "frozen_t2_series": resolved,
         "hecap_source_url": HECAP_ARCHIVE_URL,
         "hecap_archive_sha256": hecap_archive_sha256,
