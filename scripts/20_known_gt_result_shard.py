@@ -14,6 +14,11 @@ from typing import Any
 SOURCE_GIT_SHA = "f52aee24b49327bf7989ae0746dbf2ad981510d1"
 SOURCE_CI_RUN_ID = 36184383591
 EXECUTION_MODE = "ten_anatomy_shards_plus_canonical_aggregate"
+ORCHESTRATION_BLOB_FIELDS = {
+    "scripts/20_known_gt_result_shard.py": "shard_orchestrator_blob_sha",
+    ".github/workflows/known-gt-result-bearing.yml": "result_workflow_blob_sha",
+    "scripts/fetch_known_gt_inputs.py": "acquisition_utility_blob_sha",
+}
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RUNNER_PATH = REPO_ROOT / "scripts" / "19_hyperparameter_known_gt_validation.py"
@@ -106,6 +111,23 @@ def verify_execution_authorization() -> tuple[Any, dict[str, Any]]:
             )
 
     _verify_source_files(request["source_git_sha"])
+
+    for relative_path, request_field in ORCHESTRATION_BLOB_FIELDS.items():
+        expected_blob = request.get(request_field)
+        if not isinstance(expected_blob, str) or not re.fullmatch(
+            r"[0-9a-f]{40}", expected_blob
+        ):
+            raise SystemExit(
+                f"Invalid orchestration blob field {request_field!r}: "
+                f"{expected_blob!r}"
+            )
+        actual_blob = runner._git_blob_sha(str(REPO_ROOT / relative_path))
+        if actual_blob != expected_blob:
+            raise SystemExit(
+                f"Orchestration content drift for {relative_path}: "
+                f"expected blob {expected_blob}, got {actual_blob}"
+            )
+
     return runner, request
 
 
