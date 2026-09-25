@@ -10,7 +10,7 @@
   "result_bearing_authorized": false,
   "original_geometry_request_blob_sha": "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7",
   "full_series_identity_blob_sha": "4bb28ed69680179b02c78b75cb28f83a1966018c",
-  "diagnostic_workflow_run_id": 36163880105,
+  "diagnostic_workflow_run_id": 36163795107,
   "diagnostic_followup_run_id": 36163880105,
   "note": "Technical identity-resolution retry only. The first IDC implementation incorrectly required the final dot-separated UID component to equal the legacy five-digit Data Retriever folder. Public IDC metadata confirmed the legacy value is instead the final five characters of the already-intended full SeriesInstanceUID. The ten full UIDs are now frozen explicitly; no anatomy or image series changed."
 }
