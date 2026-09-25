@@ -147,3 +147,20 @@ This is a provenance clarification and implementation correction, not a change
 to the frozen scientific cohort. The original geometry authorization blob,
 anatomies, image series, seeds, deformation settings, ROI rules, estimator, and
 result-bearing authorization are unchanged.
+
+## 2026-09-25 — Correct idc-index manifest CLI before another geometry retry
+
+The exact-series geometry attempt (workflow run `36165197037`, source
+`b4d3970d95c0a8c54af2a790930c562cc4e52518`) passed both technical-retry
+guards and reached the acquisition step with the frozen full DICOM identities.
+It then stopped on the first anatomy before any DICOM transfer because
+`idc-index==0.12.5` requires `--manifest-file` for
+`download-from-manifest`; the implementation had supplied the manifest path
+positionally.
+
+Decision: correct only that CLI invocation and add a unit test for the exact
+command contract before retrying geometry. The frozen series-identity file,
+original geometry-request blob, cohort, seeds, deformation settings, ROI rules,
+geometry checks, estimator configuration, and result-bearing authorization are
+unchanged. No geometry or estimator registration has yet run in these failed
+hosted attempts.

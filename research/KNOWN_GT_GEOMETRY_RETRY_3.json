@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "retry_number": 3,
+  "retry_of_workflow_run_id": 36165197037,
+  "failed_source_git_sha": "b4d3970d95c0a8c54af2a790930c562cc4e52518",
+  "failure_stage": "fetch_frozen_public_inputs",
+  "failure_class": "implementation_cli_argument_error",
+  "scientific_configuration_changed": false,
+  "result_bearing_authorized": false,
+  "original_geometry_request_blob_sha": "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7",
+  "full_series_identity_blob_sha": "4bb28ed69680179b02c78b75cb28f83a1966018c",
+  "failed_cli_contract": "idc download-from-manifest <manifest> --download-dir <dir>",
+  "corrected_cli_contract": "idc download-from-manifest --manifest-file <manifest> --download-dir <dir>",
+  "note": "Technical acquisition retry only. idc-index 0.12.5 requires --manifest-file. The failed attempt stopped on the first series before any DICOM download, geometry generation, or estimator registration. Scientific inputs and authorization are unchanged."
+}
