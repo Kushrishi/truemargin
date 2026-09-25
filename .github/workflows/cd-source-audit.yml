@@ -1,0 +1,40 @@
+name: CD source audit
+
+on:
+  push:
+    branches: ["integrate-known-gt-local-comparators"]
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Query released Anonymous-GitHub snapshot
+        run: |
+          python - <<'PY'
+          import json
+          import urllib.request
+
+          url = "https://anonymous.4open.science/api/repo/dbc-B401/files/"
+          with urllib.request.urlopen(url, timeout=30) as response:
+              payload = json.load(response)
+
+          paths = []
+
+          def walk(node, prefix=""):
+              for name, value in node.items():
+                  path = f"{prefix}/{name}" if prefix else name
+                  if isinstance(value, dict) and "size" not in value:
+                      walk(value, path)
+                  else:
+                      paths.append(path)
+
+          walk(payload)
+          print(f"CD_SNAPSHOT_FILE_COUNT={len(paths)}")
+          for path in sorted(paths):
+              print(path)
+          PY
