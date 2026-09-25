@@ -164,3 +164,38 @@ original geometry-request blob, cohort, seeds, deformation settings, ROI rules,
 geometry checks, estimator configuration, and result-bearing authorization are
 unchanged. No geometry or estimator registration has yet run in these failed
 hosted attempts.
+
+## 2026-09-25 — Preserve 29/30 geometry failure and freeze topology Amendment 2
+
+The first hosted attempt to complete all scientific geometry checks (workflow
+run `36167535578`, source
+`bcd7099bca8d37f9f895227c386503610639bd03`) successfully acquired all ten
+frozen T2 series and all ten HECaP masks, then evaluated all 30 predeclared
+synthetic geometries.
+
+Twenty-nine cases passed. `aaa0072`, replicate `1`, case seed `7001`
+failed the existing topology criterion with minimum evaluated Jacobian
+determinant `-0.0105857`.
+
+No hyperparameter-ensemble registration ran. No sigma/error association,
+anatomy effect, p-value, calibration statistic, or comparator result existed.
+
+Decision:
+
+- preserve the exact failed preflight in
+  `research/KNOWN_GT_GEOMETRY_PREFLIGHT_RESULT_1.json`;
+- do not replace anatomy `aaa0072`;
+- do not replace seed `7001`;
+- do not redraw its Gaussian B-spline coefficients;
+- freeze `docs/hyperparameter_known_gt_protocol_amendment_2.md` before any
+  estimator execution;
+- apply the same deterministic topology-backtracking rule to all 30 cases;
+- rerun the full geometry preflight, not only the failed case;
+- keep all 270 result-bearing registrations unauthorized until a complete
+  amended 30/30 geometry record is reviewed and separately pinned.
+
+Amendment 2 keeps the original raw coefficient draw at standard deviation 4.0
+and tests fixed scales `1.00, 0.95, ..., 0.50`, selecting the largest scale
+with finite geometry and strictly positive evaluated-grid Jacobian. If no
+predeclared scale passes, the study stops again rather than extending the grid
+post hoc.
