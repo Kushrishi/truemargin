@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "authorized_mode": "geometry-scale-calibration-only",
+  "result_bearing_authorized": false,
+  "triggering_geometry_run_id": 36167535578,
+  "triggering_source_git_sha": "bcd7099bca8d37f9f895227c386503610639bd03",
+  "protocol_main_blob_sha": "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0",
+  "protocol_amendment_1_blob_sha": "1eafe77bb847b1a77229e267ef32e6bbedd27bc2",
+  "protocol_amendment_2_blob_sha": "5f1e1464e8f8d0eb81b90f92caf5a94d7ed81ac7",
+  "coefficient_std_candidates": [
+    3.5,
+    3,
+    2.5
+  ],
+  "selection_rule": "largest candidate with 30/30 original geometry checks passing",
+  "held_out_anatomies": [
+    "aaa0044",
+    "aaa0051",
+    "aaa0053",
+    "aaa0060",
+    "aaa0064",
+    "aaa0069",
+    "aaa0071",
+    "aaa0072",
+    "aaa0086",
+    "aaa0087"
+  ],
+  "planned_cases_per_candidate": 30,
+  "failed_original_case": {
+    "patient": "aaa0072",
+    "replicate": 1,
+    "seed": 7001,
+    "jacobian_min": -0.0105857
+  },
+  "note": "Geometry-only calibration. No uncertainty-estimator registration or sigma/error outcome is authorized."
+}
