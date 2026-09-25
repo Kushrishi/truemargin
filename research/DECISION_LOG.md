@@ -86,8 +86,8 @@ seed, estimator setting, geometry rule, or inferential rule changed.
 
 A dedicated request now authorizes only the 30 frozen synthetic geometry cases.
 The public acquisition helper resolves each predeclared T2 series by its frozen
-SeriesInstanceUID suffix through TCIA's public NBIA API and fails on missing,
-ambiguous, or non-T2 resolution. It also retrieves the collection's fused
+SeriesInstanceUID identity and fails on missing, ambiguous, or non-T2
+resolution. It also retrieves the collection's fused
 rad-path resource and copies only the ten required HECaP masks.
 
 Decision: the hosted preflight may validate data identity, transform geometry,
@@ -95,3 +95,31 @@ ROI eligibility, folding, landmark uniqueness, and source-domain containment.
 It may not execute any of the 270 estimator registrations. Data-resolution or
 download failures are infrastructure failures and do not permit anatomy,
 series, seed, ROI, deformation, or estimator substitution.
+
+## 2026-09-25 — Retry geometry preflight after pre-geometry acquisition timeout
+
+The first hosted geometry workflow (run `36160471644`, source
+`5911ce404b1cc0f167aafb64b54aa95b8aebab0f`) passed its geometry-only
+authorization guard and dependency installation, then timed out during the
+first legacy NBIA metadata request. No anatomy was resolved, no synthetic
+geometry was generated, and no estimator registration ran.
+
+The original geometry request is unchanged and remains identified by Git blob
+`a7bf7591850ed90f0cd7bd95ebae3552e77d32c7`.
+
+Decision: authorize one technical acquisition retry with the same scientific
+request. Replace the legacy NBIA transport with the current public Imaging Data
+Commons interfaces:
+
+- IDC REST v3 for collection/patient/series metadata and exact-series manifests;
+- pinned `idc-index==0.12.5` only for anonymous transfer from the returned
+  public manifest;
+- exact collection `prostate_fused_mri_pathology`;
+- the same ten patients and the same frozen final SeriesInstanceUID components;
+- fail-closed resolution if a series is missing, ambiguous, wrong-modality, or
+  not described as T2.
+
+This is an infrastructure amendment only. It changes no anatomy, series target,
+seed, deformation, ROI rule, estimator, endpoint, statistic, or result-bearing
+authorization. A retry marker records the failed run and verifies that the
+original geometry-request blob has not changed.
