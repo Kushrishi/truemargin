@@ -169,19 +169,29 @@ def anatomy_summary(
         patient_rows = [row for row in case_rows if row["patient"] == patient]
         valid_rows = [row for row in patient_rows if bool(row.get(valid_key, False))]
         assessable = len(valid_rows) >= min_complete_cases
-        output.append(
-            {
-                "patient": patient,
-                "valid_cases": len(valid_rows),
-                "assessable": assessable,
-                "rank_degenerate_cases": sum(
-                    bool(row.get(degenerate_key, False)) for row in valid_rows
-                ),
-                "median_case_spearman": (
-                    float(np.median([row[rho_key] for row in valid_rows]))
-                    if assessable
-                    else float("nan")
-                ),
-            }
-        )
+        anatomy: dict[str, Any] = {
+            "patient": patient,
+            "valid_cases": len(valid_rows),
+            "assessable": assessable,
+            "rank_degenerate_cases": sum(
+                bool(row.get(degenerate_key, False)) for row in valid_rows
+            ),
+            "median_case_spearman": (
+                float(np.median([row[rho_key] for row in valid_rows]))
+                if assessable
+                else float("nan")
+            ),
+        }
+        if assessable:
+            for suffix in ("quartile_known_error_delta_mm", "blind_spot_rate"):
+                key = f"{method}_{suffix}"
+                values = np.asarray(
+                    [row[key] for row in valid_rows if key in row],
+                    dtype=np.float64,
+                )
+                finite = values[np.isfinite(values)]
+                anatomy[f"median_{suffix}"] = (
+                    float(np.median(finite)) if len(finite) else float("nan")
+                )
+        output.append(anatomy)
     return output
