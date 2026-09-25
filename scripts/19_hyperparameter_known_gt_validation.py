@@ -546,6 +546,24 @@ def _case_manifest(
     )
 
 
+def _prefixed_direct_metrics(
+    method: str,
+    score: np.ndarray,
+    known_error: np.ndarray,
+) -> dict[str, Any]:
+    metrics = comparison.score_case_metrics(score, known_error)
+    return {
+        f"spearman_{method}_known_error": metrics["spearman_known_error"],
+        f"{method}_rank_degenerate": metrics["rank_degenerate"],
+        f"{method}_score_median": metrics["score_median"],
+        f"{method}_score_iqr": metrics["score_iqr"],
+        f"{method}_quartile_known_error_delta_mm": metrics[
+            "quartile_known_error_delta_mm"
+        ],
+        f"{method}_blind_spot_rate": metrics["blind_spot_rate"],
+    }
+
+
 def _run_case(
     *,
     patient: str,
@@ -576,9 +594,11 @@ def _run_case(
             anatomy_index=anatomy_index,
             replicate=replicate,
         )
+        fixed = np.asarray(synthetic["fixed"])
+        moving = np.asarray(synthetic["moving"])
         result = hyper.run_hyperparameter_ensemble(
-            np.asarray(synthetic["fixed"]),
-            np.asarray(synthetic["moving"]),
+            fixed,
+            moving,
             spacing=spacing,
             crop_diagonal_mm=float(synthetic["crop_diagonal_mm"]),
         )
@@ -592,7 +612,17 @@ def _run_case(
             "member_mean_displacement_mm": result.member_mean_displacement_mm,
             "spacing_xyz_mm": np.asarray(spacing, dtype=np.float64),
             "crop_diagonal_mm": np.asarray(synthetic["crop_diagonal_mm"], dtype=np.float64),
+            "reverse_complete": np.asarray(False),
+            "reverse_member_reasons": np.asarray([], dtype="U1024"),
         }
+        for method in DIRECT_COMPARATOR_METHODS:
+            arrays[f"{method}_valid"] = np.asarray(False)
+            arrays[f"{method}_score"] = np.asarray([], dtype=np.float64)
+            arrays[f"{method}_failure_reason"] = np.asarray(
+                "forward_target_incomplete",
+                dtype="U4096",
+            )
+
         if result.complete:
             assert result.u_mean is not None
             assert result.sigma is not None
@@ -602,6 +632,44 @@ def _run_case(
             error = cal.displacement_error(u_est, np.asarray(synthetic["u_true"]))
             arrays["error"] = np.asarray(error, dtype=np.float64)
             arrays["sigma"] = np.asarray(sigma_at, dtype=np.float64)
+
+            direct = comparison.run_direct_comparators(
+                fixed=fixed,
+                moving=moving,
+                forward_u_mean=result.u_mean,
+                idx_zyx=idx_zyx,
+                spacing=spacing,
+                crop_diagonal_mm=float(synthetic["crop_diagonal_mm"]),
+            )
+            arrays["reverse_complete"] = np.asarray(direct.reverse_complete)
+            arrays["reverse_member_reasons"] = np.asarray(
+                direct.reverse_member_reasons,
+                dtype="U1024",
+            )
+            direct_scores = {
+                "ice": direct.ice,
+                "residual": direct.residual,
+                "jacdev": direct.jacdev,
+            }
+            direct_failures = {
+                "ice": direct.ice_failure_reason,
+                "residual": direct.residual_failure_reason,
+                "jacdev": direct.jacdev_failure_reason,
+            }
+            for method in DIRECT_COMPARATOR_METHODS:
+                score = direct_scores[method]
+                failure = direct_failures[method]
+                arrays[f"{method}_valid"] = np.asarray(score is not None)
+                arrays[f"{method}_score"] = (
+                    np.asarray(score, dtype=np.float64)
+                    if score is not None
+                    else np.asarray([], dtype=np.float64)
+                )
+                arrays[f"{method}_failure_reason"] = np.asarray(
+                    failure or "",
+                    dtype="U4096",
+                )
+
         provenance.save_checkpoint(checkpoint_path, arrays=arrays, manifest=manifest)
 
     complete = bool(np.asarray(arrays["complete"]).item())
@@ -613,6 +681,10 @@ def _run_case(
         "complete": complete,
         "failed_member_count": int(np.sum(np.asarray(arrays["member_reasons"]) != "ok")),
         "member_reasons": " | ".join(str(value) for value in arrays["member_reasons"]),
+        "reverse_complete": bool(np.asarray(arrays["reverse_complete"]).item()),
+        "reverse_member_reasons": " | ".join(
+            str(value) for value in arrays["reverse_member_reasons"]
+        ),
     }
     true_mag = np.sqrt(np.sum(np.asarray(arrays["u_true"]) ** 2, axis=0))
     row.update(
@@ -623,10 +695,24 @@ def _run_case(
             "true_displacement_max_mm": float(np.max(true_mag)),
         }
     )
-    if complete:
-        row.update(case_metrics(np.asarray(arrays["error"]), np.asarray(arrays["sigma"])))
-    return row
 
+    if complete:
+        error = np.asarray(arrays["error"], dtype=np.float64)
+        row.update(case_metrics(error, np.asarray(arrays["sigma"], dtype=np.float64)))
+        for method in DIRECT_COMPARATOR_METHODS:
+            valid = bool(np.asarray(arrays[f"{method}_valid"]).item())
+            failure_reason = str(np.asarray(arrays[f"{method}_failure_reason"]).item())
+            row[f"{method}_valid"] = valid
+            row[f"{method}_failure_reason"] = failure_reason
+            if valid:
+                score = np.asarray(arrays[f"{method}_score"], dtype=np.float64)
+                row.update(_prefixed_direct_metrics(method, score, error))
+    else:
+        for method in DIRECT_COMPARATOR_METHODS:
+            row[f"{method}_valid"] = False
+            row[f"{method}_failure_reason"] = "forward_target_incomplete"
+
+    return row
 
 def anatomy_rows(case_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
