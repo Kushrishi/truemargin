@@ -292,9 +292,7 @@ def make_topology_safe_known_transform(
 
     raw_jacobian_min = _transform_jacobian_min(source_img, raw_transform)
     for scale in TOPOLOGY_SCALES:
-        transform = sitk.BSplineTransformInitializer(
-            source_img, [DEFORM_MESH_SIZE] * NDIM
-        )
+        transform = sitk.BSplineTransformInitializer(source_img, [DEFORM_MESH_SIZE] * NDIM)
         scaled_params = raw_params * scale
         transform.SetParameters(tuple(float(value) for value in scaled_params))
         jacobian_min = _transform_jacobian_min(source_img, transform)
