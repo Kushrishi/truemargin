@@ -33,6 +33,8 @@ PROTOCOL_PATH = "docs/hyperparameter_known_gt_protocol.md"
 PROTOCOL_AMENDMENT_BLOB_SHA = "1eafe77bb847b1a77229e267ef32e6bbedd27bc2"
 PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT = "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
 PROTOCOL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_protocol_amendment_1.md"
+PROTOCOL_AMENDMENT_2_BLOB_SHA = "bcd0a6b970891724c755cde75111f56d6fad7492"
+PROTOCOL_AMENDMENT_2_PATH = "docs/hyperparameter_known_gt_protocol_amendment_2.md"
 
 HELD_OUT_CASES = {
     "aaa0044": {"t2_series": "13614"},
@@ -52,6 +54,19 @@ N_REPLICATES = 3
 CROP_PAD_VOXELS = 15
 DEFORM_MESH_SIZE = 4
 KNOWN_COEFFICIENT_STD = 4.0
+TOPOLOGY_SCALES = (
+    1.00,
+    0.95,
+    0.90,
+    0.85,
+    0.80,
+    0.75,
+    0.70,
+    0.65,
+    0.60,
+    0.55,
+    0.50,
+)
 INTENSITY_NOISE_STD = 0.03
 N_LANDMARKS = 50
 LANDMARK_MARGIN = 8
@@ -90,6 +105,7 @@ def verify_protocol_identities(repo_root: str = REPO_ROOT) -> dict[str, str]:
     expected = {
         PROTOCOL_PATH: PROTOCOL_MAIN_BLOB_SHA,
         PROTOCOL_AMENDMENT_PATH: PROTOCOL_AMENDMENT_BLOB_SHA,
+        PROTOCOL_AMENDMENT_2_PATH: PROTOCOL_AMENDMENT_2_BLOB_SHA,
     }
     observed: dict[str, str] = {}
     for relative_path, expected_sha in expected.items():
@@ -254,6 +270,48 @@ def _known_displacement_field(source_img: sitk.Image, transform: sitk.Transform)
     return displacement_filter.Execute(transform)
 
 
+def _transform_jacobian_min(source_img: sitk.Image, transform: sitk.Transform) -> float:
+    displacement_image = _known_displacement_field(source_img, transform)
+    displacement = sitk.GetArrayFromImage(displacement_image)
+    if not np.isfinite(displacement).all():
+        return float("nan")
+    jacobian_image = sitk.DisplacementFieldJacobianDeterminant(displacement_image, True)
+    jacobian = sitk.GetArrayFromImage(jacobian_image)
+    if not np.isfinite(jacobian).all():
+        return float("nan")
+    return float(np.min(jacobian))
+
+
+def make_topology_safe_known_transform(
+    source_img: sitk.Image, seed: int
+) -> tuple[sitk.Transform, dict[str, float | bool]]:
+    raw_transform = make_known_transform(source_img, seed)
+    raw_params = np.asarray(raw_transform.GetParameters(), dtype=np.float64)
+    if not np.isfinite(raw_params).all():
+        raise ValueError("known B-spline parameters are non-finite")
+
+    raw_jacobian_min = _transform_jacobian_min(source_img, raw_transform)
+    for scale in TOPOLOGY_SCALES:
+        transform = sitk.BSplineTransformInitializer(
+            source_img, [DEFORM_MESH_SIZE] * NDIM
+        )
+        scaled_params = raw_params * scale
+        transform.SetParameters(tuple(float(value) for value in scaled_params))
+        jacobian_min = _transform_jacobian_min(source_img, transform)
+        if np.isfinite(jacobian_min) and jacobian_min > 0.0:
+            return transform, {
+                "raw_jacobian_min": float(raw_jacobian_min),
+                "topology_scale": float(scale),
+                "jacobian_min": float(jacobian_min),
+                "topology_attenuated": bool(scale < 1.0),
+            }
+
+    raise ValueError(
+        "known deformation remains invalid after topology backtracking: "
+        f"raw minimum Jacobian={raw_jacobian_min:.6g}"
+    )
+
+
 def geometry_record(
     *,
     patient: str,
@@ -265,10 +323,7 @@ def geometry_record(
 ) -> dict[str, Any]:
     seed = case_seed(anatomy_index, replicate)
     source_img = make_source_image(crop, spacing)
-    transform = make_known_transform(source_img, seed)
-    params = np.asarray(transform.GetParameters(), dtype=np.float64)
-    if not np.isfinite(params).all():
-        raise ValueError("known B-spline parameters are non-finite")
+    transform, topology = make_topology_safe_known_transform(source_img, seed)
 
     displacement_image = _known_displacement_field(source_img, transform)
     displacement = sitk.GetArrayFromImage(displacement_image)
@@ -314,6 +369,9 @@ def geometry_record(
         "shape_zyx": tuple(int(value) for value in crop.shape),
         "spacing_xyz_mm": spacing,
         "crop_diagonal_mm": crop_diagonal_mm(crop.shape, spacing),
+        "raw_jacobian_min": float(topology["raw_jacobian_min"]),
+        "topology_scale": float(topology["topology_scale"]),
+        "topology_attenuated": bool(topology["topology_attenuated"]),
         "jacobian_min": jacobian_min,
         "fixed_roi_voxels": int(np.sum(fixed_roi)),
         "eligible_fixed_roi_voxels": int(len(eligible_roi)),
@@ -340,7 +398,7 @@ def build_synthetic_case(
 ) -> dict[str, Any]:
     seed = case_seed(anatomy_index, replicate)
     source_img = make_source_image(crop, spacing)
-    transform = make_known_transform(source_img, seed)
+    transform, _ = make_topology_safe_known_transform(source_img, seed)
     fixed_roi = make_fixed_roi_mask(mask_crop, source_img, transform)
     idx_zyx = sample_landmarks(fixed_roi, seed + LANDMARK_SEED_OFFSET)
     u_true, _ = true_displacement_at_indices(source_img, transform, idx_zyx)
@@ -682,6 +740,7 @@ def verify_result_bearing_authorization(
         "planned_registrations": len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS),
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
+        "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
     }
     for key, value in expected.items():
         if request.get(key) != value:
@@ -750,6 +809,10 @@ def main() -> None:
     print(f"Git SHA: {head}")
     print(f"Protocol: {PROTOCOL_PATH} @ blob {PROTOCOL_MAIN_BLOB_SHA}")
     print(f"Protocol amendment: {PROTOCOL_AMENDMENT_PATH} " f"@ blob {PROTOCOL_AMENDMENT_BLOB_SHA}")
+    print(
+        f"Protocol amendment 2: {PROTOCOL_AMENDMENT_2_PATH} "
+        f"@ blob {PROTOCOL_AMENDMENT_2_BLOB_SHA}"
+    )
     print(f"Held-out anatomies: {list(HELD_OUT_CASES)}")
     print(f"Frozen hyperparameter configs: {hyper.CONFIGS}")
     print("Phase 1: geometry-only validation for all 30 predeclared cases")
@@ -812,6 +875,7 @@ def main() -> None:
     geometry_payload = {
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
+        "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
         "git_sha": head,
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
         "passed_cases": len(geometry),
@@ -895,6 +959,7 @@ def main() -> None:
     summary: dict[str, Any] = {
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
+        "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
         "git_sha": head,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
