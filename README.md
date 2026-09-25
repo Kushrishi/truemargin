@@ -48,7 +48,7 @@ official estimator fixed and evaluates:
 - calibration only as a later, separate question.
 
 See `research/STATE.md` and `research/CLAIMS.md` for the current evidence and
-claim boundaries.
+claim boundaries, and `research/ROADMAP.md` for the milestone plan.
 
 ## Scope
 
