@@ -18,9 +18,7 @@ def _load_fetcher():
 def test_frozen_series_suffixes_match_known_gt_runner() -> None:
     fetcher = _load_fetcher()
 
-    runner_path = (
-        Path(__file__).parents[1] / "scripts" / "19_hyperparameter_known_gt_validation.py"
-    )
+    runner_path = Path(__file__).parents[1] / "scripts" / "19_hyperparameter_known_gt_validation.py"
     spec = importlib.util.spec_from_file_location("known_gt_runner_for_data_test", runner_path)
     assert spec is not None and spec.loader is not None
     runner = importlib.util.module_from_spec(spec)
