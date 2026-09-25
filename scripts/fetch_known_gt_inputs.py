@@ -202,15 +202,10 @@ def resolve_frozen_series(
         and str(row.get("collection_id", IDC_COLLECTION_ID)) == IDC_COLLECTION_ID
         and str(row.get("Modality", "MR")) == "MR"
     ]
-    matches = [
-        row
-        for row in patient_rows
-        if str(row.get("SeriesInstanceUID", "")) == expected_uid
-    ]
+    matches = [row for row in patient_rows if str(row.get("SeriesInstanceUID", "")) == expected_uid]
     if len(matches) != 1:
         raise RuntimeError(
-            f"{patient}: frozen full SeriesInstanceUID resolved to "
-            f"{len(matches)} public series"
+            f"{patient}: frozen full SeriesInstanceUID resolved to " f"{len(matches)} public series"
         )
 
     selected = matches[0]
