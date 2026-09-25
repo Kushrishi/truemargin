@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; geometry-only preflight authorized; result-bearing study remains unauthorized.
+**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; first geometry-preflight attempt failed before geometry on an acquisition timeout; one technical-only retry is authorized; result-bearing study remains unauthorized.
 
 Primary design:
 
@@ -112,7 +112,7 @@ the new protocol explicitly corrects a transform-direction ambiguity.
 
 Before result-bearing execution:
 
-1. execute the authorized 30-case geometry-only preflight;
+1. complete the authorized technical retry of the 30-case geometry-only preflight using the same frozen scientific request;
 2. preserve and review its acquisition and geometry records;
 3. keep result-bearing execution unauthorized until the reviewed preflight is pinned by a separate run request;
 4. preserve the primary hyperparameter-estimator definition unchanged;
