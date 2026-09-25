@@ -1,0 +1,213 @@
+{
+  "collection": "Prostate-Fused-MRI-Pathology",
+  "collection_version": "2",
+  "collection_version_date": "2023-04-10",
+  "frozen_t2_series": {
+    "aaa0044": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 30,
+      "frozen_series_identity": {
+        "instance_count": 30,
+        "legacy_folder": "13614",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.732716917747115096802187213614",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.201705777245747582280963873728"
+      },
+      "legacy_series_folder": "13614",
+      "protocol_name": null,
+      "reported_instance_count": 30,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.732716917747115096802187213614",
+      "series_manifest_sha256": "7aa1395b6e1108a689e4a6780705f094b2279143f631c717169d2751dada17bf",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.201705777245747582280963873728"
+    },
+    "aaa0051": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 26,
+      "frozen_series_identity": {
+        "instance_count": 26,
+        "legacy_folder": "36207",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.157635096994502785546787236207",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.302634259535269710262168297855"
+      },
+      "legacy_series_folder": "36207",
+      "protocol_name": null,
+      "reported_instance_count": 26,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.157635096994502785546787236207",
+      "series_manifest_sha256": "57f07ebfde501ba44fbce623a343a781fa25ee0ce13c8a062373a11e50514530",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.302634259535269710262168297855"
+    },
+    "aaa0053": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 32,
+      "frozen_series_identity": {
+        "instance_count": 32,
+        "legacy_folder": "45314",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.259278598794248993925632445314",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.660223682632971636498927291662"
+      },
+      "legacy_series_folder": "45314",
+      "protocol_name": null,
+      "reported_instance_count": 32,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.259278598794248993925632445314",
+      "series_manifest_sha256": "4e2a47d6047da7ec5fe0975087d6e099f1fe20130761d54eb6a85dbb8f39f995",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.660223682632971636498927291662"
+    },
+    "aaa0060": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 28,
+      "frozen_series_identity": {
+        "instance_count": 28,
+        "legacy_folder": "12400",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.673662144261717516105903012400",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.208980060976713308412665848227"
+      },
+      "legacy_series_folder": "12400",
+      "protocol_name": null,
+      "reported_instance_count": 28,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.673662144261717516105903012400",
+      "series_manifest_sha256": "3fb751a2a1e79fdbb3ac0ac0997ec8afc4a9a860a381b37d0e8b650fae032654",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.208980060976713308412665848227"
+    },
+    "aaa0064": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 31,
+      "frozen_series_identity": {
+        "instance_count": 31,
+        "legacy_folder": "40733",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.269936256542453290800299940733",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.677388229699005647616973897265"
+      },
+      "legacy_series_folder": "40733",
+      "protocol_name": null,
+      "reported_instance_count": 31,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.269936256542453290800299940733",
+      "series_manifest_sha256": "b93b7b8785f9e8e5fa74cf8220463609a0396570d239e1f73961b3d9c03f4706",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.677388229699005647616973897265"
+    },
+    "aaa0069": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 22,
+      "frozen_series_identity": {
+        "instance_count": 22,
+        "legacy_folder": "58343",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.204433303194598133987954958343",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.323255419999823608842175535350"
+      },
+      "legacy_series_folder": "58343",
+      "protocol_name": null,
+      "reported_instance_count": 22,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.204433303194598133987954958343",
+      "series_manifest_sha256": "718ccfb8bddef100ed703161c96ae126f020b236a4339b6b89ad5bb8abe15806",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.323255419999823608842175535350"
+    },
+    "aaa0071": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 28,
+      "frozen_series_identity": {
+        "instance_count": 28,
+        "legacy_folder": "27783",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.251268446143166700145984727783",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.114590175231563575260488672107"
+      },
+      "legacy_series_folder": "27783",
+      "protocol_name": null,
+      "reported_instance_count": 28,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.251268446143166700145984727783",
+      "series_manifest_sha256": "89cbf9a9b02a87beb2822aa2cf82150799f7aeaee4c8bc7ace2a739141939bc8",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.114590175231563575260488672107"
+    },
+    "aaa0072": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 26,
+      "frozen_series_identity": {
+        "instance_count": 26,
+        "legacy_folder": "64767",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.272204612196811890109116064767",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.220337153887047473905655844358"
+      },
+      "legacy_series_folder": "64767",
+      "protocol_name": null,
+      "reported_instance_count": 26,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.272204612196811890109116064767",
+      "series_manifest_sha256": "c13eed364ee4bcae83ee0cddbfded007806ffa8d03eb12f73d9830c75416e9bd",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.220337153887047473905655844358"
+    },
+    "aaa0086": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 28,
+      "frozen_series_identity": {
+        "instance_count": 28,
+        "legacy_folder": "42255",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.188095814224864796452018542255",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.176024331868997816675163759858"
+      },
+      "legacy_series_folder": "42255",
+      "protocol_name": null,
+      "reported_instance_count": 28,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.188095814224864796452018542255",
+      "series_manifest_sha256": "2731e6ae2339f2c08309c7ad1a13045509ae180d67c7f3118d19638a842b5796",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.176024331868997816675163759858"
+    },
+    "aaa0087": {
+      "cohort_filters_applied": null,
+      "downloaded_file_count": 26,
+      "frozen_series_identity": {
+        "instance_count": 26,
+        "legacy_folder": "30095",
+        "series_description": "T2 AXIAL SM FOV",
+        "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.149928179075774997152309830095",
+        "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.139419287640729018088223981724"
+      },
+      "legacy_series_folder": "30095",
+      "protocol_name": null,
+      "reported_instance_count": 26,
+      "series_description": "T2 AXIAL SM FOV",
+      "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.149928179075774997152309830095",
+      "series_manifest_sha256": "a53e7abdf8f9101addde70c70335113529c1cc74030dec7e8e0a271b4c04ee7c",
+      "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.139419287640729018088223981724"
+    }
+  },
+  "hecap_archive_sha256": "d7c1b7c048d2e55db68e2715f4c53e6563da7e2ae8390aa9bef8f88dd3cd5215",
+  "hecap_file_sha256": {
+    "aaa0044": "0fefa8e8692bcb0098d95b7b0978ed71d1abbc39c63e27a7c42c3daa7fbca79c",
+    "aaa0051": "25fcf5d80c9cc6f14b9304cf724264bf09482c142cdcdd84a27a98c32ea29419",
+    "aaa0053": "fd84fdfb6c01705f980fabbbe82cdde912b94168eb54e0530acd71cc38a2fb31",
+    "aaa0060": "2455ea7d3c2071ba08d0c2a262b9229975adaf7778b07a4807b570bd81798548",
+    "aaa0064": "099384dc9dd85b76b7ebc0f801387bf3855a868d6fd33766d1865ec331da5dbe",
+    "aaa0069": "94eee6d40e83ab1b5c0d910c9e4de45bf902029c6983f6040bfb14cd86f52820",
+    "aaa0071": "43b3c1931b3be934185735fd9ea7d148b38bad6f1327562169a787d1ecf3ec1d",
+    "aaa0072": "64ea80446bc04aa176898701887ebb9c3e3fd3c62e86cd9d5238121a7c1da36b",
+    "aaa0086": "5353c7f46d25d57052ace7966aca11b5caf611693581c7e1d83dbdf2732f8dc2",
+    "aaa0087": "2d0b00ac6fb6334343a0466f8f66b449a3e98e134d8c1f2679aed07ee2d5e54c"
+  },
+  "hecap_source_url": "https://wiki.cancerimagingarchive.net/download/attachments/23691514/fused_prostate_matlab.zip?api=v2&modificationDate=1476802701461&version=1",
+  "idc_collection_id": "prostate_fused_mri_pathology",
+  "idc_index_version": "0.12.5",
+  "idc_release": {
+    "api_version": "3.0.0b3",
+    "build": "0640860",
+    "idc_index_data_version": "24.2.2",
+    "idc_version": "v24"
+  },
+  "idc_rest_base": "https://api.imaging.datacommons.cancer.gov/v3",
+  "purpose": "truemargin_known_gt_geometry_preflight_inputs",
+  "schema_version": 2,
+  "series_identity_path": "research/KNOWN_GT_SERIES_IDENTITY.json"
+}
