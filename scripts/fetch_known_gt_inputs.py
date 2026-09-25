@@ -232,6 +232,17 @@ def _idc_manifest_for_series(patient: str, series_uid: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _idc_download_command(manifest_path: Path, download_root: Path) -> list[str]:
+    return [
+        "idc",
+        "download-from-manifest",
+        "--manifest-file",
+        str(manifest_path),
+        "--download-dir",
+        str(download_root),
+    ]
+
+
 def _copy_downloaded_dicoms(download_root: Path, destination: Path) -> int:
     files = sorted(download_root.rglob("*.dcm"))
     if not files:
@@ -263,14 +274,7 @@ def _download_idc_series(patient: str, series_uid: str, destination: Path) -> tu
         manifest_path.write_text(manifest_text, encoding="utf-8")
 
         completed = subprocess.run(
-            [
-                "idc",
-                "download-from-manifest",
-                "--manifest-file",
-                str(manifest_path),
-                "--download-dir",
-                str(download_root),
-            ],
+            _idc_download_command(manifest_path, download_root),
             check=False,
             text=True,
             stdout=subprocess.PIPE,
