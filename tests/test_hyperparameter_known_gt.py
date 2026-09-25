@@ -133,9 +133,7 @@ def test_held_out_cohort_and_seed_schedule_are_frozen() -> None:
         runner.PROTOCOL_AMENDMENT_PATH: runner.PROTOCOL_AMENDMENT_BLOB_SHA,
         runner.PROTOCOL_AMENDMENT_2_PATH: runner.PROTOCOL_AMENDMENT_2_BLOB_SHA,
         runner.COMPARATOR_PROTOCOL_PATH: runner.COMPARATOR_PROTOCOL_BLOB_SHA,
-        runner.EXECUTION_CONTROL_AMENDMENT_PATH: (
-            runner.EXECUTION_CONTROL_AMENDMENT_BLOB_SHA
-        ),
+        runner.EXECUTION_CONTROL_AMENDMENT_PATH: (runner.EXECUTION_CONTROL_AMENDMENT_BLOB_SHA),
     }
     assert runner.HELD_OUT_CASES == {
         "aaa0044": {"t2_series": "13614"},
@@ -311,14 +309,10 @@ def test_result_bearing_authorization_pins_reviewed_preflight(
         "protocol_amendment_blob_sha": runner.PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": runner.PROTOCOL_AMENDMENT_2_BLOB_SHA,
         "comparator_protocol_blob_sha": runner.COMPARATOR_PROTOCOL_BLOB_SHA,
-        "execution_control_amendment_blob_sha": (
-            runner.EXECUTION_CONTROL_AMENDMENT_BLOB_SHA
-        ),
+        "execution_control_amendment_blob_sha": (runner.EXECUTION_CONTROL_AMENDMENT_BLOB_SHA),
         "geometry_preflight_record": runner.GEOMETRY_PREFLIGHT_RECORD,
         "geometry_preflight_git_blob_sha": preflight_blob,
-        "geometry_preflight_uploaded_sha256": (
-            runner.GEOMETRY_PREFLIGHT_UPLOADED_SHA256
-        ),
+        "geometry_preflight_uploaded_sha256": (runner.GEOMETRY_PREFLIGHT_UPLOADED_SHA256),
         "acquisition_record": runner.ACQUISITION_RECORD,
         "acquisition_git_blob_sha": acquisition_blob,
         "cd_feasible": False,
@@ -393,23 +387,12 @@ def test_direct_comparator_summaries_keep_secondary_tests_separate(
     assert all(summary[method]["assessable"] is True for method in summary)
     assert all(len(anatomy[method]) == 10 for method in anatomy)
     assert summary["ice"]["paired_target_minus_comparator_median"] == pytest.approx(0.1)
-    assert (
-        summary["ice"]["raw_exact_sign_p"]
-        < summary["residual"]["raw_exact_sign_p"]
-    )
-    assert (
-        summary["residual"]["raw_exact_sign_p"]
-        < summary["jacdev"]["raw_exact_sign_p"]
-    )
+    assert summary["ice"]["raw_exact_sign_p"] < summary["residual"]["raw_exact_sign_p"]
+    assert summary["residual"]["raw_exact_sign_p"] < summary["jacdev"]["raw_exact_sign_p"]
     for method in summary:
-        assert (
-            summary[method]["holm_adjusted_sign_p"]
-            >= summary[method]["raw_exact_sign_p"]
-        )
+        assert summary[method]["holm_adjusted_sign_p"] >= summary[method]["raw_exact_sign_p"]
         assert summary[method]["median_anatomy_blind_spot_rate"] == pytest.approx(0.1)
-        assert summary[method][
-            "median_anatomy_quartile_known_error_delta_mm"
-        ] == pytest.approx(1.0)
+        assert summary[method]["median_anatomy_quartile_known_error_delta_mm"] == pytest.approx(1.0)
 
 
 def test_topology_scale_schedule_is_frozen() -> None:
