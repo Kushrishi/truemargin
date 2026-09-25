@@ -16,6 +16,7 @@ import SimpleITK as sitk
 from scipy.stats import binomtest, pearsonr, spearmanr
 
 from truemargin import calibration as cal
+from truemargin import comparators
 from truemargin import hyperparameter as hyper
 from truemargin import io_utils as ioutil
 from truemargin import known_gt_comparison as comparison
@@ -803,6 +804,126 @@ def bootstrap_interval(
 
 def positive_association_label(observed: float, p_value: float) -> bool:
     return bool(observed > 0.0 and p_value <= 0.05)
+
+
+def direct_comparator_summaries(
+    case_rows: list[dict[str, Any]],
+    target_anatomy_summary: list[dict[str, Any]],
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]]]:
+    """Aggregate the frozen direct comparators without changing the primary test."""
+    target_by_patient = {row["patient"]: row for row in target_anatomy_summary}
+    summary: dict[str, dict[str, Any]] = {}
+    anatomy_by_method: dict[str, list[dict[str, Any]]] = {}
+    p_methods: list[str] = []
+    p_values: list[float] = []
+
+    for method in DIRECT_COMPARATOR_METHODS:
+        anatomy = comparison.anatomy_summary(
+            case_rows,
+            patients=list(HELD_OUT_CASES),
+            method=method,
+            min_complete_cases=MIN_ASSESSABLE_CASES_PER_ANATOMY,
+        )
+        anatomy_by_method[method] = anatomy
+        assessable_rows = [row for row in anatomy if bool(row["assessable"])]
+        assessable = len(assessable_rows) >= MIN_ASSESSABLE_ANATOMIES
+        method_summary: dict[str, Any] = {
+            "assessable_anatomies": len(assessable_rows),
+            "assessable": assessable,
+            "median_anatomy_spearman": None,
+            "positive_anatomies": None,
+            "sign_test_n": None,
+            "raw_exact_sign_p": None,
+            "holm_adjusted_sign_p": None,
+            "bootstrap_95_ci": None,
+            "median_anatomy_quartile_known_error_delta_mm": None,
+            "median_anatomy_blind_spot_rate": None,
+            "paired_joint_anatomies": 0,
+            "paired_target_minus_comparator_median": None,
+            "paired_target_minus_comparator_bootstrap_95_ci": None,
+            "paired_target_minus_comparator_values": None,
+        }
+
+        if assessable:
+            effects = np.asarray(
+                [row["median_case_spearman"] for row in assessable_rows],
+                dtype=np.float64,
+            )
+            positives, sign_n, p_value = exact_positive_sign_test(anatomy)
+            ci_lo, ci_hi = bootstrap_interval(anatomy)
+            method_summary.update(
+                {
+                    "median_anatomy_spearman": float(np.median(effects)),
+                    "positive_anatomies": positives,
+                    "sign_test_n": sign_n,
+                    "raw_exact_sign_p": p_value,
+                    "bootstrap_95_ci": [ci_lo, ci_hi],
+                }
+            )
+            p_methods.append(method)
+            p_values.append(p_value)
+
+            for metric in (
+                "median_quartile_known_error_delta_mm",
+                "median_blind_spot_rate",
+            ):
+                values = np.asarray(
+                    [row[metric] for row in assessable_rows if metric in row],
+                    dtype=np.float64,
+                )
+                finite = values[np.isfinite(values)]
+                if len(finite):
+                    method_summary[f"median_anatomy_{metric.removeprefix('median_')}"] = float(
+                        np.median(finite)
+                    )
+
+        jointly_assessable = [
+            patient
+            for patient in HELD_OUT_CASES
+            if bool(target_by_patient[patient]["assessable"])
+            and bool(next(row for row in anatomy if row["patient"] == patient)["assessable"])
+        ]
+        method_summary["paired_joint_anatomies"] = len(jointly_assessable)
+        if len(jointly_assessable) >= MIN_ASSESSABLE_ANATOMIES:
+            comparator_by_patient = {row["patient"]: row for row in anatomy}
+            target_values = np.asarray(
+                [
+                    target_by_patient[patient]["median_case_spearman"]
+                    for patient in jointly_assessable
+                ],
+                dtype=np.float64,
+            )
+            comparator_values = np.asarray(
+                [
+                    comparator_by_patient[patient]["median_case_spearman"]
+                    for patient in jointly_assessable
+                ],
+                dtype=np.float64,
+            )
+            observed, ci_lo, ci_hi = comparators.paired_median_bootstrap(
+                target_values,
+                comparator_values,
+                n_bootstraps=N_BOOTSTRAPS,
+                seed=BOOTSTRAP_SEED,
+            )
+            method_summary.update(
+                {
+                    "paired_target_minus_comparator_median": observed,
+                    "paired_target_minus_comparator_bootstrap_95_ci": [ci_lo, ci_hi],
+                    "paired_target_minus_comparator_values": (
+                        target_values - comparator_values
+                    ).tolist(),
+                }
+            )
+
+        summary[method] = method_summary
+
+    if p_values:
+        adjusted = comparators.holm_adjust(np.asarray(p_values, dtype=np.float64))
+        for method, value in zip(p_methods, adjusted, strict=True):
+            summary[method]["holm_adjusted_sign_p"] = float(value)
+
+    return summary, anatomy_by_method
 
 
 def _write_csv(path: str, rows: list[dict[str, Any]]) -> None:
