@@ -65,9 +65,7 @@ def resolve_frozen_series(
 ) -> dict[str, Any]:
     patient_rows = [row for row in rows if str(row.get("PatientID", "")) == patient]
     matches = [
-        row
-        for row in patient_rows
-        if str(row.get("SeriesInstanceUID", "")).endswith(suffix)
+        row for row in patient_rows if str(row.get("SeriesInstanceUID", "")).endswith(suffix)
     ]
     if len(matches) != 1:
         raise RuntimeError(
@@ -76,8 +74,7 @@ def resolve_frozen_series(
 
     selected = matches[0]
     descriptor = " ".join(
-        str(selected.get(key, ""))
-        for key in ("SeriesDescription", "ProtocolName")
+        str(selected.get(key, "")) for key in ("SeriesDescription", "ProtocolName")
     ).lower()
     if "t2" not in descriptor:
         raise RuntimeError(
@@ -132,11 +129,7 @@ def _extract_hecap_masks(archive: Path, destination: Path) -> dict[str, str]:
 
 
 def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
-    radiology_root = (
-        data_root
-        / "prostate_fused_manifest"
-        / "prostate_fused_mri_pathology"
-    )
+    radiology_root = data_root / "prostate_fused_manifest" / "prostate_fused_mri_pathology"
     hecap_root = data_root / "hecap"
 
     resolved: dict[str, dict[str, Any]] = {}
