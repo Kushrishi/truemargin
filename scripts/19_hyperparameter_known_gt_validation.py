@@ -1238,12 +1238,8 @@ def main() -> None:
         "acquisition_git_blob_sha": ACQUISITION_BLOB_SHA,
         "cd_feasibility_record": CD_FEASIBILITY_RECORD,
         "cd_feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
-        "planned_forward_registrations": (
-            len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
-        ),
-        "planned_reverse_registrations": (
-            len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
-        ),
+        "planned_forward_registrations": (len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)),
+        "planned_reverse_registrations": (len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)),
         "total_planned_registrations": (
             2 * len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
         ),
