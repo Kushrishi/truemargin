@@ -202,7 +202,7 @@ def test_anatomy_and_global_assessability_rules() -> None:
     patients = list(runner.HELD_OUT_CASES)
     for patient_index, patient in enumerate(patients):
         n_complete = 2 if patient_index < 8 else 1
-        for _replicate in range(3):
+        for replicate in range(3):
             complete = replicate < n_complete
             rows.append(
                 {
@@ -364,7 +364,7 @@ def test_direct_comparator_summaries_keep_secondary_tests_separate(monkeypatch) 
             "residual": 0.2 if patient_index < 9 else -0.2,
             "jacdev": 0.1 if patient_index < 8 else -0.1,
         }
-        for replicate in range(3):
+        for _replicate in range(3):
             row: dict[str, object] = {"patient": patient}
             for method, rho in method_rhos.items():
                 row[f"{method}_valid"] = True
