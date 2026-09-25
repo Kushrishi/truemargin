@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "research/KNOWN_GT_GEOMETRY_REQUEST.json"
+      - "research/KNOWN_GT_GEOMETRY_RETRY.json"
 
 permissions:
   contents: read
@@ -25,13 +26,15 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verify geometry-only request
+      - name: Verify geometry-only request and technical retry
         run: |
           python - <<'PY'
           import json
+          import subprocess
           from pathlib import Path
 
-          request = json.loads(Path("research/KNOWN_GT_GEOMETRY_REQUEST.json").read_text())
+          request_path = Path("research/KNOWN_GT_GEOMETRY_REQUEST.json")
+          request = json.loads(request_path.read_text())
           expected = {
               "schema_version": 1,
               "study": "hyperparameter-known-gt-v1",
@@ -47,10 +50,38 @@ jobs:
           }
           for key, value in expected.items():
               assert request.get(key) == value, (key, request.get(key), value)
+
+          retry_path = Path("research/KNOWN_GT_GEOMETRY_RETRY.json")
+          if retry_path.exists():
+              retry = json.loads(retry_path.read_text())
+              retry_expected = {
+                  "schema_version": 1,
+                  "study": "hyperparameter-known-gt-v1",
+                  "retry_number": 1,
+                  "retry_of_workflow_run_id": 36160471644,
+                  "failed_source_git_sha": "5911ce404b1cc0f167aafb64b54aa95b8aebab0f",
+                  "failure_stage": "fetch_frozen_public_inputs",
+                  "failure_class": "infrastructure_network_timeout",
+                  "scientific_configuration_changed": False,
+                  "result_bearing_authorized": False,
+                  "original_geometry_request_blob_sha": (
+                      "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7"
+                  ),
+              }
+              for key, value in retry_expected.items():
+                  assert retry.get(key) == value, (key, retry.get(key), value)
+
+              request_blob = subprocess.check_output(
+                  ["git", "hash-object", str(request_path)], text=True
+              ).strip()
+              assert request_blob == retry["original_geometry_request_blob_sha"]
+              print("TECHNICAL_RETRY_GUARD=PASS")
+
+          print("GEOMETRY_AUTHORIZATION=PASS")
           PY
 
-      - name: Install package and real-data dependencies
-        run: python -m pip install -e ".[realdata]"
+      - name: Install package and acquisition dependencies
+        run: python -m pip install -e ".[realdata,acquisition]"
 
       - name: Fetch frozen public inputs
         run: python scripts/fetch_known_gt_inputs.py
@@ -60,7 +91,8 @@ jobs:
 
       - name: Package reviewed-candidate evidence
         run: |
-          sha256sum outputs/hyperparameter_known_gt_geometry.json             > outputs/hyperparameter_known_gt_geometry.sha256
+          sha256sum outputs/hyperparameter_known_gt_geometry.json \
+            > outputs/hyperparameter_known_gt_geometry.sha256
           cat outputs/known_gt_data_acquisition.json
           cat outputs/hyperparameter_known_gt_geometry.json
           cat outputs/hyperparameter_known_gt_geometry.sha256
@@ -71,6 +103,7 @@ jobs:
           name: truemargin-known-gt-geometry-preflight
           path: |
             research/KNOWN_GT_GEOMETRY_REQUEST.json
+            research/KNOWN_GT_GEOMETRY_RETRY.json
             outputs/known_gt_data_acquisition.json
             outputs/hyperparameter_known_gt_geometry.json
             outputs/hyperparameter_known_gt_geometry.sha256
