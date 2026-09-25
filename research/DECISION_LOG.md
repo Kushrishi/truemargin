@@ -199,3 +199,31 @@ and tests fixed scales `1.00, 0.95, ..., 0.50`, selecting the largest scale
 with finite geometry and strictly positive evaluated-grid Jacobian. If no
 predeclared scale passes, the study stops again rather than extending the grid
 post hoc.
+
+## 2026-09-25 — Accept amended 30 / 30 geometry preflight
+
+The complete Amendment-2 geometry-only workflow (run `36172918233`, source
+`7ad0299ef1a1ec1434e6519e9fda6100a60b1212`) passed its full authorization
+history, acquired all 10 frozen T2 series and all 10 required HECaP masks, and
+completed all 30 planned geometry cases successfully.
+
+The reviewed machine-readable result contains 30 case records and zero
+failures. Twenty-nine cases retained topology scale `1.00`. Only
+`aaa0072`, replicate `1`, seed `7001` used the first predeclared
+backtracking scale, `0.95`, moving the evaluated minimum Jacobian from
+`-0.010585743635341259` to `0.05036175275237062`.
+
+Every case records exactly 50 fixed-domain ROI landmarks and a strictly
+positive final evaluated-grid minimum Jacobian. The smallest eligible ROI
+contains 562 voxels.
+
+Decision: mark geometry-only milestone M2 complete and preserve the reviewed
+geometry and acquisition evidence under `results/`. This result validates the
+cohort/provenance/geometry construction only. It does not establish
+uncertainty-error informativeness, calibration, blind-spot behavior,
+comparative performance, or generalization.
+
+The next scientific gate is a prospective comparator-protocol freeze. The 270
+planned result-bearing estimator registrations remain unauthorized until that
+protocol and the successful geometry record are pinned by a separate committed
+run request.

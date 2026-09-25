@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + Amendment 1 remain frozen; the first complete 30-case geometry preflight acquired all frozen inputs and returned 29/30 valid geometries, with one folding deformation (`aaa0072`, replicate 1, seed 7001; minimum Jacobian -0.0105857). No estimator registration ran. Amendment 2 is frozen prospectively after geometry-only evidence and before any estimator outcome; it preserves each raw seed/coefficient draw and adds deterministic topology backtracking. Result-bearing study remains unauthorized.
+**Status:** base protocol + Amendments 1 and 2 are frozen. The full amended geometry preflight passed 30/30 cases from all 10 frozen anatomies. Twenty-nine cases used topology scale 1.00; only `aaa0072`, replicate 1, seed 7001 used the prospectively frozen 0.95 backtracking scale, moving the evaluated minimum Jacobian from -0.0105857 to +0.0503618. No result-bearing estimator registration has run. Comparator protocol freeze is now the active gate.
 
 Primary design:
 
@@ -110,16 +110,17 @@ the new protocol explicitly corrects a transform-direction ambiguity.
 
 ## Current bottleneck
 
+Geometry-only M2 is complete and its reviewed evidence is preserved under
+`results/`.
+
 Before result-bearing execution:
 
-1. run the complete 30-case geometry-only preflight under frozen Amendment 2;
-2. require all 30 amended cases to pass the existing geometry criteria;
-3. preserve and review the complete machine-readable acquisition and geometry records;
-4. keep result-bearing execution unauthorized until the reviewed successful preflight is pinned by a separate run request;
-5. preserve the primary hyperparameter-estimator definition unchanged;
-6. freeze the paper-level comparator protocol before comparator outcomes are seen.
+1. freeze the paper-level comparator protocol before any primary or comparator outcome is observed;
+2. preserve the primary hyperparameter-estimator definition unchanged;
+3. pin the successful geometry record, comparator protocol, exact implementation identities, and result-bearing source revision in a separate run request;
+4. keep the 270 planned estimator registrations unauthorized until that request is reviewed and committed.
 
-The literature and implementation audits are complete enough to proceed to geometry validation; comparator implementation remains downstream of the frozen primary preflight.
+Comparator design is now the active scientific gate.
 
 The existing 30-case primary evaluation must not be retuned based on future
 results.
