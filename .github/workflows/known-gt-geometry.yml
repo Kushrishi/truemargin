@@ -1,0 +1,78 @@
+name: TrueMargin known-GT geometry preflight
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/KNOWN_GT_GEOMETRY_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-known-gt-geometry
+  cancel-in-progress: false
+
+jobs:
+  geometry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Verify geometry-only request
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          request = json.loads(Path("research/KNOWN_GT_GEOMETRY_REQUEST.json").read_text())
+          expected = {
+              "schema_version": 1,
+              "study": "hyperparameter-known-gt-v1",
+              "authorized_mode": "geometry-only",
+              "result_bearing_authorized": False,
+              "planned_cases": 30,
+              "held_out_anatomies": [
+                  "aaa0044", "aaa0051", "aaa0053", "aaa0060", "aaa0064",
+                  "aaa0069", "aaa0071", "aaa0072", "aaa0086", "aaa0087"
+              ],
+              "protocol_main_blob_sha": "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0",
+              "protocol_amendment_blob_sha": "1eafe77bb847b1a77229e267ef32e6bbedd27bc2",
+          }
+          for key, value in expected.items():
+              assert request.get(key) == value, (key, request.get(key), value)
+          PY
+
+      - name: Install package and real-data dependencies
+        run: python -m pip install -e ".[realdata]"
+
+      - name: Fetch frozen public inputs
+        run: python scripts/fetch_known_gt_inputs.py
+
+      - name: Run geometry-only preflight
+        run: python scripts/19_hyperparameter_known_gt_validation.py --geometry-only
+
+      - name: Package reviewed-candidate evidence
+        run: |
+          sha256sum outputs/hyperparameter_known_gt_geometry.json             > outputs/hyperparameter_known_gt_geometry.sha256
+          cat outputs/known_gt_data_acquisition.json
+          cat outputs/hyperparameter_known_gt_geometry.json
+          cat outputs/hyperparameter_known_gt_geometry.sha256
+
+      - name: Upload geometry evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-known-gt-geometry-preflight
+          path: |
+            research/KNOWN_GT_GEOMETRY_REQUEST.json
+            outputs/known_gt_data_acquisition.json
+            outputs/hyperparameter_known_gt_geometry.json
+            outputs/hyperparameter_known_gt_geometry.sha256
+          if-no-files-found: error
+          retention-days: 90
