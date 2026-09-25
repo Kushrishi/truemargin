@@ -120,8 +120,18 @@ def test_synthetic_resample_direction_matches_fixed_to_moving_truth() -> None:
 
 def test_held_out_cohort_and_seed_schedule_are_frozen() -> None:
     runner = _load_runner()
-    assert runner.PROTOCOL_MAIN_SHA == "44afb8653c8c90b33a438107481f7be4586b0e68"
-    assert runner.PROTOCOL_AMENDMENT_SHA == "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
+    assert runner.PROTOCOL_MAIN_BLOB_SHA == "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0"
+    assert runner.PROTOCOL_MAIN_PRIVATE_FREEZE_COMMIT == (
+        "44afb8653c8c90b33a438107481f7be4586b0e68"
+    )
+    assert runner.PROTOCOL_AMENDMENT_BLOB_SHA == "1eafe77bb847b1a77229e267ef32e6bbedd27bc2"
+    assert runner.PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT == (
+        "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
+    )
+    assert runner.verify_protocol_identities() == {
+        runner.PROTOCOL_PATH: runner.PROTOCOL_MAIN_BLOB_SHA,
+        runner.PROTOCOL_AMENDMENT_PATH: runner.PROTOCOL_AMENDMENT_BLOB_SHA,
+    }
     assert runner.HELD_OUT_CASES == {
         "aaa0044": {"t2_series": "13614"},
         "aaa0051": {"t2_series": "36207"},
@@ -275,8 +285,8 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
         "planned_registrations": (
             len(runner.HELD_OUT_CASES) * runner.N_REPLICATES * len(runner.hyper.CONFIGS)
         ),
-        "protocol_main_sha": runner.PROTOCOL_MAIN_SHA,
-        "protocol_amendment_sha": runner.PROTOCOL_AMENDMENT_SHA,
+        "protocol_main_blob_sha": runner.PROTOCOL_MAIN_BLOB_SHA,
+        "protocol_amendment_blob_sha": runner.PROTOCOL_AMENDMENT_BLOB_SHA,
         "geometry_preflight_record": "results/hyperparameter_known_gt_geometry_preflight.json",
         "geometry_preflight_sha256": digest,
     }
