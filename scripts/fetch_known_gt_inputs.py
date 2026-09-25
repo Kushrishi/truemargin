@@ -266,6 +266,7 @@ def _download_idc_series(patient: str, series_uid: str, destination: Path) -> tu
             [
                 "idc",
                 "download-from-manifest",
+                "--manifest-file",
                 str(manifest_path),
                 "--download-dir",
                 str(download_root),
