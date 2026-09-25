@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + Amendments 1 and 2 are frozen. The full amended geometry preflight passed 30/30 cases from all 10 frozen anatomies. Twenty-nine cases used topology scale 1.00; only `aaa0072`, replicate 1, seed 7001 used the prospectively frozen 0.95 backtracking scale, moving the evaluated minimum Jacobian from -0.0105857 to +0.0503618. No result-bearing estimator registration has run. The comparator protocol, direct-comparator implementation, and CD feasibility decision are now frozen and tested; M3 is complete.
+**Status:** base protocol + Amendments 1 and 2 are frozen. The full amended geometry preflight passed 30/30 cases from all 10 frozen anatomies. Twenty-nine cases used topology scale 1.00; only `aaa0072`, replicate 1, seed 7001 used the prospectively frozen 0.95 backtracking scale, moving the evaluated minimum Jacobian from -0.0105857 to +0.0503618. No result-bearing estimator registration has run. The comparator protocol, direct-comparator implementation, and CD feasibility decision are frozen and tested; M3 is complete. A separate source-pinned result-bearing request is now frozen on this authorization branch; no result-bearing outcome existed when it was created.
 
 Primary design:
 
@@ -128,19 +128,28 @@ pin enough implementation detail to reproduce CD faithfully without inventing
 choices. The exact pre-result decision is frozen in
 `research/KNOWN_GT_CD_FEASIBILITY.json`.
 
-Before result-bearing execution:
+M4 is now authorized prospectively by
+`research/KNOWN_GT_RUN_REQUEST.json`, but no result-bearing registration has
+run at the authorization freeze.
 
-1. preserve the primary estimator and all comparator semantics unchanged;
-2. create a separate result-bearing run request that pins the successful M2
-   evidence, all protocol blobs, the CD-feasibility record, the exact
-   implementation source revision, and the exact registration budget;
-3. require the runner's authorization guard to verify all pinned evidence before
-   the first registration.
+The request pins:
 
-The frozen budget is exactly **270 forward + 270 reverse = 540
-registrations**. CD adds zero registrations.
+- implementation source `f52aee24b49327bf7989ae0746dbf2ad981510d1`;
+- its green CI run `36184383591`;
+- all protocol, geometry, acquisition, and CD-feasibility blobs;
+- the exact execution/orchestration blobs;
+- 10 frozen anatomy shards x 3 cases;
+- **270 forward + 270 reverse = 540 planned registrations**;
+- CD=false with zero CD registrations.
+
+Execution is sharded only for infrastructure robustness. Each anatomy shard
+produces the same canonical provenance checkpoints consumed by the unchanged
+scientific runner; a final job refuses to aggregate unless all 30 checkpoints
+are present.
 
 The existing 30-case evaluation must not be retuned based on future results.
+Scientific failures are retained and are not grounds for replacing cases,
+members, seeds, or comparators.
 
 ## Current source-of-truth order
 

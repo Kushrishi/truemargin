@@ -303,3 +303,48 @@ The frozen result-bearing budget is therefore exactly:
 The result-bearing authorization guard is hard-locked to this CD decision and
 budget. No primary or comparator known-GT outcome existed when this decision
 was frozen.
+
+## 2026-09-25 — Freeze source-pinned M4 result-bearing authorization
+
+After M2 geometry passed 30 / 30 and M3 comparator implementation/reproducibility
+completed, a separate result-bearing authorization was frozen before any
+known-ground-truth estimator outcome existed.
+
+The request is `research/KNOWN_GT_RUN_REQUEST.json`.
+
+It pins:
+
+- result-defining implementation source
+  `f52aee24b49327bf7989ae0746dbf2ad981510d1`;
+- green source CI run `36184383591`;
+- all frozen protocol/amendment/comparator blobs;
+- reviewed geometry and acquisition evidence identities;
+- the frozen CD=false feasibility record;
+- exact shard orchestrator, workflow, and acquisition-utility blobs;
+- 10 anatomy shards x 3 frozen cases;
+- 270 forward registrations;
+- 270 reverse registrations;
+- 0 CD registrations;
+- 540 planned registrations total.
+
+Execution is parallelized only across the ten already-frozen anatomies. Each
+shard calls the same canonical case runner and writes its existing
+provenance-bearing checkpoints. The final aggregation job refuses to run unless
+all 30 checkpoint files exist, then invokes the unchanged canonical 30-case
+runner to load those checkpoints and compute the sole final statistics.
+
+Before any shard registration, the execution guard verifies:
+
+1. the committed run request against the runner authorization schema;
+2. the result-defining files byte-for-byte against the pinned source commit;
+3. the orchestration/workflow/acquisition files against their pinned Git blobs;
+4. all frozen protocol/evidence blobs.
+
+Scientific failures are not infrastructure failures. Incomplete cases or
+members, weak correlations, unfavorable comparator results, or a negative
+primary result remain part of the study and do not authorize replacement or
+retuning.
+
+No primary statistic, comparator statistic, anatomy effect, p-value, bootstrap
+interval, or blind-spot outcome had been observed when this authorization was
+frozen.

@@ -73,7 +73,7 @@ The frozen result-bearing budget is 540 registrations.
 
 ## M4 — Primary known-ground-truth experiment
 
-**State:** unauthorized
+**State:** authorized prospectively; execution pending
 
 Frozen primary design:
 
@@ -88,11 +88,7 @@ Frozen primary design:
 - exact one-sided anatomy-level sign test;
 - 10,000-replicate anatomy bootstrap interval.
 
-Authorization requires the reviewed M2 geometry record, completed M3 comparator
-implementation preflight, exact protocol/implementation identities, and final
-registration budget to be pinned by a separate run request. No primary
-statistic, anatomy, seed, estimator, ROI rule, or comparator definition may be
-retuned after observing the result.
+Authorization is frozen in `research/KNOWN_GT_RUN_REQUEST.json`. It pins the reviewed M2 geometry record, completed M3 comparator implementation, exact source/orchestration identities, CD=false decision, and the 540-registration budget. Ten frozen anatomy shards create provenance-checked checkpoints; the unchanged canonical runner performs the sole final 30-case aggregation. No primary statistic, anatomy, seed, estimator, ROI rule, or comparator definition may be retuned after observing the result.
 
 ## M5 — Informativeness and blind-spot comparison
 

@@ -45,10 +45,12 @@ Contrastive Discrepancy was prospectively excluded from this confirmatory study
 because its authors' linked code snapshot could not be retrieved reproducibly
 from clean hosted runners; no bespoke analogue is substituted.
 
-The result-bearing known-ground-truth study has not been run. Its frozen budget
-is **270 forward + 270 reverse = 540 registrations**, and execution remains
-unauthorized until a separate reviewed run request pins the exact source and
-evidence identities.
+The result-bearing known-ground-truth study has not yet produced an outcome. A
+separate prospective run request now pins the exact green implementation source,
+reviewed evidence, execution machinery, CD=false decision, and **270 forward +
+270 reverse = 540 planned registrations**. The hosted execution is sharded by
+the ten already-frozen anatomies for infrastructure robustness, then aggregated
+by the unchanged canonical runner.
 
 ## Research discipline
 

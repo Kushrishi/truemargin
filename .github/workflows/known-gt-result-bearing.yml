@@ -1,0 +1,232 @@
+name: TrueMargin known-GT result-bearing study
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/KNOWN_GT_RUN_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-known-gt-result-bearing
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: sudo apt-get update && sudo apt-get install -y libopenslide0
+
+      - name: Install package and frozen study dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,acquisition,dev]"
+
+      - name: Verify source-pinned result authorization
+        run: python scripts/20_known_gt_result_shard.py --verify-only
+
+      - name: Re-run focused pre-result test contract
+        run: |
+          pytest -q             tests/test_comparators.py             tests/test_known_gt_comparison.py             tests/test_hyperparameter_known_gt.py             tests/test_known_gt_data_fetch.py
+
+  anatomy:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        patient:
+          - aaa0044
+          - aaa0051
+          - aaa0053
+          - aaa0060
+          - aaa0064
+          - aaa0069
+          - aaa0071
+          - aaa0072
+          - aaa0086
+          - aaa0087
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: sudo apt-get update && sudo apt-get install -y libopenslide0
+
+      - name: Install package and acquisition dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,acquisition]"
+
+      - name: Verify source-pinned result authorization
+        run: python scripts/20_known_gt_result_shard.py --verify-only
+
+      - name: Fetch exact frozen anatomy input
+        run: |
+          python scripts/fetch_known_gt_inputs.py \
+            --patient "${{ matrix.patient }}" \
+            --output outputs/known_gt_data_acquisition.json
+
+      - name: Run frozen anatomy shard
+        run: python scripts/20_known_gt_result_shard.py --patient "${{ matrix.patient }}"
+
+      - name: Validate shard evidence
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          patient = os.environ["PATIENT"]
+          shard = Path("outputs/shards") / f"{patient}.json"
+          payload = json.loads(shard.read_text())
+          assert payload["patient"] == patient
+          assert payload["planned_cases"] == 3
+          assert len(payload["geometry_records"]) == 3
+          assert len(payload["case_rows"]) == 3
+
+          checkpoints = sorted(
+              (Path("outputs/checkpoints/hyperparameter_known_gt") / patient).glob(
+                  "replicate_*.npz"
+              )
+          )
+          assert len(checkpoints) == 3, checkpoints
+          print(f"SHARD_EVIDENCE=PASS patient={patient} checkpoints={len(checkpoints)}")
+          PY
+        env:
+          PATIENT: ${{ matrix.patient }}
+
+      - name: Upload immutable shard evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ${{ matrix.patient }}
+          path: |
+            outputs/checkpoints/hyperparameter_known_gt/${{ matrix.patient }}
+            outputs/shards/${{ matrix.patient }}.json
+            outputs/known_gt_data_acquisition.json
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: anatomy
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: sudo apt-get update && sudo apt-get install -y libopenslide0
+
+      - name: Install package and acquisition dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,acquisition]"
+
+      - name: Verify source-pinned result authorization
+        run: python scripts/20_known_gt_result_shard.py --verify-only
+
+      - name: Download all anatomy checkpoint artifacts
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: "aaa*"
+          path: shard-artifacts
+          merge-multiple: false
+
+      - name: Assemble and verify all 30 provenance checkpoints
+        run: |
+          set -euo pipefail
+          mkdir -p outputs/checkpoints/hyperparameter_known_gt
+          for patient in \
+            aaa0044 aaa0051 aaa0053 aaa0060 aaa0064 \
+            aaa0069 aaa0071 aaa0072 aaa0086 aaa0087
+          do
+            source_dir="shard-artifacts/${patient}/checkpoints/hyperparameter_known_gt/${patient}"
+            test -d "${source_dir}"
+            cp -R "${source_dir}" outputs/checkpoints/hyperparameter_known_gt/
+          done
+
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path("outputs/checkpoints/hyperparameter_known_gt")
+          patients = (
+              "aaa0044", "aaa0051", "aaa0053", "aaa0060", "aaa0064",
+              "aaa0069", "aaa0071", "aaa0072", "aaa0086", "aaa0087",
+          )
+          checkpoints = []
+          for patient in patients:
+              patient_files = sorted((root / patient).glob("replicate_*.npz"))
+              assert len(patient_files) == 3, (patient, patient_files)
+              checkpoints.extend(patient_files)
+          assert len(checkpoints) == 30
+          print("CHECKPOINT_SET=PASS count=30")
+          PY
+
+      - name: Fetch and verify complete frozen input cohort
+        run: python scripts/fetch_known_gt_inputs.py
+
+      - name: Run canonical 30-case aggregation
+        run: python scripts/19_hyperparameter_known_gt_validation.py --run-result-bearing
+
+      - name: Hash final evidence
+        run: |
+          sha256sum \
+            outputs/hyperparameter_known_gt_geometry.json \
+            outputs/hyperparameter_known_gt_case_metrics.csv \
+            outputs/hyperparameter_known_gt_anatomy_metrics.csv \
+            outputs/hyperparameter_known_gt_comparator_anatomy_metrics.csv \
+            outputs/hyperparameter_known_gt_summary.json \
+            outputs/known_gt_data_acquisition.json \
+            > outputs/hyperparameter_known_gt_result.sha256
+          cat outputs/hyperparameter_known_gt_result.sha256
+
+      - name: Upload final result-bearing evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-known-gt-result-bearing
+          path: |
+            research/KNOWN_GT_RUN_REQUEST.json
+            research/KNOWN_GT_CD_FEASIBILITY.json
+            docs/hyperparameter_known_gt_protocol.md
+            docs/hyperparameter_known_gt_protocol_amendment_1.md
+            docs/hyperparameter_known_gt_protocol_amendment_2.md
+            docs/hyperparameter_known_gt_comparator_protocol.md
+            docs/hyperparameter_known_gt_execution_control_amendment_1.md
+            outputs/hyperparameter_known_gt_geometry.json
+            outputs/hyperparameter_known_gt_case_metrics.csv
+            outputs/hyperparameter_known_gt_anatomy_metrics.csv
+            outputs/hyperparameter_known_gt_comparator_anatomy_metrics.csv
+            outputs/hyperparameter_known_gt_summary.json
+            outputs/known_gt_data_acquisition.json
+            outputs/hyperparameter_known_gt_result.sha256
+          if-no-files-found: error
+          retention-days: 90
