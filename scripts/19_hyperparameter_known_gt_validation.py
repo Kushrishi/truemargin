@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import os
 from collections.abc import Mapping
@@ -26,9 +27,11 @@ MANIFEST_ROOT = os.path.join(DATA, "prostate_fused_manifest", "prostate_fused_mr
 HECAP_DIR = os.path.join(DATA, "hecap")
 RUN_REQUEST_PATH = os.path.join(REPO_ROOT, "research", "KNOWN_GT_RUN_REQUEST.json")
 
-PROTOCOL_MAIN_SHA = "44afb8653c8c90b33a438107481f7be4586b0e68"
+PROTOCOL_MAIN_BLOB_SHA = "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0"
+PROTOCOL_MAIN_PRIVATE_FREEZE_COMMIT = "44afb8653c8c90b33a438107481f7be4586b0e68"
 PROTOCOL_PATH = "docs/hyperparameter_known_gt_protocol.md"
-PROTOCOL_AMENDMENT_SHA = "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
+PROTOCOL_AMENDMENT_BLOB_SHA = "1eafe77bb847b1a77229e267ef32e6bbedd27bc2"
+PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT = "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
 PROTOCOL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_protocol_amendment_1.md"
 
 HELD_OUT_CASES = {
@@ -74,6 +77,33 @@ SECONDARY_METRICS = (
     "true_displacement_p90_mm",
     "true_displacement_max_mm",
 )
+
+
+def _git_blob_sha(path: str) -> str:
+    with open(path, "rb") as handle:
+        content = handle.read()
+    header = f"blob {len(content)}\0".encode()
+    return hashlib.sha1(header + content, usedforsecurity=False).hexdigest()
+
+
+def verify_protocol_identities(repo_root: str = REPO_ROOT) -> dict[str, str]:
+    expected = {
+        PROTOCOL_PATH: PROTOCOL_MAIN_BLOB_SHA,
+        PROTOCOL_AMENDMENT_PATH: PROTOCOL_AMENDMENT_BLOB_SHA,
+    }
+    observed: dict[str, str] = {}
+    for relative_path, expected_sha in expected.items():
+        full_path = os.path.join(repo_root, relative_path)
+        if not os.path.isfile(full_path):
+            raise SystemExit(f"Frozen protocol file is missing: {full_path}")
+        actual_sha = _git_blob_sha(full_path)
+        if actual_sha != expected_sha:
+            raise SystemExit(
+                f"Frozen protocol content drift for {relative_path}: "
+                f"expected blob {expected_sha}, got {actual_sha}"
+            )
+        observed[relative_path] = actual_sha
+    return observed
 
 
 def find_series_dir(patient: str, series_id: str) -> str:
@@ -397,8 +427,10 @@ def _case_manifest(
         experiment="hyperparameter-known-gt-v1",
         artifact_id=f"{patient}:replicate_{replicate}",
         parameters={
-            "protocol_main_sha": PROTOCOL_MAIN_SHA,
-            "protocol_amendment_sha": PROTOCOL_AMENDMENT_SHA,
+            "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
+            "protocol_main_private_freeze_commit": PROTOCOL_MAIN_PRIVATE_FREEZE_COMMIT,
+            "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
+            "protocol_amendment_private_freeze_commit": PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT,
             "protocol_amendment_path": PROTOCOL_AMENDMENT_PATH,
             "hyperparameter_configs": [
                 {
@@ -648,8 +680,8 @@ def verify_result_bearing_authorization(
         "n_replicates": N_REPLICATES,
         "n_estimator_members": len(hyper.CONFIGS),
         "planned_registrations": len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS),
-        "protocol_main_sha": PROTOCOL_MAIN_SHA,
-        "protocol_amendment_sha": PROTOCOL_AMENDMENT_SHA,
+        "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
+        "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
     }
     for key, value in expected.items():
         if request.get(key) != value:
@@ -672,8 +704,6 @@ def verify_result_bearing_authorization(
     record_path = os.path.join(repo_root, preflight_record)
     if not os.path.isfile(record_path):
         raise SystemExit(f"Reviewed geometry preflight record is missing: {record_path}")
-
-    import hashlib
 
     digest = hashlib.sha256()
     with open(record_path, "rb") as handle:
@@ -707,6 +737,7 @@ def _parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = _parse_args()
+    verify_protocol_identities()
     if args.run_result_bearing:
         verify_result_bearing_authorization()
 
@@ -717,9 +748,11 @@ def main() -> None:
 
     print("=== TrueMargin hyperparameter ensemble known-GT evaluation ===")
     print(f"Git SHA: {head}")
-    print(f"Protocol main SHA: {PROTOCOL_MAIN_SHA}")
-    print(f"Protocol: {PROTOCOL_PATH}")
-    print(f"Protocol amendment: {PROTOCOL_AMENDMENT_PATH} @ {PROTOCOL_AMENDMENT_SHA}")
+    print(f"Protocol: {PROTOCOL_PATH} @ blob {PROTOCOL_MAIN_BLOB_SHA}")
+    print(
+        f"Protocol amendment: {PROTOCOL_AMENDMENT_PATH} "
+        f"@ blob {PROTOCOL_AMENDMENT_BLOB_SHA}"
+    )
     print(f"Held-out anatomies: {list(HELD_OUT_CASES)}")
     print(f"Frozen hyperparameter configs: {hyper.CONFIGS}")
     print("Phase 1: geometry-only validation for all 30 predeclared cases")
@@ -780,8 +813,8 @@ def main() -> None:
 
     geometry_path = os.path.join(OUT, "hyperparameter_known_gt_geometry.json")
     geometry_payload = {
-        "protocol_main_sha": PROTOCOL_MAIN_SHA,
-        "protocol_amendment_sha": PROTOCOL_AMENDMENT_SHA,
+        "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
+        "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "git_sha": head,
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
         "passed_cases": len(geometry),
@@ -863,8 +896,8 @@ def main() -> None:
 
     secondary_summary = global_secondary_summary(anatomy_summary)
     summary: dict[str, Any] = {
-        "protocol_main_sha": PROTOCOL_MAIN_SHA,
-        "protocol_amendment_sha": PROTOCOL_AMENDMENT_SHA,
+        "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
+        "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "git_sha": head,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
