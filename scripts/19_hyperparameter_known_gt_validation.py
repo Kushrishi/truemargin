@@ -749,10 +749,7 @@ def main() -> None:
     print("=== TrueMargin hyperparameter ensemble known-GT evaluation ===")
     print(f"Git SHA: {head}")
     print(f"Protocol: {PROTOCOL_PATH} @ blob {PROTOCOL_MAIN_BLOB_SHA}")
-    print(
-        f"Protocol amendment: {PROTOCOL_AMENDMENT_PATH} "
-        f"@ blob {PROTOCOL_AMENDMENT_BLOB_SHA}"
-    )
+    print(f"Protocol amendment: {PROTOCOL_AMENDMENT_PATH} " f"@ blob {PROTOCOL_AMENDMENT_BLOB_SHA}")
     print(f"Held-out anatomies: {list(HELD_OUT_CASES)}")
     print(f"Frozen hyperparameter configs: {hyper.CONFIGS}")
     print("Phase 1: geometry-only validation for all 30 predeclared cases")
