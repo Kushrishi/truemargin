@@ -47,6 +47,8 @@ GEOMETRY_PREFLIGHT_UPLOADED_SHA256 = (
 )
 ACQUISITION_RECORD = "results/known_gt_data_acquisition.json"
 ACQUISITION_BLOB_SHA = "7481390f2565fbe49aff8faf00f1e59ca0f82c9c"
+CD_FEASIBILITY_RECORD = "research/KNOWN_GT_CD_FEASIBILITY.json"
+CD_FEASIBILITY_BLOB_SHA = "0d8a264fb1ee22369c80965840a90702cf55638e"
 
 HELD_OUT_CASES = {
     "aaa0044": {"t2_series": "13614"},
@@ -506,6 +508,8 @@ def _case_manifest(
             "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
             "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
             "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
+            "cd_feasibility_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+            "cd_feasible": False,
             "hyperparameter_configs": [
                 {
                     "metric_bins": bins,
@@ -542,6 +546,7 @@ def _case_manifest(
             PROTOCOL_AMENDMENT_2_PATH,
             COMPARATOR_PROTOCOL_PATH,
             EXECUTION_CONTROL_AMENDMENT_PATH,
+            CD_FEASIBILITY_RECORD,
             "src/truemargin/hyperparameter.py",
             "src/truemargin/comparators.py",
             "src/truemargin/known_gt_comparison.py",
@@ -991,36 +996,24 @@ def verify_result_bearing_authorization(
                 f"expected {value!r}, got {request.get(key)!r}"
             )
 
-    cd_feasible = request.get("cd_feasible")
-    cd_registration_count = request.get("cd_registration_count")
-    total_registrations = request.get("total_planned_registrations")
-    if not isinstance(cd_feasible, bool):
-        raise SystemExit("Authorization must pin a boolean CD feasibility decision.")
-    if not isinstance(cd_registration_count, int) or cd_registration_count < 0:
-        raise SystemExit("Authorization must pin a non-negative CD registration count.")
-    if cd_feasible and cd_registration_count <= 0:
-        raise SystemExit("A feasible CD plan must pin a positive additional registration count.")
-    if not cd_feasible and cd_registration_count != 0:
-        raise SystemExit("An infeasible CD decision must use zero additional registrations.")
-
-    expected_total = forward_registrations + reverse_registrations + cd_registration_count
-    if total_registrations != expected_total:
-        raise SystemExit(
-            "Invalid total planned registration count: "
-            f"expected {expected_total}, got {total_registrations!r}"
-        )
-
-    cd_record = request.get("cd_feasibility_record")
-    cd_record_blob = request.get("cd_feasibility_record_blob_sha")
-    if not isinstance(cd_record, str) or not cd_record:
-        raise SystemExit("Authorization must pin the CD feasibility record path.")
-    if not isinstance(cd_record_blob, str) or len(cd_record_blob) != 40:
-        raise SystemExit("Authorization must pin the CD feasibility record Git blob.")
+    fixed_cd_fields = {
+        "cd_feasible": False,
+        "cd_registration_count": 0,
+        "total_planned_registrations": forward_registrations + reverse_registrations,
+        "cd_feasibility_record": CD_FEASIBILITY_RECORD,
+        "cd_feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+    }
+    for key, value in fixed_cd_fields.items():
+        if request.get(key) != value:
+            raise SystemExit(
+                f"Invalid result-bearing authorization field {key!r}: "
+                f"expected {value!r}, got {request.get(key)!r}"
+            )
 
     for relative_path, expected_blob in (
         (GEOMETRY_PREFLIGHT_RECORD, GEOMETRY_PREFLIGHT_BLOB_SHA),
         (ACQUISITION_RECORD, ACQUISITION_BLOB_SHA),
-        (cd_record, cd_record_blob),
+        (CD_FEASIBILITY_RECORD, CD_FEASIBILITY_BLOB_SHA),
     ):
         full_path = os.path.join(repo_root, relative_path)
         if not os.path.isfile(full_path):
@@ -1243,6 +1236,17 @@ def main() -> None:
         "geometry_preflight_git_blob_sha": GEOMETRY_PREFLIGHT_BLOB_SHA,
         "geometry_preflight_uploaded_sha256": GEOMETRY_PREFLIGHT_UPLOADED_SHA256,
         "acquisition_git_blob_sha": ACQUISITION_BLOB_SHA,
+        "cd_feasibility_record": CD_FEASIBILITY_RECORD,
+        "cd_feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+        "planned_forward_registrations": (
+            len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
+        ),
+        "planned_reverse_registrations": (
+            len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
+        ),
+        "total_planned_registrations": (
+            2 * len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
+        ),
         "git_sha": head,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
@@ -1259,7 +1263,9 @@ def main() -> None:
         "secondary_across_anatomy_medians": secondary_summary,
         "direct_comparators": direct_summary,
         "contrastive_discrepancy": {
-            "feasibility_decision": "pending_pre_result_audit",
+            "feasibility_decision": "infeasible_for_current_confirmatory_study",
+            "feasibility_record": CD_FEASIBILITY_RECORD,
+            "feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
             "included_in_this_run": False,
         },
     }
