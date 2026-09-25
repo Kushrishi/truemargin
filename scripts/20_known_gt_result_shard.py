@@ -114,12 +114,9 @@ def verify_execution_authorization() -> tuple[Any, dict[str, Any]]:
 
     for relative_path, request_field in ORCHESTRATION_BLOB_FIELDS.items():
         expected_blob = request.get(request_field)
-        if not isinstance(expected_blob, str) or not re.fullmatch(
-            r"[0-9a-f]{40}", expected_blob
-        ):
+        if not isinstance(expected_blob, str) or not re.fullmatch(r"[0-9a-f]{40}", expected_blob):
             raise SystemExit(
-                f"Invalid orchestration blob field {request_field!r}: "
-                f"{expected_blob!r}"
+                f"Invalid orchestration blob field {request_field!r}: " f"{expected_blob!r}"
             )
         actual_blob = runner._git_blob_sha(str(REPO_ROOT / relative_path))
         if actual_blob != expected_blob:
@@ -158,9 +155,7 @@ def run_patient_shard(patient: str) -> None:
             )
         )
 
-    checkpoint_root = str(
-        REPO_ROOT / "outputs" / "checkpoints" / "hyperparameter_known_gt"
-    )
+    checkpoint_root = str(REPO_ROOT / "outputs" / "checkpoints" / "hyperparameter_known_gt")
     case_rows: list[dict[str, Any]] = []
     for replicate in range(runner.N_REPLICATES):
         row = runner._run_case(
