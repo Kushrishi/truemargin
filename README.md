@@ -31,10 +31,14 @@ operational results:
 Operational promotion does **not** establish that the uncertainty signal tracks
 true error.
 
-The next primary study therefore evaluates the frozen nine-member estimator
-against synthetic deformations with known spatial error across ten held-out
-anatomies. Its base protocol and a pre-result amendment are frozen. The
-result-bearing known-ground-truth study has not been run.
+The known-ground-truth program now has a reviewed **30 / 30 geometry-only
+preflight** across ten held-out anatomies under the frozen base protocol and
+Amendments 1 and 2. That result validates the prospective cohort, acquisition,
+and synthetic-geometry construction only.
+
+The paper-level comparator protocol is the active next gate. The
+result-bearing known-ground-truth study has not been run, and none of the 270
+planned estimator registrations is currently authorized.
 
 ## Research discipline
 
