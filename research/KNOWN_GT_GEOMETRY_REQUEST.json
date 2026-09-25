@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "date": "2026-09-25",
+  "authorized_mode": "geometry-only",
+  "result_bearing_authorized": false,
+  "planned_cases": 30,
+  "held_out_anatomies": [
+    "aaa0044",
+    "aaa0051",
+    "aaa0053",
+    "aaa0060",
+    "aaa0064",
+    "aaa0069",
+    "aaa0071",
+    "aaa0072",
+    "aaa0086",
+    "aaa0087"
+  ],
+  "protocol_main_blob_sha": "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0",
+  "protocol_amendment_blob_sha": "1eafe77bb847b1a77229e267ef32e6bbedd27bc2",
+  "note": "Authorizes geometry validation only. The 270 result-bearing registrations remain unauthorized."
+}
