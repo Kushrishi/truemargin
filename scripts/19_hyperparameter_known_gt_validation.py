@@ -33,6 +33,8 @@ PROTOCOL_PATH = "docs/hyperparameter_known_gt_protocol.md"
 PROTOCOL_AMENDMENT_BLOB_SHA = "1eafe77bb847b1a77229e267ef32e6bbedd27bc2"
 PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT = "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
 PROTOCOL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_protocol_amendment_1.md"
+PROTOCOL_AMENDMENT_2_BLOB_SHA = "5f1e1464e8f8d0eb81b90f92caf5a94d7ed81ac7"
+PROTOCOL_AMENDMENT_2_PATH = "docs/hyperparameter_known_gt_protocol_amendment_2.md"
 
 HELD_OUT_CASES = {
     "aaa0044": {"t2_series": "13614"},
@@ -90,6 +92,7 @@ def verify_protocol_identities(repo_root: str = REPO_ROOT) -> dict[str, str]:
     expected = {
         PROTOCOL_PATH: PROTOCOL_MAIN_BLOB_SHA,
         PROTOCOL_AMENDMENT_PATH: PROTOCOL_AMENDMENT_BLOB_SHA,
+        PROTOCOL_AMENDMENT_2_PATH: PROTOCOL_AMENDMENT_2_BLOB_SHA,
     }
     observed: dict[str, str] = {}
     for relative_path, expected_sha in expected.items():
@@ -191,10 +194,17 @@ def make_fixed_roi_mask(
     return sitk.GetArrayFromImage(fixed_mask) > 0
 
 
-def make_known_transform(source_img: sitk.Image, seed: int) -> sitk.Transform:
+def make_known_transform(
+    source_img: sitk.Image,
+    seed: int,
+    *,
+    coefficient_std: float = KNOWN_COEFFICIENT_STD,
+) -> sitk.Transform:
+    if not np.isfinite(coefficient_std) or coefficient_std <= 0.0:
+        raise ValueError("coefficient_std must be finite and positive")
     transform = sitk.BSplineTransformInitializer(source_img, [DEFORM_MESH_SIZE] * NDIM)
     rng = np.random.default_rng(seed)
-    params = rng.normal(0.0, KNOWN_COEFFICIENT_STD, len(transform.GetParameters()))
+    params = rng.normal(0.0, coefficient_std, len(transform.GetParameters()))
     transform.SetParameters(tuple(float(value) for value in params))
     return transform
 
@@ -262,10 +272,11 @@ def geometry_record(
     crop: np.ndarray,
     mask_crop: np.ndarray,
     spacing: tuple[float, ...],
+    coefficient_std: float = KNOWN_COEFFICIENT_STD,
 ) -> dict[str, Any]:
     seed = case_seed(anatomy_index, replicate)
     source_img = make_source_image(crop, spacing)
-    transform = make_known_transform(source_img, seed)
+    transform = make_known_transform(source_img, seed, coefficient_std=coefficient_std)
     params = np.asarray(transform.GetParameters(), dtype=np.float64)
     if not np.isfinite(params).all():
         raise ValueError("known B-spline parameters are non-finite")
@@ -309,6 +320,7 @@ def geometry_record(
         "anatomy_index": anatomy_index,
         "replicate": replicate,
         "case_seed": seed,
+        "known_coefficient_std": float(coefficient_std),
         "noise_seed": seed + NOISE_SEED_OFFSET,
         "landmark_seed": seed + LANDMARK_SEED_OFFSET,
         "shape_zyx": tuple(int(value) for value in crop.shape),
