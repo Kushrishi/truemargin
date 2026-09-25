@@ -345,7 +345,9 @@ def test_result_bearing_authorization_pins_reviewed_preflight(
         )
 
 
-def test_direct_comparator_summaries_keep_secondary_tests_separate(monkeypatch) -> None:
+def test_direct_comparator_summaries_keep_secondary_tests_separate(
+    monkeypatch,
+) -> None:
     runner = _load_runner()
     patients = list(runner.HELD_OUT_CASES)
     target_anatomy = [
@@ -391,14 +393,24 @@ def test_direct_comparator_summaries_keep_secondary_tests_separate(monkeypatch) 
     assert all(summary[method]["assessable"] is True for method in summary)
     assert all(len(anatomy[method]) == 10 for method in anatomy)
     assert summary["ice"]["paired_target_minus_comparator_median"] == pytest.approx(0.1)
-    assert summary["ice"]["raw_exact_sign_p"] < summary["residual"]["raw_exact_sign_p"]
-    assert summary["residual"]["raw_exact_sign_p"] < summary["jacdev"]["raw_exact_sign_p"]
+    assert (
+        summary["ice"]["raw_exact_sign_p"]
+        < summary["residual"]["raw_exact_sign_p"]
+    )
+    assert (
+        summary["residual"]["raw_exact_sign_p"]
+        < summary["jacdev"]["raw_exact_sign_p"]
+    )
     for method in summary:
-        assert summary[method]["holm_adjusted_sign_p"] >= summary[method]["raw_exact_sign_p"]
-        assert summary[method]["median_anatomy_blind_spot_rate"] == pytest.approx(0.1)
-        assert summary[method]["median_anatomy_quartile_known_error_delta_mm"] == pytest.approx(
-            1.0
+        assert (
+            summary[method]["holm_adjusted_sign_p"]
+            >= summary[method]["raw_exact_sign_p"]
         )
+        assert summary[method]["median_anatomy_blind_spot_rate"] == pytest.approx(0.1)
+        assert summary[method][
+            "median_anatomy_quartile_known_error_delta_mm"
+        ] == pytest.approx(1.0)
+
 
 def test_topology_scale_schedule_is_frozen() -> None:
     runner = _load_runner()
