@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "truemargin"
+version = "0.1.0"
+description = "Research code for evaluating whether deformable image-registration uncertainty is informative about spatial error."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "Proprietary - research use only" }
+authors = [{ name = "Kush Rishi" }]
+
+dependencies = [
+    "numpy>=1.26,<3",
+    "scipy>=1.11,<2",
+    "matplotlib>=3.8,<4",
+    "scikit-image>=0.22,<0.25",
+    "pyyaml>=6.0,<7",
+]
+
+[project.optional-dependencies]
+realdata = [
+    "SimpleITK>=2.3,<3",
+    "openslide-python>=1.3,<2",
+]
+tracking = [
+    "mlflow>=2.14,<3",
+    "dvc>=3.51,<4",
+]
+dev = [
+    "pytest>=8.0,<9",
+    "pytest-cov>=5.0,<6",
+    "ruff>=0.5,<1",
+    "black>=24.4,<25",
+    "mypy>=1.10,<2",
+    "pre-commit>=3.7,<4",
+]
+
+[project.urls]
+Repository = "https://github.com/Kushrishi/truemargin"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-ra -q --cov=truemargin --cov-report=term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["src/truemargin"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+warn_unused_ignores = true
+disallow_untyped_defs = false
+files = ["src/truemargin"]

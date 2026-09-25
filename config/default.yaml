@@ -1,0 +1,36 @@
+# Legacy/demo defaults retained for the lightweight synthetic and historical
+# registration scripts.
+#
+# Current prospective studies (including the hyperparameter known-ground-truth
+# evaluation) freeze result-defining parameters in their protocol documents and
+# experiment runners rather than inheriting values silently from this file.
+
+synthetic:
+  shape: [256, 256]
+  max_disp_px: 12.0
+  overconfidence: 2.2
+  seed_phantom: 0
+  seed_deformation: 1
+  seed_estimator: 2
+
+registration:
+  ensemble_n: 5
+  ensemble_jitter: 0.02
+  seed: 0
+  fast_dev:
+    mesh_size: 3
+    max_iterations: 15
+  full:
+    mesh_size: 8
+    max_iterations: 100
+
+calibration:
+  # Historical 2-D synthetic-demo setting. Current 3-D prospective experiments
+  # define dimensionality in their own frozen runner/protocol.
+  ndim: 2
+  levels: 10
+  cal_split_fraction: 0.5
+
+tracking:
+  mlflow_experiment: "truemargin-calibration"
+  mlflow_tracking_uri: "file:./outputs/mlruns"

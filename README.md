@@ -47,8 +47,8 @@ official estimator fixed and evaluates:
 - high-error / low-uncertainty blind spots;
 - calibration only as a later, separate question.
 
-See `research/STATE.md` and `research/CLAIMS.md` once the curated research
-snapshot is established here.
+See `research/STATE.md` and `research/CLAIMS.md` for the current evidence and
+claim boundaries.
 
 ## Scope
 
