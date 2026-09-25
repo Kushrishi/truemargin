@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "authorized_mode": "geometry-only-amendment-2",
+  "result_bearing_authorized": false,
+  "planned_cases": 30,
+  "held_out_anatomies": [
+    "aaa0044",
+    "aaa0051",
+    "aaa0053",
+    "aaa0060",
+    "aaa0064",
+    "aaa0069",
+    "aaa0071",
+    "aaa0072",
+    "aaa0086",
+    "aaa0087"
+  ],
+  "original_geometry_request_blob_sha": "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7",
+  "failed_preflight_result_blob_sha": "1755218fb849c744b8434edc4e255d636f7021df",
+  "failed_preflight_workflow_run_id": 36167535578,
+  "protocol_main_blob_sha": "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0",
+  "protocol_amendment_1_blob_sha": "1eafe77bb847b1a77229e267ef32e6bbedd27bc2",
+  "protocol_amendment_2_blob_sha": "bcd0a6b970891724c755cde75111f56d6fad7492",
+  "topology_scales": [
+    1.0,
+    0.95,
+    0.9,
+    0.85,
+    0.8,
+    0.75,
+    0.7,
+    0.65,
+    0.6,
+    0.55,
+    0.5
+  ],
+  "estimator_outcomes_observed_before_freeze": false,
+  "note": "Authorizes a full 30-case geometry-only rerun under frozen Amendment 2. It does not authorize any of the 270 estimator registrations."
+}
