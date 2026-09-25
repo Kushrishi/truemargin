@@ -41,6 +41,13 @@ COMPARATOR_PROTOCOL_BLOB_SHA = "2d383d3bed7503e2ceaecf36f599e7965726a18d"
 COMPARATOR_PROTOCOL_PATH = "docs/hyperparameter_known_gt_comparator_protocol.md"
 EXECUTION_CONTROL_AMENDMENT_BLOB_SHA = "9dc7c2680e128b3a67d9bd864ab465a47d6e7e53"
 EXECUTION_CONTROL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_execution_control_amendment_1.md"
+GEOMETRY_PREFLIGHT_RECORD = "results/hyperparameter_known_gt_geometry_preflight.json"
+GEOMETRY_PREFLIGHT_BLOB_SHA = "fb90f421c6d11dcaff407d9f8267503925dd4aaa"
+GEOMETRY_PREFLIGHT_UPLOADED_SHA256 = (
+    "fbf0b60f50e8bd6af2af2af036fe94b4491ad0ffe4ab15863b0ce8f95515c2d2"
+)
+ACQUISITION_RECORD = "results/known_gt_data_acquisition.json"
+ACQUISITION_BLOB_SHA = "7481390f2565fbe49aff8faf00f1e59ca0f82c9c"
 
 HELD_OUT_CASES = {
     "aaa0044": {"t2_series": "13614"},
@@ -944,24 +951,37 @@ def verify_result_bearing_authorization(
 ) -> dict[str, Any]:
     if not os.path.exists(path):
         raise SystemExit(
-            "Result-bearing execution is not authorized. Run --geometry-only first; "
-            "then commit a reviewed research/KNOWN_GT_RUN_REQUEST.json."
+            "Result-bearing execution is not authorized. Complete comparator "
+            "implementation/CD feasibility first; then commit a reviewed "
+            "research/KNOWN_GT_RUN_REQUEST.json."
         )
 
     with open(path) as handle:
         request = json.load(handle)
 
+    forward_registrations = len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
+    reverse_registrations = forward_registrations
     expected = {
-        "schema_version": 1,
+        "schema_version": 2,
         "study": "hyperparameter-known-gt-v1",
-        "authorized": True,
+        "authorized_mode": "result-bearing",
+        "result_bearing_authorized": True,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "n_replicates": N_REPLICATES,
-        "n_estimator_members": len(hyper.CONFIGS),
-        "planned_registrations": len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS),
+        "n_forward_members": len(hyper.CONFIGS),
+        "n_reverse_members": len(hyper.CONFIGS),
+        "planned_forward_registrations": forward_registrations,
+        "planned_reverse_registrations": reverse_registrations,
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
+        "geometry_preflight_record": GEOMETRY_PREFLIGHT_RECORD,
+        "geometry_preflight_git_blob_sha": GEOMETRY_PREFLIGHT_BLOB_SHA,
+        "geometry_preflight_uploaded_sha256": GEOMETRY_PREFLIGHT_UPLOADED_SHA256,
+        "acquisition_record": ACQUISITION_RECORD,
+        "acquisition_git_blob_sha": ACQUISITION_BLOB_SHA,
     }
     for key, value in expected.items():
         if request.get(key) != value:
@@ -970,34 +990,48 @@ def verify_result_bearing_authorization(
                 f"expected {value!r}, got {request.get(key)!r}"
             )
 
-    preflight_record = request.get("geometry_preflight_record")
-    preflight_sha256 = request.get("geometry_preflight_sha256")
-    if not isinstance(preflight_record, str) or not preflight_record:
-        raise SystemExit("Authorization must name the reviewed geometry preflight record.")
-    if (
-        not isinstance(preflight_sha256, str)
-        or len(preflight_sha256) != 64
-        or any(char not in "0123456789abcdef" for char in preflight_sha256.lower())
-    ):
-        raise SystemExit("Authorization must pin a 64-character geometry preflight SHA-256.")
+    cd_feasible = request.get("cd_feasible")
+    cd_registration_count = request.get("cd_registration_count")
+    total_registrations = request.get("total_planned_registrations")
+    if not isinstance(cd_feasible, bool):
+        raise SystemExit("Authorization must pin a boolean CD feasibility decision.")
+    if not isinstance(cd_registration_count, int) or cd_registration_count < 0:
+        raise SystemExit("Authorization must pin a non-negative CD registration count.")
+    if cd_feasible and cd_registration_count <= 0:
+        raise SystemExit("A feasible CD plan must pin a positive additional registration count.")
+    if not cd_feasible and cd_registration_count != 0:
+        raise SystemExit("An infeasible CD decision must use zero additional registrations.")
 
-    record_path = os.path.join(repo_root, preflight_record)
-    if not os.path.isfile(record_path):
-        raise SystemExit(f"Reviewed geometry preflight record is missing: {record_path}")
-
-    digest = hashlib.sha256()
-    with open(record_path, "rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    actual_sha256 = digest.hexdigest()
-    if actual_sha256 != preflight_sha256.lower():
+    expected_total = forward_registrations + reverse_registrations + cd_registration_count
+    if total_registrations != expected_total:
         raise SystemExit(
-            "Reviewed geometry preflight record hash does not match authorization: "
-            f"expected {preflight_sha256.lower()}, got {actual_sha256}"
+            "Invalid total planned registration count: "
+            f"expected {expected_total}, got {total_registrations!r}"
         )
 
-    return request
+    cd_record = request.get("cd_feasibility_record")
+    cd_record_blob = request.get("cd_feasibility_record_blob_sha")
+    if not isinstance(cd_record, str) or not cd_record:
+        raise SystemExit("Authorization must pin the CD feasibility record path.")
+    if not isinstance(cd_record_blob, str) or len(cd_record_blob) != 40:
+        raise SystemExit("Authorization must pin the CD feasibility record Git blob.")
 
+    for relative_path, expected_blob in (
+        (GEOMETRY_PREFLIGHT_RECORD, GEOMETRY_PREFLIGHT_BLOB_SHA),
+        (ACQUISITION_RECORD, ACQUISITION_BLOB_SHA),
+        (cd_record, cd_record_blob),
+    ):
+        full_path = os.path.join(repo_root, relative_path)
+        if not os.path.isfile(full_path):
+            raise SystemExit(f"Authorized evidence file is missing: {full_path}")
+        actual_blob = _git_blob_sha(full_path)
+        if actual_blob != expected_blob:
+            raise SystemExit(
+                f"Authorized evidence blob drift for {relative_path}: "
+                f"expected {expected_blob}, got {actual_blob}"
+            )
+
+    return request
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
@@ -1207,6 +1241,11 @@ def main() -> None:
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
+        "geometry_preflight_git_blob_sha": GEOMETRY_PREFLIGHT_BLOB_SHA,
+        "geometry_preflight_uploaded_sha256": GEOMETRY_PREFLIGHT_UPLOADED_SHA256,
+        "acquisition_git_blob_sha": ACQUISITION_BLOB_SHA,
         "git_sha": head,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
