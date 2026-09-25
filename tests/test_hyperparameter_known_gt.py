@@ -256,6 +256,7 @@ def test_bootstrap_interval_is_deterministic() -> None:
     assert first == second
     assert first[0] <= first[1]
 
+
 def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) -> None:
     runner = _load_runner()
     result_dir = tmp_path / "results"
