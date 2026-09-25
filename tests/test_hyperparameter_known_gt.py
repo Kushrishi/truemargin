@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 import SimpleITK as sitk
 
 from truemargin import hyperparameter as hyper
@@ -252,3 +255,44 @@ def test_bootstrap_interval_is_deterministic() -> None:
     second = runner.bootstrap_interval(anatomy, n_bootstraps=200, seed=0)
     assert first == second
     assert first[0] <= first[1]
+
+def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) -> None:
+    runner = _load_runner()
+    result_dir = tmp_path / "results"
+    result_dir.mkdir()
+    preflight = result_dir / "hyperparameter_known_gt_geometry_preflight.json"
+    preflight.write_text('{"geometry_preflight":"PASS"}\n', encoding="utf-8")
+    digest = hashlib.sha256(preflight.read_bytes()).hexdigest()
+
+    request = {
+        "schema_version": 1,
+        "study": "hyperparameter-known-gt-v1",
+        "authorized": True,
+        "held_out_anatomies": list(runner.HELD_OUT_CASES),
+        "n_replicates": runner.N_REPLICATES,
+        "n_estimator_members": len(runner.hyper.CONFIGS),
+        "planned_registrations": (
+            len(runner.HELD_OUT_CASES) * runner.N_REPLICATES * len(runner.hyper.CONFIGS)
+        ),
+        "protocol_main_sha": runner.PROTOCOL_MAIN_SHA,
+        "protocol_amendment_sha": runner.PROTOCOL_AMENDMENT_SHA,
+        "geometry_preflight_record": "results/hyperparameter_known_gt_geometry_preflight.json",
+        "geometry_preflight_sha256": digest,
+    }
+    request_path = tmp_path / "KNOWN_GT_RUN_REQUEST.json"
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+
+    verified = runner.verify_result_bearing_authorization(
+        str(request_path),
+        repo_root=str(tmp_path),
+    )
+    assert verified["authorized"] is True
+
+    request["authorized"] = False
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    with pytest.raises(SystemExit, match="authorization field"):
+        runner.verify_result_bearing_authorization(
+            str(request_path),
+            repo_root=str(tmp_path),
+        )
+

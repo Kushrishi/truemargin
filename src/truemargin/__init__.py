@@ -1,17 +1,11 @@
-"""
-truemargin
-==========
-Calibrated uncertainty for image registration, applied to mapping a pathology
-finding (positive cancer margin) back onto a patient's pre-op scan.
+"""TrueMargin research package.
 
-The reusable core is `truemargin.calibration`: given a registration method's
-estimated displacement, the true displacement, and a predicted per-point
-uncertainty, it answers whether the stated confidence is empirically honest,
-and can recalibrate it if not. Everything else in this package (`synthetic`,
-`registration`, `io_utils`, `metrics`) exists to feed real or toy data into
-that one module -- the calibration harness itself never changes.
+The package supports prospective evaluation of deformable image-registration
+uncertainty and quality surrogates against spatial error. The active research
+path separates operational variability, pointwise informativeness, calibration,
+blind spots, and generalization.
 
-Not a medical device. Research use on public/synthetic data only.
+Research software only; not a medical device.
 """
 
 __version__ = "0.1.0"

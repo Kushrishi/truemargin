@@ -24,6 +24,7 @@ DATA = os.path.join(REPO_ROOT, "data")
 OUT = os.path.join(REPO_ROOT, "outputs")
 MANIFEST_ROOT = os.path.join(DATA, "prostate_fused_manifest", "prostate_fused_mri_pathology")
 HECAP_DIR = os.path.join(DATA, "hecap")
+RUN_REQUEST_PATH = os.path.join(REPO_ROOT, "research", "KNOWN_GT_RUN_REQUEST.json")
 
 PROTOCOL_MAIN_SHA = "44afb8653c8c90b33a438107481f7be4586b0e68"
 PROTOCOL_PATH = "docs/hyperparameter_known_gt_protocol.md"
@@ -629,18 +630,90 @@ def _write_csv(path: str, rows: list[dict[str, Any]]) -> None:
         writer.writerows(clean_rows)
 
 
+def verify_result_bearing_authorization(
+    path: str = RUN_REQUEST_PATH,
+    *,
+    repo_root: str = REPO_ROOT,
+) -> dict[str, Any]:
+    if not os.path.exists(path):
+        raise SystemExit(
+            "Result-bearing execution is not authorized. Run --geometry-only first; "
+            "then commit a reviewed research/KNOWN_GT_RUN_REQUEST.json."
+        )
+
+    with open(path) as handle:
+        request = json.load(handle)
+
+    expected = {
+        "schema_version": 1,
+        "study": "hyperparameter-known-gt-v1",
+        "authorized": True,
+        "held_out_anatomies": list(HELD_OUT_CASES),
+        "n_replicates": N_REPLICATES,
+        "n_estimator_members": len(hyper.CONFIGS),
+        "planned_registrations": len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS),
+        "protocol_main_sha": PROTOCOL_MAIN_SHA,
+        "protocol_amendment_sha": PROTOCOL_AMENDMENT_SHA,
+    }
+    for key, value in expected.items():
+        if request.get(key) != value:
+            raise SystemExit(
+                f"Invalid result-bearing authorization field {key!r}: "
+                f"expected {value!r}, got {request.get(key)!r}"
+            )
+
+    preflight_record = request.get("geometry_preflight_record")
+    preflight_sha256 = request.get("geometry_preflight_sha256")
+    if not isinstance(preflight_record, str) or not preflight_record:
+        raise SystemExit("Authorization must name the reviewed geometry preflight record.")
+    if (
+        not isinstance(preflight_sha256, str)
+        or len(preflight_sha256) != 64
+        or any(char not in "0123456789abcdef" for char in preflight_sha256.lower())
+    ):
+        raise SystemExit("Authorization must pin a 64-character geometry preflight SHA-256.")
+
+    record_path = os.path.join(repo_root, preflight_record)
+    if not os.path.isfile(record_path):
+        raise SystemExit(f"Reviewed geometry preflight record is missing: {record_path}")
+
+    import hashlib
+
+    digest = hashlib.sha256()
+    with open(record_path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    actual_sha256 = digest.hexdigest()
+    if actual_sha256 != preflight_sha256.lower():
+        raise SystemExit(
+            "Reviewed geometry preflight record hash does not match authorization: "
+            f"expected {preflight_sha256.lower()}, got {actual_sha256}"
+        )
+
+    return request
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
         "--geometry-only",
         action="store_true",
         help="validate all 30 frozen synthetic geometries and exit before registration",
+    )
+    mode.add_argument(
+        "--run-result-bearing",
+        action="store_true",
+        help="run registrations only with a committed reviewed run authorization",
     )
     return parser.parse_args()
 
 
 def main() -> None:
     args = _parse_args()
+    if args.run_result_bearing:
+        verify_result_bearing_authorization()
+
     head = provenance.current_git_sha(REPO_ROOT)
     os.makedirs(OUT, exist_ok=True)
     checkpoint_root = os.path.join(OUT, "checkpoints", "hyperparameter_known_gt")
