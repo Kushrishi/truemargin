@@ -23,7 +23,7 @@ Completed requirements:
 
 ## M2 — Geometry-only preflight
 
-**State:** prepared; not yet recorded
+**State:** first complete preflight recorded at 29/30; Amendment 2 frozen; full amended rerun pending
 
 Goal: validate the frozen 30 synthetic cases before any estimator registration.
 

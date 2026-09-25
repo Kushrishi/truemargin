@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "phase": "geometry-only-preflight",
+  "workflow_run_id": 36167535578,
+  "workflow_job_id": 108178827422,
+  "source_git_sha": "bcd7099bca8d37f9f895227c386503610639bd03",
+  "protocol_main_blob_sha": "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0",
+  "protocol_amendment_1_blob_sha": "1eafe77bb847b1a77229e267ef32e6bbedd27bc2",
+  "acquisition": {
+    "idc_release": "v24",
+    "idc_index_version": "0.12.5",
+    "resolved_t2_series": 10,
+    "hecap_masks": 10
+  },
+  "planned_cases": 30,
+  "passed_cases": 29,
+  "failed_cases": 1,
+  "estimator_registrations_run": 0,
+  "result_bearing_observed": false,
+  "cases": [
+    {
+      "patient": "aaa0044",
+      "replicate": 0,
+      "case_seed": 0,
+      "status": "pass",
+      "jacobian_min": 0.438255,
+      "true_displacement_median_mm": 1.67839
+    },
+    {
+      "patient": "aaa0044",
+      "replicate": 1,
+      "case_seed": 1,
+      "status": "pass",
+      "jacobian_min": 0.400411,
+      "true_displacement_median_mm": 2.41449
+    },
+    {
+      "patient": "aaa0044",
+      "replicate": 2,
+      "case_seed": 2,
+      "status": "pass",
+      "jacobian_min": 0.471834,
+      "true_displacement_median_mm": 1.70853
+    },
+    {
+      "patient": "aaa0051",
+      "replicate": 0,
+      "case_seed": 1000,
+      "status": "pass",
+      "jacobian_min": 0.486959,
+      "true_displacement_median_mm": 1.91805
+    },
+    {
+      "patient": "aaa0051",
+      "replicate": 1,
+      "case_seed": 1001,
+      "status": "pass",
+      "jacobian_min": 0.350206,
+      "true_displacement_median_mm": 1.3898
+    },
+    {
+      "patient": "aaa0051",
+      "replicate": 2,
+      "case_seed": 1002,
+      "status": "pass",
+      "jacobian_min": 0.499027,
+      "true_displacement_median_mm": 2.68231
+    },
+    {
+      "patient": "aaa0053",
+      "replicate": 0,
+      "case_seed": 2000,
+      "status": "pass",
+      "jacobian_min": 0.375271,
+      "true_displacement_median_mm": 3.7974
+    },
+    {
+      "patient": "aaa0053",
+      "replicate": 1,
+      "case_seed": 2001,
+      "status": "pass",
+      "jacobian_min": 0.373106,
+      "true_displacement_median_mm": 2.49707
+    },
+    {
+      "patient": "aaa0053",
+      "replicate": 2,
+      "case_seed": 2002,
+      "status": "pass",
+      "jacobian_min": 0.446422,
+      "true_displacement_median_mm": 2.60095
+    },
+    {
+      "patient": "aaa0060",
+      "replicate": 0,
+      "case_seed": 3000,
+      "status": "pass",
+      "jacobian_min": 0.308114,
+      "true_displacement_median_mm": 1.53464
+    },
+    {
+      "patient": "aaa0060",
+      "replicate": 1,
+      "case_seed": 3001,
+      "status": "pass",
+      "jacobian_min": 0.125223,
+      "true_displacement_median_mm": 1.49887
+    },
+    {
+      "patient": "aaa0060",
+      "replicate": 2,
+      "case_seed": 3002,
+      "status": "pass",
+      "jacobian_min": 0.364901,
+      "true_displacement_median_mm": 3.262
+    },
+    {
+      "patient": "aaa0064",
+      "replicate": 0,
+      "case_seed": 4000,
+      "status": "pass",
+      "jacobian_min": 0.519868,
+      "true_displacement_median_mm": 2.76545
+    },
+    {
+      "patient": "aaa0064",
+      "replicate": 1,
+      "case_seed": 4001,
+      "status": "pass",
+      "jacobian_min": 0.413526,
+      "true_displacement_median_mm": 2.85817
+    },
+    {
+      "patient": "aaa0064",
+      "replicate": 2,
+      "case_seed": 4002,
+      "status": "pass",
+      "jacobian_min": 0.490459,
+      "true_displacement_median_mm": 1.49744
+    },
+    {
+      "patient": "aaa0069",
+      "replicate": 0,
+      "case_seed": 5000,
+      "status": "pass",
+      "jacobian_min": 0.415454,
+      "true_displacement_median_mm": 2.77054
+    },
+    {
+      "patient": "aaa0069",
+      "replicate": 1,
+      "case_seed": 5001,
+      "status": "pass",
+      "jacobian_min": 0.446185,
+      "true_displacement_median_mm": 3.80497
+    },
+    {
+      "patient": "aaa0069",
+      "replicate": 2,
+      "case_seed": 5002,
+      "status": "pass",
+      "jacobian_min": 0.489182,
+      "true_displacement_median_mm": 2.01278
+    },
+    {
+      "patient": "aaa0071",
+      "replicate": 0,
+      "case_seed": 6000,
+      "status": "pass",
+      "jacobian_min": 0.464669,
+      "true_displacement_median_mm": 1.55842
+    },
+    {
+      "patient": "aaa0071",
+      "replicate": 1,
+      "case_seed": 6001,
+      "status": "pass",
+      "jacobian_min": 0.371567,
+      "true_displacement_median_mm": 3.82376
+    },
+    {
+      "patient": "aaa0071",
+      "replicate": 2,
+      "case_seed": 6002,
+      "status": "pass",
+      "jacobian_min": 0.407949,
+      "true_displacement_median_mm": 2.01969
+    },
+    {
+      "patient": "aaa0072",
+      "replicate": 0,
+      "case_seed": 7000,
+      "status": "pass",
+      "jacobian_min": 0.233584,
+      "true_displacement_median_mm": 3.56028
+    },
+    {
+      "patient": "aaa0072",
+      "replicate": 1,
+      "case_seed": 7001,
+      "status": "fail",
+      "failure_type": "ValueError",
+      "failure_reason": "known deformation folds: minimum Jacobian=-0.0105857"
+    },
+    {
+      "patient": "aaa0072",
+      "replicate": 2,
+      "case_seed": 7002,
+      "status": "pass",
+      "jacobian_min": 0.135181,
+      "true_displacement_median_mm": 2.69649
+    },
+    {
+      "patient": "aaa0086",
+      "replicate": 0,
+      "case_seed": 8000,
+      "status": "pass",
+      "jacobian_min": 0.419103,
+      "true_displacement_median_mm": 3.19006
+    },
+    {
+      "patient": "aaa0086",
+      "replicate": 1,
+      "case_seed": 8001,
+      "status": "pass",
+      "jacobian_min": 0.360546,
+      "true_displacement_median_mm": 2.29673
+    },
+    {
+      "patient": "aaa0086",
+      "replicate": 2,
+      "case_seed": 8002,
+      "status": "pass",
+      "jacobian_min": 0.547571,
+      "true_displacement_median_mm": 2.07962
+    },
+    {
+      "patient": "aaa0087",
+      "replicate": 0,
+      "case_seed": 9000,
+      "status": "pass",
+      "jacobian_min": 0.486962,
+      "true_displacement_median_mm": 1.03363
+    },
+    {
+      "patient": "aaa0087",
+      "replicate": 1,
+      "case_seed": 9001,
+      "status": "pass",
+      "jacobian_min": 0.617888,
+      "true_displacement_median_mm": 1.25679
+    },
+    {
+      "patient": "aaa0087",
+      "replicate": 2,
+      "case_seed": 9002,
+      "status": "pass",
+      "jacobian_min": 0.437808,
+      "true_displacement_median_mm": 1.95041
+    }
+  ],
+  "conclusion": "FAIL",
+  "note": "Transcribed deterministically from the preserved GitHub Actions job log because the original workflow stopped before artifact upload on geometry failure."
+}

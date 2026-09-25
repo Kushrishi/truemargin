@@ -128,9 +128,11 @@ def test_held_out_cohort_and_seed_schedule_are_frozen() -> None:
     assert runner.PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT == (
         "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
     )
+    assert runner.PROTOCOL_AMENDMENT_2_BLOB_SHA == ("bcd0a6b970891724c755cde75111f56d6fad7492")
     assert runner.verify_protocol_identities() == {
         runner.PROTOCOL_PATH: runner.PROTOCOL_MAIN_BLOB_SHA,
         runner.PROTOCOL_AMENDMENT_PATH: runner.PROTOCOL_AMENDMENT_BLOB_SHA,
+        runner.PROTOCOL_AMENDMENT_2_PATH: runner.PROTOCOL_AMENDMENT_2_BLOB_SHA,
     }
     assert runner.HELD_OUT_CASES == {
         "aaa0044": {"t2_series": "13614"},
@@ -287,6 +289,7 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
         ),
         "protocol_main_blob_sha": runner.PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": runner.PROTOCOL_AMENDMENT_BLOB_SHA,
+        "protocol_amendment_2_blob_sha": runner.PROTOCOL_AMENDMENT_2_BLOB_SHA,
         "geometry_preflight_record": "results/hyperparameter_known_gt_geometry_preflight.json",
         "geometry_preflight_sha256": digest,
     }
@@ -306,3 +309,39 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
             str(request_path),
             repo_root=str(tmp_path),
         )
+
+
+def test_topology_scale_schedule_is_frozen() -> None:
+    runner = _load_runner()
+    assert runner.TOPOLOGY_SCALES == (
+        1.00,
+        0.95,
+        0.90,
+        0.85,
+        0.80,
+        0.75,
+        0.70,
+        0.65,
+        0.60,
+        0.55,
+        0.50,
+    )
+
+
+def test_topology_backtracking_selects_largest_valid_scale(monkeypatch) -> None:
+    runner = _load_runner()
+    source = runner.sitk.Image([8, 8, 8], runner.sitk.sitkFloat32)
+    values = iter([-0.01, -0.01, 0.02])
+
+    monkeypatch.setattr(
+        runner,
+        "_transform_jacobian_min",
+        lambda source_img, transform: next(values),
+    )
+
+    _, meta = runner.make_topology_safe_known_transform(source, seed=7001)
+
+    assert meta["raw_jacobian_min"] == -0.01
+    assert meta["topology_scale"] == 0.95
+    assert meta["jacobian_min"] == 0.02
+    assert meta["topology_attenuated"] is True

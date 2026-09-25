@@ -8,6 +8,7 @@ on:
       - "research/KNOWN_GT_GEOMETRY_RETRY.json"
       - "research/KNOWN_GT_GEOMETRY_RETRY_2.json"
       - "research/KNOWN_GT_GEOMETRY_RETRY_3.json"
+      - "research/KNOWN_GT_GEOMETRY_AMENDMENT_2_REQUEST.json"
 
 permissions:
   contents: read
@@ -28,7 +29,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Verify geometry-only request and technical retries
+      - name: Verify geometry-only authorization history
         run: |
           python - <<'PY'
           import json
@@ -53,83 +54,98 @@ jobs:
           for key, value in expected.items():
               assert request.get(key) == value, (key, request.get(key), value)
 
-          retry_path = Path("research/KNOWN_GT_GEOMETRY_RETRY.json")
-          retry = json.loads(retry_path.read_text())
-          retry_expected = {
+          retry_expectations = [
+              (
+                  "research/KNOWN_GT_GEOMETRY_RETRY.json",
+                  {
+                      "retry_number": 1,
+                      "retry_of_workflow_run_id": 36160471644,
+                      "failed_source_git_sha": "5911ce404b1cc0f167aafb64b54aa95b8aebab0f",
+                      "failure_class": "infrastructure_network_timeout",
+                  },
+              ),
+              (
+                  "research/KNOWN_GT_GEOMETRY_RETRY_2.json",
+                  {
+                      "retry_number": 2,
+                      "retry_of_workflow_run_id": 36162012654,
+                      "failed_source_git_sha": "f7fff7da11af7ce6db115b221c0e850efdd29d0b",
+                      "failure_class": "implementation_identity_translation_error",
+                  },
+              ),
+              (
+                  "research/KNOWN_GT_GEOMETRY_RETRY_3.json",
+                  {
+                      "retry_number": 3,
+                      "retry_of_workflow_run_id": 36165197037,
+                      "failed_source_git_sha": "b4d3970d95c0a8c54af2a790930c562cc4e52518",
+                      "failure_class": "implementation_cli_argument_error",
+                  },
+              ),
+          ]
+          for path, expected_retry in retry_expectations:
+              retry = json.loads(Path(path).read_text())
+              assert retry["schema_version"] == 1
+              assert retry["study"] == "hyperparameter-known-gt-v1"
+              assert retry["scientific_configuration_changed"] is False
+              assert retry["result_bearing_authorized"] is False
+              assert retry["original_geometry_request_blob_sha"] == (
+                  "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7"
+              )
+              for key, value in expected_retry.items():
+                  assert retry.get(key) == value, (path, key, retry.get(key), value)
+
+          amendment_path = Path("research/KNOWN_GT_GEOMETRY_AMENDMENT_2_REQUEST.json")
+          amendment = json.loads(amendment_path.read_text())
+          expected_amendment = {
               "schema_version": 1,
               "study": "hyperparameter-known-gt-v1",
-              "retry_number": 1,
-              "retry_of_workflow_run_id": 36160471644,
-              "failed_source_git_sha": "5911ce404b1cc0f167aafb64b54aa95b8aebab0f",
-              "failure_stage": "fetch_frozen_public_inputs",
-              "failure_class": "infrastructure_network_timeout",
-              "scientific_configuration_changed": False,
+              "authorized_mode": "geometry-only-amendment-2",
               "result_bearing_authorized": False,
+              "planned_cases": 30,
               "original_geometry_request_blob_sha": (
                   "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7"
               ),
+              "failed_preflight_result_blob_sha": (
+                  "1755218fb849c744b8434edc4e255d636f7021df"
+              ),
+              "failed_preflight_workflow_run_id": 36167535578,
+              "protocol_main_blob_sha": (
+                  "98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0"
+              ),
+              "protocol_amendment_1_blob_sha": (
+                  "1eafe77bb847b1a77229e267ef32e6bbedd27bc2"
+              ),
+              "protocol_amendment_2_blob_sha": (
+                  "bcd0a6b970891724c755cde75111f56d6fad7492"
+              ),
+              "estimator_outcomes_observed_before_freeze": False,
           }
-          for key, value in retry_expected.items():
-              assert retry.get(key) == value, (key, retry.get(key), value)
+          for key, value in expected_amendment.items():
+              assert amendment.get(key) == value, (key, amendment.get(key), value)
 
-          retry2_path = Path("research/KNOWN_GT_GEOMETRY_RETRY_2.json")
-          retry2 = json.loads(retry2_path.read_text())
-          retry2_expected = {
-              "schema_version": 1,
-              "study": "hyperparameter-known-gt-v1",
-              "retry_number": 2,
-              "retry_of_workflow_run_id": 36162012654,
-              "failed_source_git_sha": "f7fff7da11af7ce6db115b221c0e850efdd29d0b",
-              "failure_stage": "resolve_frozen_public_series_identity",
-              "failure_class": "implementation_identity_translation_error",
-              "scientific_configuration_changed": False,
-              "result_bearing_authorized": False,
-              "original_geometry_request_blob_sha": (
-                  "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7"
-              ),
-              "full_series_identity_blob_sha": (
-                  "4bb28ed69680179b02c78b75cb28f83a1966018c"
-              ),
-          }
-          for key, value in retry2_expected.items():
-              assert retry2.get(key) == value, (key, retry2.get(key), value)
+          assert amendment["topology_scales"] == [
+              1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5
+          ]
 
-          retry3_path = Path("research/KNOWN_GT_GEOMETRY_RETRY_3.json")
-          retry3 = json.loads(retry3_path.read_text())
-          retry3_expected = {
-              "schema_version": 1,
-              "study": "hyperparameter-known-gt-v1",
-              "retry_number": 3,
-              "retry_of_workflow_run_id": 36165197037,
-              "failed_source_git_sha": "b4d3970d95c0a8c54af2a790930c562cc4e52518",
-              "failure_stage": "fetch_frozen_public_inputs",
-              "failure_class": "implementation_cli_argument_error",
-              "scientific_configuration_changed": False,
-              "result_bearing_authorized": False,
-              "original_geometry_request_blob_sha": (
-                  "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7"
-              ),
-              "full_series_identity_blob_sha": (
-                  "4bb28ed69680179b02c78b75cb28f83a1966018c"
-              ),
-          }
-          for key, value in retry3_expected.items():
-              assert retry3.get(key) == value, (key, retry3.get(key), value)
+          def blob(path: str) -> str:
+              return subprocess.check_output(
+                  ["git", "hash-object", path], text=True
+              ).strip()
 
-          request_blob = subprocess.check_output(
-              ["git", "hash-object", str(request_path)], text=True
-          ).strip()
-          identity_path = Path("research/KNOWN_GT_SERIES_IDENTITY.json")
-          identity_blob = subprocess.check_output(
-              ["git", "hash-object", str(identity_path)], text=True
-          ).strip()
-          assert request_blob == retry["original_geometry_request_blob_sha"]
-          assert request_blob == retry2["original_geometry_request_blob_sha"]
-          assert request_blob == retry3["original_geometry_request_blob_sha"]
-          assert identity_blob == retry2["full_series_identity_blob_sha"]
-          assert identity_blob == retry3["full_series_identity_blob_sha"]
-          print("TECHNICAL_RETRY_GUARDS=PASS")
-          print("GEOMETRY_AUTHORIZATION=PASS")
+          assert blob(str(request_path)) == amendment["original_geometry_request_blob_sha"]
+          assert blob("research/KNOWN_GT_GEOMETRY_PREFLIGHT_RESULT_1.json") == (
+              amendment["failed_preflight_result_blob_sha"]
+          )
+          assert blob("docs/hyperparameter_known_gt_protocol_amendment_2.md") == (
+              amendment["protocol_amendment_2_blob_sha"]
+          )
+
+          identity_blob = blob("research/KNOWN_GT_SERIES_IDENTITY.json")
+          assert identity_blob == "4bb28ed69680179b02c78b75cb28f83a1966018c"
+
+          print("GEOMETRY_AMENDMENT_2_AUTHORIZATION=PASS")
+          print("RESULT_BEARING_AUTHORIZED=False")
           PY
 
       - name: Install package and acquisition dependencies
@@ -139,28 +155,42 @@ jobs:
         run: python scripts/fetch_known_gt_inputs.py
 
       - name: Run geometry-only preflight
+        id: geometry
+        continue-on-error: true
         run: python scripts/19_hyperparameter_known_gt_validation.py --geometry-only
 
-      - name: Package reviewed-candidate evidence
+      - name: Package geometry evidence
+        if: always()
         run: |
-          sha256sum outputs/hyperparameter_known_gt_geometry.json \
-            > outputs/hyperparameter_known_gt_geometry.sha256
-          cat outputs/known_gt_data_acquisition.json
-          cat outputs/hyperparameter_known_gt_geometry.json
-          cat outputs/hyperparameter_known_gt_geometry.sha256
+          if [ -f outputs/hyperparameter_known_gt_geometry.json ]; then
+            sha256sum outputs/hyperparameter_known_gt_geometry.json               > outputs/hyperparameter_known_gt_geometry.sha256
+            cat outputs/hyperparameter_known_gt_geometry.json
+            cat outputs/hyperparameter_known_gt_geometry.sha256
+          fi
+          if [ -f outputs/known_gt_data_acquisition.json ]; then
+            cat outputs/known_gt_data_acquisition.json
+          fi
 
       - name: Upload geometry evidence
+        if: always()
         uses: actions/upload-artifact@v7.0.1
         with:
           name: truemargin-known-gt-geometry-preflight
           path: |
+            docs/hyperparameter_known_gt_protocol_amendment_2.md
             research/KNOWN_GT_GEOMETRY_REQUEST.json
             research/KNOWN_GT_GEOMETRY_RETRY.json
             research/KNOWN_GT_GEOMETRY_RETRY_2.json
             research/KNOWN_GT_GEOMETRY_RETRY_3.json
+            research/KNOWN_GT_GEOMETRY_PREFLIGHT_RESULT_1.json
+            research/KNOWN_GT_GEOMETRY_AMENDMENT_2_REQUEST.json
             research/KNOWN_GT_SERIES_IDENTITY.json
             outputs/known_gt_data_acquisition.json
             outputs/hyperparameter_known_gt_geometry.json
             outputs/hyperparameter_known_gt_geometry.sha256
           if-no-files-found: error
           retention-days: 90
+
+      - name: Enforce geometry-only outcome
+        if: always()
+        run: test "${{ steps.geometry.outcome }}" = "success"
