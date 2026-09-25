@@ -102,13 +102,22 @@ Exact T2 series IDs are versioned in the experiment runner and protocol.
 
 ## Acquisition
 
-Use TCIA's current NBIA Data Retriever / collection download mechanism for the
-radiology images, and download the collection's **Fused Rad-Path Matlab Files**
-resource for the HECaP MHA files.
+For ordinary local use, TCIA's collection page and current Data Retriever are
+the authoritative acquisition surfaces.
 
-TCIA's collection page is the authoritative source for current download links
-and data-usage terms; do not rely on hard-coded historical download URLs in a
-paper or reproducibility package.
+For the frozen geometry preflight, `scripts/fetch_known_gt_inputs.py` uses
+TCIA's public NBIA Search API to resolve and download only the ten predeclared
+T2 series. Resolution is strict: the full SeriesInstanceUID must end in the
+already-frozen five-digit series suffix, exactly one public series must match,
+and its public metadata must identify it as T2. Missing or ambiguous resolution
+fails rather than selecting a substitute.
+
+The same helper retrieves TCIA's small **Fused Rad-Path Matlab Files** archive
+and copies only the ten required HECaP MHA files. The acquisition artifact
+records the resolved full UIDs and SHA-256 hashes. The collection page remains
+the authoritative citation, version, license, and data-usage source; the
+workflow download endpoint is an implementation detail, not a replacement
+citation.
 
 ## Data identity and provenance
 
