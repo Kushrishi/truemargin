@@ -35,7 +35,7 @@ jobs:
         run: ruff check src tests scripts
 
       - name: Black
-        run: black --diff --check src tests scripts
+        run: black --check src tests scripts
 
       - name: Mypy
         run: mypy
