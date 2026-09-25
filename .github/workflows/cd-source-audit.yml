@@ -15,26 +15,19 @@ jobs:
     steps:
       - name: Query released Anonymous-GitHub snapshot
         run: |
+          set -euo pipefail
+          URL='https://anonymous.4open.science/api/repo/dbc-B401/files?path='
+          curl --fail-with-body --location --silent --show-error \
+            --user-agent 'Mozilla/5.0' \
+            --header 'Accept: application/json' \
+            "$URL" -o /tmp/cd-files.json
           python - <<'PY'
           import json
-          import urllib.request
 
-          url = "https://anonymous.4open.science/api/repo/dbc-B401/files/"
-          with urllib.request.urlopen(url, timeout=30) as response:
-              payload = json.load(response)
+          with open("/tmp/cd-files.json", encoding="utf-8") as handle:
+              payload = json.load(handle)
 
-          paths = []
-
-          def walk(node, prefix=""):
-              for name, value in node.items():
-                  path = f"{prefix}/{name}" if prefix else name
-                  if isinstance(value, dict) and "size" not in value:
-                      walk(value, path)
-                  else:
-                      paths.append(path)
-
-          walk(payload)
-          print(f"CD_SNAPSHOT_FILE_COUNT={len(paths)}")
-          for path in sorted(paths):
-              print(path)
+          print(f"CD_ROOT_ENTRY_COUNT={len(payload)}")
+          for entry in payload:
+              print(json.dumps(entry, sort_keys=True))
           PY
