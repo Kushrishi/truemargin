@@ -1,7 +1,7 @@
 # Related work and contribution boundary
 
-**Updated:** 2026-09-24  
-**Status:** active comparator/contribution audit
+**Updated:** 2026-09-25  
+**Status:** comparator boundary frozen; implementation feasibility audit active
 
 The broad problem of medical image-registration uncertainty is mature. TrueMargin
 must not claim novelty for uncertainty estimation, perturbation ensembles,
@@ -56,25 +56,37 @@ estimator based on comparator literature.
 
 ### Comparators
 
-Before a paper-level evaluation, prospectively specify a comparator suite.
-Highest-priority candidates are:
+The paper-level comparator boundary is now prospectively frozen before any
+result-bearing known-GT registration.
 
-1. **inverse-consistency error (ICE)** — directly validated against known error
-   in 2026 computational-phantom work;
-2. **transformation-equivariance uncertainty** or a clearly documented
-   classical-registration analogue if method assumptions permit;
-3. **a label-free quality signal related to Contrastive Discrepancy**, if a
-   faithful implementation is feasible;
-4. the existing hyperparameter-sensitivity ensemble;
-5. optional historical curvature signal only if its mathematics and provenance
-   survive a fresh audit.
+Direct local methods:
 
-CONReg is important related work but is not automatically a fair direct
-baseline because it trains a learned quantile-registration model and conformal
-calibration layer, unlike the current classical B-spline setup.
+1. **hyperparameter-ensemble sigma** — frozen target method;
+2. **inverse-consistency error (ICE)** — computed from forward/reverse
+   nine-member ensemble means and evaluated against the same ensemble-mean
+   known-error target;
+3. **same-modality absolute post-registration residual** — intentionally simple
+   local mismatch baseline for the synthetic T2 setting;
+4. **Jacobian deviation `abs(J - 1)`** — deformation-plausibility baseline,
+   explicitly not a probabilistic uncertainty estimate.
 
-Comparator inclusion/exclusion must be decided before comparator outcomes are
-seen.
+**Contrastive Discrepancy (CD)** is assigned to a separate case-level
+model-selection axis rather than forced into the pointwise local table. The
+peer-reviewed 2026 paper has a code link from the authors' publication page to
+snapshot `anonymous.4open.science/r/dbc-B401`; inclusion still requires a
+non-result-bearing faithful-reproduction audit before primary outcomes exist.
+
+**Transformation-equivariance UQ** remains related-work-only in the
+confirmatory classical study: the authors' current publication page still
+lists it as an arXiv preprint and the demonstrated implementations use
+pretrained deep registration models. A classical-optimizer adaptation would be
+a new method rather than a clean baseline.
+
+**CONReg** remains related-work-only because it requires a learned
+quantile-registration model and conformal calibration pipeline.
+
+Historical curvature is excluded unless a separate pre-result audit recovers a
+complete stable definition.
 
 ## Paper-level evaluation axes
 
@@ -150,18 +162,21 @@ Primary/review sources currently driving this boundary:
 - Le Folgoc et al. (2017), *Quantifying Registration Uncertainty With Sparse
   Bayesian Modelling*, IEEE Transactions on Medical Imaging 36(2):607-617.
 
-## Open literature questions before comparator-protocol freeze
+## Comparator-freeze conclusions
 
-1. Is there a published benchmark directly comparing multiple registration-UQ
-   surrogates on the same known-DVF cases with anatomy-aware inference?
-2. Has transformation-equivariance UQ been peer-reviewed beyond the current
-   preprint state and does its implementation generalize cleanly to classical
-   optimizers?
-3. Is Contrastive Discrepancy code available and can it be reproduced without
-   changing the scientific problem?
-4. Which ICE definition is appropriate for the exact B-spline transform and
-   synthetic generation convention used here?
-5. Which comparator set is strong enough for publication without turning the
-   project into an unfocused survey?
+The literature audit resolved the pre-freeze questions as follows:
 
-Answer these before freezing the comparator protocol. They do not alter the already-frozen primary known-GT geometry design.
+1. known-GT validation of individual local surrogates exists, including recent
+   ICE work, but the current contribution remains a prospective same-case,
+   anatomy-aware comparison of distinct surrogate semantics and blind spots;
+2. transformation-equivariance UQ is not used as a direct classical comparator;
+3. Contrastive Discrepancy has released code and is reserved for a faithful
+   case-level feasibility/model-selection evaluation rather than a pointwise
+   reinterpretation;
+4. ICE is defined prospectively through forward/reverse ensemble-mean cycle
+   error in physical coordinates;
+5. the confirmatory local suite is intentionally small: target sigma, ICE,
+   residual, and Jacobian deviation.
+
+Implementation details and source identities must still pass the frozen
+pre-result implementation preflight before M3 is complete.
