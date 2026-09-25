@@ -202,7 +202,7 @@ def test_anatomy_and_global_assessability_rules() -> None:
     patients = list(runner.HELD_OUT_CASES)
     for patient_index, patient in enumerate(patients):
         n_complete = 2 if patient_index < 8 else 1
-        for replicate in range(3):
+        for _replicate in range(3):
             complete = replicate < n_complete
             rows.append(
                 {
