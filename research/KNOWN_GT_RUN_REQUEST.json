@@ -43,7 +43,7 @@
   "acquisition_git_blob_sha": "7481390f2565fbe49aff8faf00f1e59ca0f82c9c",
   "cd_feasibility_record": "research/KNOWN_GT_CD_FEASIBILITY.json",
   "cd_feasibility_record_blob_sha": "0d8a264fb1ee22369c80965840a90702cf55638e",
-  "shard_orchestrator_blob_sha": "8d84e605a26fd17b75bae023e4f27c89d6954656",
+  "shard_orchestrator_blob_sha": "5845a9a8fd2a8ee525a95b7b2f75c9bdba2715a7",
   "result_workflow_blob_sha": "2ea70b176f8a2941738378e1cb9d94b75db84540",
   "acquisition_utility_blob_sha": "916c4287a609fee5135ab528f4cb6252b0a5a5c9",
   "failure_discipline": {
