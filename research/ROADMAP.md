@@ -44,28 +44,26 @@ planned estimator registrations.
 
 ## M3 — Comparator protocol freeze
 
-**State:** active
+**State:** protocol frozen; implementation and CD feasibility preflight active
 
-Goal: define the paper-level comparator set before comparator outcomes or the
+Goal: define and implement the paper-level comparator set before comparator outcomes or the
 primary known-GT outcome can influence method selection.
 
-Priority families:
+Frozen direct local set:
 
-1. inverse-consistency error;
-2. transformation-equivariance/consistency uncertainty if mathematically valid
-   for the classical registration setting;
-3. a faithful Contrastive Discrepancy-style label-free quality signal if
-   reproducible;
-4. the frozen nine-member hyperparameter ensemble;
-5. optional historical curvature signal only if a fresh audit supports it.
+1. the frozen nine-member hyperparameter-ensemble sigma target;
+2. ensemble-mean inverse-consistency error;
+3. same-modality absolute post-registration residual;
+4. ensemble-mean Jacobian deviation `abs(J - 1)`.
 
-CONReg remains important related work but is not automatically a like-for-like
-direct baseline because it uses a learned quantile-registration/conformal
-pipeline.
+Contrastive Discrepancy is frozen as a separate case-level model-selection
+comparator only if a non-result-bearing audit can reproduce its released method
+faithfully. Transformation-equivariance UQ and CONReg remain related work rather
+than forced direct baselines because their demonstrated model/training setting
+does not match the classical B-spline study.
 
-The protocol must freeze inclusion/exclusion rationale, implementation identity,
-output semantics, failure handling, and which paper-level axes each comparator
-is eligible for.
+M3 completes only when implementation identities, tests, and the CD feasibility
+decision are pinned before result-bearing execution.
 
 ## M4 — Primary known-ground-truth experiment
 
@@ -84,8 +82,10 @@ Frozen primary design:
 - exact one-sided anatomy-level sign test;
 - 10,000-replicate anatomy bootstrap interval.
 
-Authorization requires a reviewed M2 geometry record pinned by a separate run
-request. No primary statistic, anatomy, seed, estimator, or ROI rule may be
+Authorization requires the reviewed M2 geometry record, completed M3 comparator
+implementation preflight, exact protocol/implementation identities, and final
+registration budget to be pinned by a separate run request. No primary
+statistic, anatomy, seed, estimator, ROI rule, or comparator definition may be
 retuned after observing the result.
 
 ## M5 — Informativeness and blind-spot comparison

@@ -227,3 +227,40 @@ The next scientific gate is a prospective comparator-protocol freeze. The 270
 planned result-bearing estimator registrations remain unauthorized until that
 protocol and the successful geometry record are pinned by a separate committed
 run request.
+
+## 2026-09-25 — Freeze paper-level comparator semantics before estimator outcomes
+
+After the successful 30 / 30 geometry milestone and before any result-bearing
+known-GT registration, the comparator audit was completed and
+`docs/hyperparameter_known_gt_comparator_protocol.md` was frozen.
+
+Decision:
+
+- retain the nine-member hyperparameter-ensemble sigma as the target method;
+- include ensemble-mean inverse-consistency error as the strongest direct local
+  comparator;
+- include same-modality absolute post-registration residual as a deliberately
+  simple local baseline;
+- include ensemble-mean Jacobian deviation `abs(J - 1)` as a deformation
+  plausibility baseline;
+- evaluate every direct local method against the same frozen ensemble-mean
+  known-error vector at the same 50 ROI landmarks;
+- evaluate Contrastive Discrepancy only on its native case/model-selection axis
+  if a pre-result faithful-reproduction audit succeeds;
+- keep transformation-equivariance UQ and CONReg as related work rather than
+  inventing classical adaptations;
+- exclude historical curvature unless a separate pre-result audit recovers a
+  complete stable method.
+
+The existing TrueMargin primary anatomy-level sign test remains unchanged.
+Comparator sign tests are secondary and Holm-corrected as one family. Paired
+target-versus-comparator differences are effect-size summaries with anatomy
+bootstrap intervals rather than post-hoc winner tests.
+
+A post-geometry execution-control amendment now requires the final run request
+to pin the reviewed geometry evidence, all protocol blobs, comparator protocol,
+implementation identities, CD feasibility decision, exact source revision, and
+registration budget before any result-bearing execution.
+
+The direct frozen budget is 270 forward + 270 reverse registrations = 540
+registrations before any feasible CD-specific additional work.
