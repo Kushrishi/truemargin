@@ -444,6 +444,8 @@ def _case_manifest(
             "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
             "protocol_amendment_private_freeze_commit": PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT,
             "protocol_amendment_path": PROTOCOL_AMENDMENT_PATH,
+            "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+            "protocol_amendment_2_path": PROTOCOL_AMENDMENT_2_PATH,
             "hyperparameter_configs": [
                 {
                     "metric_bins": bins,
@@ -477,6 +479,7 @@ def _case_manifest(
             "scripts/19_hyperparameter_known_gt_validation.py",
             PROTOCOL_PATH,
             PROTOCOL_AMENDMENT_PATH,
+            PROTOCOL_AMENDMENT_2_PATH,
             "src/truemargin/hyperparameter.py",
             "src/truemargin/registration.py",
             "src/truemargin/ensemble.py",
@@ -694,6 +697,7 @@ def verify_result_bearing_authorization(
         "planned_registrations": len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS),
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
+        "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
     }
     for key, value in expected.items():
         if request.get(key) != value:
@@ -761,7 +765,11 @@ def main() -> None:
     print("=== TrueMargin hyperparameter ensemble known-GT evaluation ===")
     print(f"Git SHA: {head}")
     print(f"Protocol: {PROTOCOL_PATH} @ blob {PROTOCOL_MAIN_BLOB_SHA}")
-    print(f"Protocol amendment: {PROTOCOL_AMENDMENT_PATH} " f"@ blob {PROTOCOL_AMENDMENT_BLOB_SHA}")
+    print(f"Protocol amendment 1: {PROTOCOL_AMENDMENT_PATH} " f"@ blob {PROTOCOL_AMENDMENT_BLOB_SHA}")
+    print(
+        f"Protocol amendment 2: {PROTOCOL_AMENDMENT_2_PATH} "
+        f"@ blob {PROTOCOL_AMENDMENT_2_BLOB_SHA}"
+    )
     print(f"Held-out anatomies: {list(HELD_OUT_CASES)}")
     print(f"Frozen hyperparameter configs: {hyper.CONFIGS}")
     print("Phase 1: geometry-only validation for all 30 predeclared cases")
@@ -824,6 +832,7 @@ def main() -> None:
     geometry_payload = {
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
+        "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
         "git_sha": head,
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
         "passed_cases": len(geometry),
