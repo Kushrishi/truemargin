@@ -564,9 +564,7 @@ def _prefixed_direct_metrics(
         f"{method}_rank_degenerate": metrics["rank_degenerate"],
         f"{method}_score_median": metrics["score_median"],
         f"{method}_score_iqr": metrics["score_iqr"],
-        f"{method}_quartile_known_error_delta_mm": metrics[
-            "quartile_known_error_delta_mm"
-        ],
+        f"{method}_quartile_known_error_delta_mm": metrics["quartile_known_error_delta_mm"],
         f"{method}_blind_spot_rate": metrics["blind_spot_rate"],
     }
 
@@ -711,9 +709,7 @@ def _run_case(
         row.update(case_metrics(error, np.asarray(arrays["sigma"], dtype=np.float64)))
         for method in DIRECT_COMPARATOR_METHODS:
             valid = bool(np.asarray(arrays[f"{method}_valid"]).item())
-            failure_reason = str(
-                np.asarray(arrays[f"{method}_failure_reason"]).item()
-            )
+            failure_reason = str(np.asarray(arrays[f"{method}_failure_reason"]).item())
             row[f"{method}_valid"] = valid
             row[f"{method}_failure_reason"] = failure_reason
             if valid:
@@ -885,19 +881,15 @@ def direct_comparator_summaries(
                 )
                 finite = values[np.isfinite(values)]
                 if len(finite):
-                    method_summary[
-                        f"median_anatomy_{metric.removeprefix('median_')}"
-                    ] = float(np.median(finite))
+                    method_summary[f"median_anatomy_{metric.removeprefix('median_')}"] = float(
+                        np.median(finite)
+                    )
 
         jointly_assessable = [
             patient
             for patient in HELD_OUT_CASES
             if bool(target_by_patient[patient]["assessable"])
-            and bool(
-                next(row for row in anatomy if row["patient"] == patient)[
-                    "assessable"
-                ]
-            )
+            and bool(next(row for row in anatomy if row["patient"] == patient)["assessable"])
         ]
         method_summary["paired_joint_anatomies"] = len(jointly_assessable)
         if len(jointly_assessable) >= MIN_ASSESSABLE_ANATOMIES:
@@ -1042,6 +1034,7 @@ def verify_result_bearing_authorization(
 
     return request
 
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -1078,8 +1071,7 @@ def main() -> None:
         f"@ blob {PROTOCOL_AMENDMENT_2_BLOB_SHA}"
     )
     print(
-        f"Comparator protocol: {COMPARATOR_PROTOCOL_PATH} "
-        f"@ blob {COMPARATOR_PROTOCOL_BLOB_SHA}"
+        f"Comparator protocol: {COMPARATOR_PROTOCOL_PATH} " f"@ blob {COMPARATOR_PROTOCOL_BLOB_SHA}"
     )
     print(
         f"Execution-control amendment: {EXECUTION_CONTROL_AMENDMENT_PATH} "
@@ -1238,11 +1230,7 @@ def main() -> None:
     _write_csv(anatomy_metrics_path, anatomy_summary)
     _write_csv(
         comparator_anatomy_path,
-        [
-            {"method": method, **row}
-            for method, rows in direct_anatomy.items()
-            for row in rows
-        ],
+        [{"method": method, **row} for method, rows in direct_anatomy.items() for row in rows],
     )
 
     secondary_summary = global_secondary_summary(anatomy_summary)
