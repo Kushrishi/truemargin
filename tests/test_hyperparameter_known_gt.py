@@ -133,6 +133,10 @@ def test_held_out_cohort_and_seed_schedule_are_frozen() -> None:
         runner.PROTOCOL_PATH: runner.PROTOCOL_MAIN_BLOB_SHA,
         runner.PROTOCOL_AMENDMENT_PATH: runner.PROTOCOL_AMENDMENT_BLOB_SHA,
         runner.PROTOCOL_AMENDMENT_2_PATH: runner.PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        runner.COMPARATOR_PROTOCOL_PATH: runner.COMPARATOR_PROTOCOL_BLOB_SHA,
+        runner.EXECUTION_CONTROL_AMENDMENT_PATH: (
+            runner.EXECUTION_CONTROL_AMENDMENT_BLOB_SHA
+        ),
     }
     assert runner.HELD_OUT_CASES == {
         "aaa0044": {"t2_series": "13614"},
@@ -269,29 +273,60 @@ def test_bootstrap_interval_is_deterministic() -> None:
     assert first[0] <= first[1]
 
 
-def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) -> None:
+def test_result_bearing_authorization_pins_reviewed_preflight(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
     runner = _load_runner()
     result_dir = tmp_path / "results"
+    research_dir = tmp_path / "research"
     result_dir.mkdir()
-    preflight = result_dir / "hyperparameter_known_gt_geometry_preflight.json"
-    preflight.write_text('{"geometry_preflight":"PASS"}\n', encoding="utf-8")
-    digest = hashlib.sha256(preflight.read_bytes()).hexdigest()
+    research_dir.mkdir()
 
+    preflight = result_dir / "hyperparameter_known_gt_geometry_preflight.json"
+    acquisition = result_dir / "known_gt_data_acquisition.json"
+    cd_record = research_dir / "KNOWN_GT_CD_FEASIBILITY.json"
+    preflight.write_text('{"geometry_preflight":"PASS"}\n', encoding="utf-8")
+    acquisition.write_text('{"acquisition":"PASS"}\n', encoding="utf-8")
+    cd_record.write_text('{"cd_feasible":false}\n', encoding="utf-8")
+
+    preflight_blob = runner._git_blob_sha(str(preflight))
+    acquisition_blob = runner._git_blob_sha(str(acquisition))
+    cd_blob = runner._git_blob_sha(str(cd_record))
+    monkeypatch.setattr(runner, "GEOMETRY_PREFLIGHT_BLOB_SHA", preflight_blob)
+    monkeypatch.setattr(runner, "ACQUISITION_BLOB_SHA", acquisition_blob)
+
+    forward = len(runner.HELD_OUT_CASES) * runner.N_REPLICATES * len(runner.hyper.CONFIGS)
     request = {
-        "schema_version": 1,
+        "schema_version": 2,
         "study": "hyperparameter-known-gt-v1",
-        "authorized": True,
+        "authorized_mode": "result-bearing",
+        "result_bearing_authorized": True,
         "held_out_anatomies": list(runner.HELD_OUT_CASES),
         "n_replicates": runner.N_REPLICATES,
-        "n_estimator_members": len(runner.hyper.CONFIGS),
-        "planned_registrations": (
-            len(runner.HELD_OUT_CASES) * runner.N_REPLICATES * len(runner.hyper.CONFIGS)
-        ),
+        "n_forward_members": len(runner.hyper.CONFIGS),
+        "n_reverse_members": len(runner.hyper.CONFIGS),
+        "planned_forward_registrations": forward,
+        "planned_reverse_registrations": forward,
         "protocol_main_blob_sha": runner.PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": runner.PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": runner.PROTOCOL_AMENDMENT_2_BLOB_SHA,
-        "geometry_preflight_record": "results/hyperparameter_known_gt_geometry_preflight.json",
-        "geometry_preflight_sha256": digest,
+        "comparator_protocol_blob_sha": runner.COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": (
+            runner.EXECUTION_CONTROL_AMENDMENT_BLOB_SHA
+        ),
+        "geometry_preflight_record": runner.GEOMETRY_PREFLIGHT_RECORD,
+        "geometry_preflight_git_blob_sha": preflight_blob,
+        "geometry_preflight_uploaded_sha256": (
+            runner.GEOMETRY_PREFLIGHT_UPLOADED_SHA256
+        ),
+        "acquisition_record": runner.ACQUISITION_RECORD,
+        "acquisition_git_blob_sha": acquisition_blob,
+        "cd_feasible": False,
+        "cd_registration_count": 0,
+        "total_planned_registrations": 2 * forward,
+        "cd_feasibility_record": "research/KNOWN_GT_CD_FEASIBILITY.json",
+        "cd_feasibility_record_blob_sha": cd_blob,
     }
     request_path = tmp_path / "KNOWN_GT_RUN_REQUEST.json"
     request_path.write_text(json.dumps(request), encoding="utf-8")
@@ -300,9 +335,9 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
         str(request_path),
         repo_root=str(tmp_path),
     )
-    assert verified["authorized"] is True
+    assert verified["result_bearing_authorized"] is True
 
-    request["authorized"] = False
+    request["planned_reverse_registrations"] = 0
     request_path.write_text(json.dumps(request), encoding="utf-8")
     with pytest.raises(SystemExit, match="authorization field"):
         runner.verify_result_bearing_authorization(
@@ -310,6 +345,61 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
             repo_root=str(tmp_path),
         )
 
+
+def test_direct_comparator_summaries_keep_secondary_tests_separate(monkeypatch) -> None:
+    runner = _load_runner()
+    patients = list(runner.HELD_OUT_CASES)
+    target_anatomy = [
+        {
+            "patient": patient,
+            "assessable": True,
+            "median_case_spearman": 0.5,
+        }
+        for patient in patients
+    ]
+
+    case_rows: list[dict[str, object]] = []
+    for patient_index, patient in enumerate(patients):
+        method_rhos = {
+            "ice": 0.4,
+            "residual": 0.2 if patient_index < 9 else -0.2,
+            "jacdev": 0.1 if patient_index < 8 else -0.1,
+        }
+        for replicate in range(3):
+            row: dict[str, object] = {"patient": patient}
+            for method, rho in method_rhos.items():
+                row[f"{method}_valid"] = True
+                row[f"spearman_{method}_known_error"] = rho
+                row[f"{method}_rank_degenerate"] = False
+                row[f"{method}_quartile_known_error_delta_mm"] = 1.0
+                row[f"{method}_blind_spot_rate"] = 0.1
+            case_rows.append(row)
+
+    monkeypatch.setattr(runner, "bootstrap_interval", lambda rows: (0.0, 1.0))
+    monkeypatch.setattr(
+        runner.comparators,
+        "paired_median_bootstrap",
+        lambda target, comparator, **kwargs: (
+            float(np.median(target - comparator)),
+            -0.1,
+            0.2,
+        ),
+    )
+
+    summary, anatomy = runner.direct_comparator_summaries(case_rows, target_anatomy)
+
+    assert set(summary) == {"ice", "residual", "jacdev"}
+    assert all(summary[method]["assessable"] is True for method in summary)
+    assert all(len(anatomy[method]) == 10 for method in anatomy)
+    assert summary["ice"]["paired_target_minus_comparator_median"] == pytest.approx(0.1)
+    assert summary["ice"]["raw_exact_sign_p"] < summary["residual"]["raw_exact_sign_p"]
+    assert summary["residual"]["raw_exact_sign_p"] < summary["jacdev"]["raw_exact_sign_p"]
+    for method in summary:
+        assert summary[method]["holm_adjusted_sign_p"] >= summary[method]["raw_exact_sign_p"]
+        assert summary[method]["median_anatomy_blind_spot_rate"] == pytest.approx(0.1)
+        assert summary[method]["median_anatomy_quartile_known_error_delta_mm"] == pytest.approx(
+            1.0
+        )
 
 def test_topology_scale_schedule_is_frozen() -> None:
     runner = _load_runner()
