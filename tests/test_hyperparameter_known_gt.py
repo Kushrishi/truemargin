@@ -296,4 +296,3 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
             str(request_path),
             repo_root=str(tmp_path),
         )
-
