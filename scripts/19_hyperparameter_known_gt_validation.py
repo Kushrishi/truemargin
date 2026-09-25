@@ -887,9 +887,7 @@ def main() -> None:
 
     if assessable:
         anatomy_values = [
-            float(row["median_case_spearman"])
-            for row in anatomy_summary
-            if bool(row["assessable"])
+            float(row["median_case_spearman"]) for row in anatomy_summary if bool(row["assessable"])
         ]
         observed = float(np.median(anatomy_values))
         positives, sign_n, p_value = exact_positive_sign_test(anatomy_summary)
