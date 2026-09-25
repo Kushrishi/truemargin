@@ -34,6 +34,15 @@ remain outside Git.
 
 ## Known-ground-truth execution
 
+Before either execution mode starts, the runner verifies the frozen protocol
+files against their public Git blob identities:
+
+- base protocol: `98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0`;
+- Amendment 1: `1eafe77bb847b1a77229e267ef32e6bbedd27bc2`.
+
+These blobs are byte-identical to the original private freeze commits recorded
+in `research/DECISION_LOG.md`.
+
 The first permitted scientific execution is geometry only:
 
 ```bash
