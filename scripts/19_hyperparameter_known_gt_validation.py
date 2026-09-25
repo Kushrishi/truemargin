@@ -106,7 +106,6 @@ def case_seed(anatomy_index: int, replicate: int) -> int:
     return 1000 * anatomy_index + replicate
 
 
-
 def _mask_bbox_crop(
     t2_img: sitk.Image, mask_img: sitk.Image
 ) -> tuple[np.ndarray, np.ndarray, tuple[float, ...]]:
@@ -134,6 +133,7 @@ def prepare_anatomy(
         raise SystemExit(f"Missing HECaP mask: {mask_path}")
     mask_img = sitk.ReadImage(mask_path)
     return _mask_bbox_crop(t2_img, mask_img)
+
 
 def make_source_image(crop: np.ndarray, spacing: tuple[float, ...]) -> sitk.Image:
     image = sitk.GetImageFromArray(crop.astype(np.float32))
@@ -169,7 +169,6 @@ def make_known_transform(source_img: sitk.Image, seed: int) -> sitk.Transform:
     return transform
 
 
-
 def sample_landmarks(fixed_roi_mask: np.ndarray, seed: int) -> np.ndarray:
     if fixed_roi_mask.ndim != NDIM:
         raise ValueError("fixed ROI mask must be 3-D")
@@ -192,6 +191,7 @@ def sample_landmarks(fixed_roi_mask: np.ndarray, seed: int) -> np.ndarray:
     rng = np.random.default_rng(seed)
     selected = rng.choice(len(eligible), size=N_LANDMARKS, replace=False)
     return eligible[selected].astype(np.int64)
+
 
 def true_displacement_at_indices(
     source_img: sitk.Image,
@@ -222,7 +222,6 @@ def _known_displacement_field(source_img: sitk.Image, transform: sitk.Transform)
     displacement_filter = sitk.TransformToDisplacementFieldFilter()
     displacement_filter.SetReferenceImage(source_img)
     return displacement_filter.Execute(transform)
-
 
 
 def geometry_record(
@@ -338,6 +337,7 @@ def build_synthetic_case(
         "spacing": spacing,
     }
 
+
 def _safe_spearman(sigma: np.ndarray, error: np.ndarray) -> tuple[float, bool]:
     sigma = np.asarray(sigma, dtype=np.float64)
     error = np.asarray(error, dtype=np.float64)
@@ -442,7 +442,6 @@ def _case_manifest(
     )
 
 
-
 def _run_case(
     *,
     patient: str,
@@ -524,6 +523,7 @@ def _run_case(
         row.update(case_metrics(np.asarray(arrays["error"]), np.asarray(arrays["sigma"])))
     return row
 
+
 def anatomy_rows(case_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
     for patient in HELD_OUT_CASES:
@@ -573,7 +573,6 @@ def global_secondary_summary(
     return output
 
 
-
 def exact_positive_sign_test(
     anatomy_summary: list[dict[str, Any]],
 ) -> tuple[int, int, float]:
@@ -589,9 +588,6 @@ def exact_positive_sign_test(
     positives = int(np.sum(values > 0.0))
     p_value = float(binomtest(positives, n=len(values), p=0.5, alternative="greater").pvalue)
     return positives, int(len(values)), p_value
-
-
-
 
 
 def bootstrap_interval(
