@@ -29,22 +29,36 @@ def test_frozen_series_suffixes_match_known_gt_runner() -> None:
     } == fetcher.FROZEN_T2_SERIES_SUFFIXES
 
 
-def test_series_resolution_requires_unique_frozen_uid_suffix_and_t2_identity() -> None:
+def test_idc_filters_pin_collection_patient_and_modality() -> None:
+    fetcher = _load_fetcher()
+
+    assert fetcher._idc_filters("aaa0044") == {
+        "terms": {
+            "collection_id": ["prostate_fused_mri_pathology"],
+            "PatientID": ["aaa0044"],
+            "Modality": ["MR"],
+        }
+    }
+
+
+def test_series_resolution_requires_unique_frozen_uid_component_and_t2_identity() -> None:
     fetcher = _load_fetcher()
     rows = [
         {
+            "collection_id": "prostate_fused_mri_pathology",
             "PatientID": "aaa0044",
+            "Modality": "MR",
             "SeriesInstanceUID": "1.2.3.13614",
             "StudyInstanceUID": "1.2.3",
             "SeriesDescription": "T2 AXIAL",
-            "ProtocolName": "T2",
         },
         {
+            "collection_id": "prostate_fused_mri_pathology",
             "PatientID": "aaa0044",
+            "Modality": "MR",
             "SeriesInstanceUID": "1.2.3.99999",
             "StudyInstanceUID": "1.2.3",
             "SeriesDescription": "DCE",
-            "ProtocolName": "DCE",
         },
     ]
 
@@ -53,11 +67,13 @@ def test_series_resolution_requires_unique_frozen_uid_suffix_and_t2_identity() -
     assert selected["SeriesInstanceUID"] == "1.2.3.13614"
 
 
-def test_series_resolution_rejects_ambiguity_and_non_t2() -> None:
+def test_series_resolution_rejects_ambiguous_non_t2_and_non_exact_suffix() -> None:
     fetcher = _load_fetcher()
     ambiguous = [
         {
+            "collection_id": "prostate_fused_mri_pathology",
             "PatientID": "aaa0044",
+            "Modality": "MR",
             "SeriesInstanceUID": f"1.2.{prefix}.13614",
             "StudyInstanceUID": "1.2.3",
             "SeriesDescription": "T2 AXIAL",
@@ -69,12 +85,51 @@ def test_series_resolution_rejects_ambiguity_and_non_t2() -> None:
 
     non_t2 = [
         {
+            "collection_id": "prostate_fused_mri_pathology",
             "PatientID": "aaa0044",
+            "Modality": "MR",
             "SeriesInstanceUID": "1.2.3.13614",
             "StudyInstanceUID": "1.2.3",
             "SeriesDescription": "DCE",
-            "ProtocolName": "DCE",
         }
     ]
     with pytest.raises(RuntimeError, match="not described as T2"):
         fetcher.resolve_frozen_series(non_t2, patient="aaa0044", suffix="13614")
+
+    suffix_collision = [
+        {
+            "collection_id": "prostate_fused_mri_pathology",
+            "PatientID": "aaa0044",
+            "Modality": "MR",
+            "SeriesInstanceUID": "1.2.3.113614",
+            "StudyInstanceUID": "1.2.3",
+            "SeriesDescription": "T2 AXIAL",
+        }
+    ]
+    with pytest.raises(RuntimeError, match="resolved to 0 public series"):
+        fetcher.resolve_frozen_series(suffix_collision, patient="aaa0044", suffix="13614")
+
+
+def test_series_resolution_ignores_rows_outside_frozen_collection_or_modality() -> None:
+    fetcher = _load_fetcher()
+    rows = [
+        {
+            "collection_id": "other_collection",
+            "PatientID": "aaa0044",
+            "Modality": "MR",
+            "SeriesInstanceUID": "1.2.3.13614",
+            "StudyInstanceUID": "1.2.3",
+            "SeriesDescription": "T2 AXIAL",
+        },
+        {
+            "collection_id": "prostate_fused_mri_pathology",
+            "PatientID": "aaa0044",
+            "Modality": "CT",
+            "SeriesInstanceUID": "1.2.3.13614",
+            "StudyInstanceUID": "1.2.3",
+            "SeriesDescription": "T2 AXIAL",
+        },
+    ]
+
+    with pytest.raises(RuntimeError, match="resolved to 0 public series"):
+        fetcher.resolve_frozen_series(rows, patient="aaa0044", suffix="13614")
