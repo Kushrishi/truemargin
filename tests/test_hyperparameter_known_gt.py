@@ -128,9 +128,7 @@ def test_held_out_cohort_and_seed_schedule_are_frozen() -> None:
     assert runner.PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT == (
         "d37b5a4a7931fdd3947870ba651b097f712ebdb3"
     )
-    assert runner.PROTOCOL_AMENDMENT_2_BLOB_SHA == (
-        "bcd0a6b970891724c755cde75111f56d6fad7492"
-    )
+    assert runner.PROTOCOL_AMENDMENT_2_BLOB_SHA == ("bcd0a6b970891724c755cde75111f56d6fad7492")
     assert runner.verify_protocol_identities() == {
         runner.PROTOCOL_PATH: runner.PROTOCOL_MAIN_BLOB_SHA,
         runner.PROTOCOL_AMENDMENT_PATH: runner.PROTOCOL_AMENDMENT_BLOB_SHA,
