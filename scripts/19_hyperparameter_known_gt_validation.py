@@ -18,6 +18,7 @@ from scipy.stats import binomtest, pearsonr, spearmanr
 from truemargin import calibration as cal
 from truemargin import hyperparameter as hyper
 from truemargin import io_utils as ioutil
+from truemargin import known_gt_comparison as comparison
 from truemargin import provenance
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -35,6 +36,10 @@ PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT = "d37b5a4a7931fdd3947870ba651b097f712e
 PROTOCOL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_protocol_amendment_1.md"
 PROTOCOL_AMENDMENT_2_BLOB_SHA = "bcd0a6b970891724c755cde75111f56d6fad7492"
 PROTOCOL_AMENDMENT_2_PATH = "docs/hyperparameter_known_gt_protocol_amendment_2.md"
+COMPARATOR_PROTOCOL_BLOB_SHA = "2d383d3bed7503e2ceaecf36f599e7965726a18d"
+COMPARATOR_PROTOCOL_PATH = "docs/hyperparameter_known_gt_comparator_protocol.md"
+EXECUTION_CONTROL_AMENDMENT_BLOB_SHA = "9dc7c2680e128b3a67d9bd864ab465a47d6e7e53"
+EXECUTION_CONTROL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_execution_control_amendment_1.md"
 
 HELD_OUT_CASES = {
     "aaa0044": {"t2_series": "13614"},
@@ -78,6 +83,7 @@ N_BOOTSTRAPS = 10_000
 BOOTSTRAP_SEED = 0
 RANK_DEGENERACY_TOL = 1e-12
 NDIM = 3
+DIRECT_COMPARATOR_METHODS = ("ice", "residual", "jacdev")
 SECONDARY_METRICS = (
     "pearson_sigma_known_error",
     "known_error_median_mm",
@@ -106,6 +112,8 @@ def verify_protocol_identities(repo_root: str = REPO_ROOT) -> dict[str, str]:
         PROTOCOL_PATH: PROTOCOL_MAIN_BLOB_SHA,
         PROTOCOL_AMENDMENT_PATH: PROTOCOL_AMENDMENT_BLOB_SHA,
         PROTOCOL_AMENDMENT_2_PATH: PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        COMPARATOR_PROTOCOL_PATH: COMPARATOR_PROTOCOL_BLOB_SHA,
+        EXECUTION_CONTROL_AMENDMENT_PATH: EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
     }
     observed: dict[str, str] = {}
     for relative_path, expected_sha in expected.items():
@@ -488,6 +496,9 @@ def _case_manifest(
             "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
             "protocol_amendment_private_freeze_commit": PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT,
             "protocol_amendment_path": PROTOCOL_AMENDMENT_PATH,
+            "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+            "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+            "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
             "hyperparameter_configs": [
                 {
                     "metric_bins": bins,
@@ -521,7 +532,12 @@ def _case_manifest(
             "scripts/19_hyperparameter_known_gt_validation.py",
             PROTOCOL_PATH,
             PROTOCOL_AMENDMENT_PATH,
+            PROTOCOL_AMENDMENT_2_PATH,
+            COMPARATOR_PROTOCOL_PATH,
+            EXECUTION_CONTROL_AMENDMENT_PATH,
             "src/truemargin/hyperparameter.py",
+            "src/truemargin/comparators.py",
+            "src/truemargin/known_gt_comparison.py",
             "src/truemargin/registration.py",
             "src/truemargin/ensemble.py",
             "src/truemargin/io_utils.py",
