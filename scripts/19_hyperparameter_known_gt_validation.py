@@ -618,7 +618,10 @@ def _run_case(
             "member_reasons": np.asarray(result.member_reasons, dtype="U1024"),
             "member_mean_displacement_mm": result.member_mean_displacement_mm,
             "spacing_xyz_mm": np.asarray(spacing, dtype=np.float64),
-            "crop_diagonal_mm": np.asarray(synthetic["crop_diagonal_mm"], dtype=np.float64),
+            "crop_diagonal_mm": np.asarray(
+                synthetic["crop_diagonal_mm"],
+                dtype=np.float64,
+            ),
             "reverse_complete": np.asarray(False),
             "reverse_member_reasons": np.asarray([], dtype="U1024"),
         }
@@ -708,7 +711,9 @@ def _run_case(
         row.update(case_metrics(error, np.asarray(arrays["sigma"], dtype=np.float64)))
         for method in DIRECT_COMPARATOR_METHODS:
             valid = bool(np.asarray(arrays[f"{method}_valid"]).item())
-            failure_reason = str(np.asarray(arrays[f"{method}_failure_reason"]).item())
+            failure_reason = str(
+                np.asarray(arrays[f"{method}_failure_reason"]).item()
+            )
             row[f"{method}_valid"] = valid
             row[f"{method}_failure_reason"] = failure_reason
             if valid:
@@ -720,6 +725,7 @@ def _run_case(
             row[f"{method}_failure_reason"] = "forward_target_incomplete"
 
     return row
+
 
 def anatomy_rows(case_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     output: list[dict[str, Any]] = []
@@ -879,15 +885,19 @@ def direct_comparator_summaries(
                 )
                 finite = values[np.isfinite(values)]
                 if len(finite):
-                    method_summary[f"median_anatomy_{metric.removeprefix('median_')}"] = float(
-                        np.median(finite)
-                    )
+                    method_summary[
+                        f"median_anatomy_{metric.removeprefix('median_')}"
+                    ] = float(np.median(finite))
 
         jointly_assessable = [
             patient
             for patient in HELD_OUT_CASES
             if bool(target_by_patient[patient]["assessable"])
-            and bool(next(row for row in anatomy if row["patient"] == patient)["assessable"])
+            and bool(
+                next(row for row in anatomy if row["patient"] == patient)[
+                    "assessable"
+                ]
+            )
         ]
         method_summary["paired_joint_anatomies"] = len(jointly_assessable)
         if len(jointly_assessable) >= MIN_ASSESSABLE_ANATOMIES:
