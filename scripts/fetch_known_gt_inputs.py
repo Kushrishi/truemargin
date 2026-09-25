@@ -71,7 +71,8 @@ def _request(
             if attempt + 1 == NETWORK_ATTEMPTS:
                 break
             time.sleep(NETWORK_BACKOFF_SECONDS[min(attempt, len(NETWORK_BACKOFF_SECONDS) - 1)])
-    raise RuntimeError(f"Network request failed after {NETWORK_ATTEMPTS} attempts: {url}") from last_error
+    message = f"Network request failed after {NETWORK_ATTEMPTS} attempts: {url}"
+    raise RuntimeError(message) from last_error
 
 
 def _get_json(url: str) -> dict[str, Any]:
@@ -208,7 +209,9 @@ def _copy_downloaded_dicoms(download_root: Path, destination: Path) -> int:
     seen: set[str] = set()
     for source in files:
         if source.name in seen:
-            raise RuntimeError(f"Duplicate DICOM filename while flattening IDC download: {source.name}")
+            raise RuntimeError(
+                f"Duplicate DICOM filename while flattening IDC download: {source.name}"
+            )
         seen.add(source.name)
         shutil.copy2(source, destination / source.name)
     return len(files)
