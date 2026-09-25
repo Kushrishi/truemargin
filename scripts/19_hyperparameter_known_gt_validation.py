@@ -1034,6 +1034,14 @@ def main() -> None:
         f"Protocol amendment 2: {PROTOCOL_AMENDMENT_2_PATH} "
         f"@ blob {PROTOCOL_AMENDMENT_2_BLOB_SHA}"
     )
+    print(
+        f"Comparator protocol: {COMPARATOR_PROTOCOL_PATH} "
+        f"@ blob {COMPARATOR_PROTOCOL_BLOB_SHA}"
+    )
+    print(
+        f"Execution-control amendment: {EXECUTION_CONTROL_AMENDMENT_PATH} "
+        f"@ blob {EXECUTION_CONTROL_AMENDMENT_BLOB_SHA}"
+    )
     print(f"Held-out anatomies: {list(HELD_OUT_CASES)}")
     print(f"Frozen hyperparameter configs: {hyper.CONFIGS}")
     print("Phase 1: geometry-only validation for all 30 predeclared cases")
@@ -1097,6 +1105,8 @@ def main() -> None:
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
         "git_sha": head,
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
         "passed_cases": len(geometry),
@@ -1167,14 +1177,30 @@ def main() -> None:
             case_rows.append(row)
 
     anatomy_summary = anatomy_rows(case_rows)
+    direct_summary, direct_anatomy = direct_comparator_summaries(
+        case_rows,
+        anatomy_summary,
+    )
     assessable_count = sum(bool(row["assessable"]) for row in anatomy_summary)
     assessable = assessable_count >= MIN_ASSESSABLE_ANATOMIES
 
     case_metrics_path = os.path.join(OUT, "hyperparameter_known_gt_case_metrics.csv")
     anatomy_metrics_path = os.path.join(OUT, "hyperparameter_known_gt_anatomy_metrics.csv")
+    comparator_anatomy_path = os.path.join(
+        OUT,
+        "hyperparameter_known_gt_comparator_anatomy_metrics.csv",
+    )
     summary_path = os.path.join(OUT, "hyperparameter_known_gt_summary.json")
     _write_csv(case_metrics_path, case_rows)
     _write_csv(anatomy_metrics_path, anatomy_summary)
+    _write_csv(
+        comparator_anatomy_path,
+        [
+            {"method": method, **row}
+            for method, rows in direct_anatomy.items()
+            for row in rows
+        ],
+    )
 
     secondary_summary = global_secondary_summary(anatomy_summary)
     summary: dict[str, Any] = {
@@ -1195,6 +1221,11 @@ def main() -> None:
         "primary_anatomy_spearman_values": None,
         "primary_bootstrap_95_ci": None,
         "secondary_across_anatomy_medians": secondary_summary,
+        "direct_comparators": direct_summary,
+        "contrastive_discrepancy": {
+            "feasibility_decision": "pending_pre_result_audit",
+            "included_in_this_run": False,
+        },
     }
 
     print("\n=== Predeclared known-GT pointwise-informativeness evaluation ===")
@@ -1229,11 +1260,32 @@ def main() -> None:
     else:
         print("KNOWN_GT_POINTWISE_ASSOCIATION_POSITIVE=False -- evaluation not assessable")
 
+    print("\n=== Frozen direct local comparator summaries ===")
+    for method in DIRECT_COMPARATOR_METHODS:
+        values = direct_summary[method]
+        print(
+            f"{method.upper()}_ASSESSABLE={values['assessable']} "
+            f"anatomies={values['assessable_anatomies']}/10"
+        )
+        if values["assessable"]:
+            print(
+                f"{method.upper()}_MEDIAN_ANATOMY_SPEARMAN="
+                f"{values['median_anatomy_spearman']:.9g} "
+                f"raw_sign_p={values['raw_exact_sign_p']:.9g} "
+                f"holm_p={values['holm_adjusted_sign_p']:.9g}"
+            )
+            if values["paired_target_minus_comparator_median"] is not None:
+                print(
+                    f"{method.upper()}_PAIRED_TARGET_MINUS_COMPARATOR_MEDIAN="
+                    f"{values['paired_target_minus_comparator_median']:.9g}"
+                )
+
     with open(summary_path, "w") as handle:
         json.dump(summary, handle, indent=2, sort_keys=True)
 
     print(f"Case metrics: {case_metrics_path}")
     print(f"Anatomy metrics: {anatomy_metrics_path}")
+    print(f"Comparator anatomy metrics: {comparator_anatomy_path}")
     print(f"Machine-readable summary: {summary_path}")
 
 
