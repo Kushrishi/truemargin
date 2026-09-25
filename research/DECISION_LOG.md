@@ -81,3 +81,17 @@ Decision: public execution pins and verifies the immutable Git blob identities,
 not inaccessible private commit objects. The private commit SHAs remain
 historical provenance only. No protocol text, scientific endpoint, cohort,
 seed, estimator setting, geometry rule, or inferential rule changed.
+
+## 2026-09-25 — Authorize geometry-only public preflight
+
+A dedicated request now authorizes only the 30 frozen synthetic geometry cases.
+The public acquisition helper resolves each predeclared T2 series by its frozen
+SeriesInstanceUID suffix through TCIA's public NBIA API and fails on missing,
+ambiguous, or non-T2 resolution. It also retrieves the collection's fused
+rad-path resource and copies only the ten required HECaP masks.
+
+Decision: the hosted preflight may validate data identity, transform geometry,
+ROI eligibility, folding, landmark uniqueness, and source-domain containment.
+It may not execute any of the 270 estimator registrations. Data-resolution or
+download failures are infrastructure failures and do not permit anatomy,
+series, seed, ROI, deformation, or estimator substitution.
