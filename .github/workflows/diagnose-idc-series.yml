@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
       - name: Install acquisition dependency
         run: python -m pip install idc-index==0.12.5
-      - name: Print aaa0044 MR series metadata
+      - name: Print frozen-cohort T2 axial series metadata
         run: |
           python - <<'PY'
           import importlib.util
@@ -31,21 +31,23 @@ jobs:
           fetcher = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(fetcher)
 
-          rows, response = fetcher._idc_series_rows("aaa0044")
-          keep = [
-              "collection_id",
-              "PatientID",
-              "StudyInstanceUID",
-              "SeriesInstanceUID",
-              "SeriesDescription",
-              "ProtocolName",
-              "SeriesNumber",
-              "instanceCount",
-              "series_size_MB",
-              "Modality",
-          ]
-          print("filters_applied=", json.dumps(response.get("filters_applied"), sort_keys=True))
-          print("series_count=", len(rows))
-          for row in rows:
-              print(json.dumps({key: row.get(key) for key in keep}, sort_keys=True))
+          for patient, legacy_folder in fetcher.FROZEN_T2_SERIES_SUFFIXES.items():
+              rows, response = fetcher._idc_series_rows(patient)
+              candidates = []
+              for row in rows:
+                  desc = str(row.get("SeriesDescription", "")).upper()
+                  if "T2" in desc and "AXIAL" in desc:
+                      candidates.append(
+                          {
+                              "patient": patient,
+                              "legacy_folder": legacy_folder,
+                              "StudyInstanceUID": row.get("StudyInstanceUID"),
+                              "SeriesInstanceUID": row.get("SeriesInstanceUID"),
+                              "SeriesDescription": row.get("SeriesDescription"),
+                              "instanceCount": row.get("instanceCount"),
+                              "series_size_MB": row.get("series_size_MB"),
+                              "Modality": row.get("Modality"),
+                          }
+                      )
+              print(json.dumps({"patient": patient, "candidates": candidates}, sort_keys=True))
           PY
