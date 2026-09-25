@@ -16,11 +16,10 @@ import SimpleITK as sitk
 from scipy.stats import binomtest, pearsonr, spearmanr
 
 from truemargin import calibration as cal
-from truemargin import comparators
+from truemargin import comparators, provenance
 from truemargin import hyperparameter as hyper
 from truemargin import io_utils as ioutil
 from truemargin import known_gt_comparison as comparison
-from truemargin import provenance
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
 DATA = os.path.join(REPO_ROOT, "data")
