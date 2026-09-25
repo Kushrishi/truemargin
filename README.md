@@ -36,9 +36,19 @@ preflight** across ten held-out anatomies under the frozen base protocol and
 Amendments 1 and 2. That result validates the prospective cohort, acquisition,
 and synthetic-geometry construction only.
 
-The paper-level comparator protocol is the active next gate. The
-result-bearing known-ground-truth study has not been run, and none of the 270
-planned estimator registrations is currently authorized.
+The paper-level comparator protocol and direct-comparator implementation are
+now frozen before any result-bearing outcome. The local suite compares the
+target sigma with inverse-consistency error, same-modality residual, and
+Jacobian deviation under anatomy-aware statistics and failure handling.
+
+Contrastive Discrepancy was prospectively excluded from this confirmatory study
+because its authors' linked code snapshot could not be retrieved reproducibly
+from clean hosted runners; no bespoke analogue is substituted.
+
+The result-bearing known-ground-truth study has not been run. Its frozen budget
+is **270 forward + 270 reverse = 540 registrations**, and execution remains
+unauthorized until a separate reviewed run request pins the exact source and
+evidence identities.
 
 ## Research discipline
 
