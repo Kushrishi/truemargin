@@ -179,6 +179,7 @@ def test_idc_manifest_download_command_uses_required_manifest_option(tmp_path: P
         str(download_root),
     ]
 
+
 def test_patient_subset_defaults_to_full_frozen_cohort() -> None:
     fetcher = _load_fetcher()
 
