@@ -292,6 +292,7 @@ def test_result_bearing_authorization_pins_reviewed_preflight(
     cd_blob = runner._git_blob_sha(str(cd_record))
     monkeypatch.setattr(runner, "GEOMETRY_PREFLIGHT_BLOB_SHA", preflight_blob)
     monkeypatch.setattr(runner, "ACQUISITION_BLOB_SHA", acquisition_blob)
+    monkeypatch.setattr(runner, "CD_FEASIBILITY_BLOB_SHA", cd_blob)
 
     forward = len(runner.HELD_OUT_CASES) * runner.N_REPLICATES * len(runner.hyper.CONFIGS)
     request = {
@@ -318,7 +319,7 @@ def test_result_bearing_authorization_pins_reviewed_preflight(
         "cd_feasible": False,
         "cd_registration_count": 0,
         "total_planned_registrations": 2 * forward,
-        "cd_feasibility_record": "research/KNOWN_GT_CD_FEASIBILITY.json",
+        "cd_feasibility_record": runner.CD_FEASIBILITY_RECORD,
         "cd_feasibility_record_blob_sha": cd_blob,
     }
     request_path = tmp_path / "KNOWN_GT_RUN_REQUEST.json"
@@ -331,6 +332,15 @@ def test_result_bearing_authorization_pins_reviewed_preflight(
     assert verified["result_bearing_authorized"] is True
 
     request["planned_reverse_registrations"] = 0
+    request_path.write_text(json.dumps(request), encoding="utf-8")
+    with pytest.raises(SystemExit, match="authorization field"):
+        runner.verify_result_bearing_authorization(
+            str(request_path),
+            repo_root=str(tmp_path),
+        )
+
+    request["planned_reverse_registrations"] = forward
+    request["cd_feasible"] = True
     request_path.write_text(json.dumps(request), encoding="utf-8")
     with pytest.raises(SystemExit, match="authorization field"):
         runner.verify_result_bearing_authorization(
