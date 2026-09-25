@@ -29,19 +29,26 @@ def test_frozen_series_suffixes_match_known_gt_runner() -> None:
     } == fetcher.FROZEN_T2_SERIES_SUFFIXES
 
 
-def test_idc_filters_pin_collection_patient_and_modality() -> None:
+def test_series_query_pins_collection_patient_and_modality() -> None:
     fetcher = _load_fetcher()
 
-    assert fetcher._idc_filters("aaa0044") == {
-        "terms": {
-            "collection_id": ["prostate_fused_mri_pathology"],
-            "PatientID": ["aaa0044"],
-            "Modality": ["MR"],
-        }
-    }
+    query = fetcher._series_query("aaa0044")
+
+    assert "collection_id = 'prostate_fused_mri_pathology'" in query
+    assert "PatientID = 'aaa0044'" in query
+    assert "Modality = 'MR'" in query
+    assert "SeriesInstanceUID" in query
+    assert "series_aws_url" in query
 
 
-def test_series_resolution_requires_unique_frozen_uid_component_and_t2_identity() -> None:
+def test_series_query_rejects_non_frozen_patient() -> None:
+    fetcher = _load_fetcher()
+
+    with pytest.raises(ValueError, match="not in the frozen cohort"):
+        fetcher._series_query("not-frozen")
+
+
+def test_series_resolution_requires_unique_exact_uid_component_and_t2_identity() -> None:
     fetcher = _load_fetcher()
     rows = [
         {
@@ -67,7 +74,7 @@ def test_series_resolution_requires_unique_frozen_uid_component_and_t2_identity(
     assert selected["SeriesInstanceUID"] == "1.2.3.13614"
 
 
-def test_series_resolution_rejects_ambiguous_non_t2_and_non_exact_suffix() -> None:
+def test_series_resolution_rejects_ambiguous_non_t2_and_suffix_collision() -> None:
     fetcher = _load_fetcher()
     ambiguous = [
         {
@@ -110,7 +117,7 @@ def test_series_resolution_rejects_ambiguous_non_t2_and_non_exact_suffix() -> No
         fetcher.resolve_frozen_series(suffix_collision, patient="aaa0044", suffix="13614")
 
 
-def test_series_resolution_ignores_rows_outside_frozen_collection_or_modality() -> None:
+def test_series_resolution_ignores_wrong_collection_or_modality() -> None:
     fetcher = _load_fetcher()
     rows = [
         {
