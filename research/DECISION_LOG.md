@@ -123,3 +123,27 @@ This is an infrastructure amendment only. It changes no anatomy, series target,
 seed, deformation, ROI rule, estimator, endpoint, statistic, or result-bearing
 authorization. A retry marker records the failed run and verifies that the
 original geometry-request blob has not changed.
+
+## 2026-09-25 — Freeze full DICOM identities before second technical retry
+
+The first IDC-backed retry (workflow run `36162012654`, source
+`f7fff7da11af7ce6db115b221c0e850efdd29d0b`) reached current IDC metadata
+successfully and then stopped before any image download or geometry because the
+implementation incorrectly required the final dot-separated UID component to
+equal the historical five-digit Data Retriever folder name.
+
+A metadata-only diagnostic was then run before any known-GT geometry result.
+It established that, for every frozen anatomy, the historical five-digit folder
+is the final five characters of the intended full `SeriesInstanceUID`. The
+same diagnostic uniquely recovered the `T2 AXIAL SM FOV` full UID for all ten
+held-out anatomies. No alternative anatomy or series was chosen.
+
+Decision: freeze those ten full DICOM `StudyInstanceUID` /
+`SeriesInstanceUID` pairs in `research/KNOWN_GT_SERIES_IDENTITY.json` and
+require exact UID equality during acquisition. The historical five-digit folder
+remains a compatibility alias and must match the final five UID characters.
+
+This is a provenance clarification and implementation correction, not a change
+to the frozen scientific cohort. The original geometry authorization blob,
+anatomies, image series, seeds, deformation settings, ROI rules, estimator, and
+result-bearing authorization are unchanged.

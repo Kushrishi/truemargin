@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "date": "2026-09-25",
+  "source": "IDC REST v3 public metadata diagnostic before any known-GT geometry result",
+  "collection_id": "prostate_fused_mri_pathology",
+  "series": {
+    "aaa0044": {
+      "legacy_folder": "13614",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.201705777245747582280963873728",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.732716917747115096802187213614",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 30
+    },
+    "aaa0051": {
+      "legacy_folder": "36207",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.302634259535269710262168297855",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.157635096994502785546787236207",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 26
+    },
+    "aaa0053": {
+      "legacy_folder": "45314",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.660223682632971636498927291662",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.259278598794248993925632445314",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 32
+    },
+    "aaa0060": {
+      "legacy_folder": "12400",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.208980060976713308412665848227",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.673662144261717516105903012400",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 28
+    },
+    "aaa0064": {
+      "legacy_folder": "40733",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.677388229699005647616973897265",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.269936256542453290800299940733",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 31
+    },
+    "aaa0069": {
+      "legacy_folder": "58343",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.323255419999823608842175535350",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.204433303194598133987954958343",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 22
+    },
+    "aaa0071": {
+      "legacy_folder": "27783",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.114590175231563575260488672107",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.251268446143166700145984727783",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 28
+    },
+    "aaa0072": {
+      "legacy_folder": "64767",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.220337153887047473905655844358",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.272204612196811890109116064767",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 26
+    },
+    "aaa0086": {
+      "legacy_folder": "42255",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.176024331868997816675163759858",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.188095814224864796452018542255",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 28
+    },
+    "aaa0087": {
+      "legacy_folder": "30095",
+      "study_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.139419287640729018088223981724",
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.5826.1401.149928179075774997152309830095",
+      "series_description": "T2 AXIAL SM FOV",
+      "instance_count": 26
+    }
+  },
+  "note": "The legacy five-digit Data Retriever folder identifier equals the final five characters of the corresponding full SeriesInstanceUID. These entries translate the already-frozen series identities; they do not select new series."
+}

@@ -109,16 +109,21 @@ For the frozen geometry preflight, `scripts/fetch_known_gt_inputs.py` uses
 NCI Imaging Data Commons (IDC) REST v3 to resolve only the ten predeclared T2
 series within the public `prostate_fused_mri_pathology` collection. It then
 uses pinned `idc-index==0.12.5` to transfer the exact public-series manifest.
-Resolution is strict: the final SeriesInstanceUID component must equal the
-already-frozen five-digit series identifier, exactly one public MR series must
-match, and its public metadata must identify it as T2. Missing, ambiguous, or
-wrong-modality resolution fails rather than selecting a substitute.
+Resolution is strict: `research/KNOWN_GT_SERIES_IDENTITY.json` pins the full
+`StudyInstanceUID` and `SeriesInstanceUID` for each already-frozen anatomy.
+The historical five-digit Data Retriever folder is retained as a compatibility
+alias and must equal the final five characters of the pinned full series UID.
+Exactly one public MR series must match the full UID, expected study UID,
+`T2 AXIAL SM FOV` description, and frozen instance count. Any drift fails
+rather than selecting a substitute.
 
 The transport was moved from TCIA's legacy NBIA API after the first hosted
-preflight timed out before resolving any anatomy. The scientific data identity
-did not change: IDC hosts the same public collection and the workflow records
-the complete resolved StudyInstanceUID and SeriesInstanceUID for every selected
-series.
+preflight timed out before resolving any anatomy. A subsequent metadata-only
+diagnostic established the exact mapping from the historical Data Retriever
+folder labels to the current full DICOM UIDs before any geometry result
+existed. The scientific data identity did not change: IDC hosts the same public
+collection and the workflow records and checks the complete frozen
+StudyInstanceUID and SeriesInstanceUID for every selected series.
 
 The same helper retrieves TCIA's small **Fused Rad-Path Matlab Files** archive
 and copies only the ten required HECaP MHA files. The acquisition artifact

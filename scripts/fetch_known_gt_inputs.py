@@ -42,6 +42,38 @@ FROZEN_T2_SERIES_SUFFIXES = {
     "aaa0086": "42255",
     "aaa0087": "30095",
 }
+SERIES_IDENTITY_PATH = (
+    Path(__file__).resolve().parents[1] / "research" / "KNOWN_GT_SERIES_IDENTITY.json"
+)
+
+
+def load_frozen_series_identity() -> dict[str, dict[str, Any]]:
+    payload = json.loads(SERIES_IDENTITY_PATH.read_text(encoding="utf-8"))
+    if payload.get("schema_version") != 1:
+        raise RuntimeError("Frozen series identity schema drift")
+    if payload.get("study") != "hyperparameter-known-gt-v1":
+        raise RuntimeError("Frozen series identity study drift")
+    if payload.get("collection_id") != IDC_COLLECTION_ID:
+        raise RuntimeError("Frozen series identity collection drift")
+
+    series = payload.get("series")
+    if not isinstance(series, dict):
+        raise RuntimeError("Frozen series identity is missing the series mapping")
+    if set(series) != set(FROZEN_T2_SERIES_SUFFIXES):
+        raise RuntimeError("Frozen series identity patient set drift")
+
+    for patient, legacy_suffix in FROZEN_T2_SERIES_SUFFIXES.items():
+        identity = series[patient]
+        if not isinstance(identity, dict):
+            raise RuntimeError(f"{patient}: invalid frozen series identity record")
+        if identity.get("legacy_folder") != legacy_suffix:
+            raise RuntimeError(f"{patient}: legacy series folder identity drift")
+        series_uid = str(identity.get("series_uid", ""))
+        if not series_uid.endswith(legacy_suffix):
+            raise RuntimeError(f"{patient}: full SeriesInstanceUID does not match legacy suffix")
+        if identity.get("series_description") != "T2 AXIAL SM FOV":
+            raise RuntimeError(f"{patient}: frozen T2 series description drift")
+    return series
 
 
 def _request(
@@ -152,8 +184,17 @@ def resolve_frozen_series(
     rows: list[dict[str, Any]],
     *,
     patient: str,
-    suffix: str,
+    identity: dict[str, Any],
 ) -> dict[str, Any]:
+    expected_uid = str(identity["series_uid"])
+    expected_study_uid = str(identity["study_uid"])
+    expected_description = str(identity["series_description"])
+    expected_count = int(identity["instance_count"])
+    legacy_suffix = str(identity["legacy_folder"])
+
+    if not expected_uid.endswith(legacy_suffix):
+        raise RuntimeError(f"{patient}: frozen full UID / legacy-folder mismatch")
+
     patient_rows = [
         row
         for row in rows
@@ -161,25 +202,19 @@ def resolve_frozen_series(
         and str(row.get("collection_id", IDC_COLLECTION_ID)) == IDC_COLLECTION_ID
         and str(row.get("Modality", "MR")) == "MR"
     ]
-    matches = [
-        row
-        for row in patient_rows
-        if str(row.get("SeriesInstanceUID", "")).rsplit(".", 1)[-1] == suffix
-    ]
+    matches = [row for row in patient_rows if str(row.get("SeriesInstanceUID", "")) == expected_uid]
     if len(matches) != 1:
         raise RuntimeError(
-            f"{patient}: frozen T2 suffix {suffix!r} resolved to {len(matches)} public series"
+            f"{patient}: frozen full SeriesInstanceUID resolved to " f"{len(matches)} public series"
         )
 
     selected = matches[0]
-    descriptor = " ".join(
-        str(selected.get(key, "")) for key in ("SeriesDescription", "ProtocolName")
-    ).lower()
-    if "t2" not in descriptor:
-        raise RuntimeError(
-            f"{patient}: frozen series {selected.get('SeriesInstanceUID')} "
-            f"is not described as T2: {descriptor!r}"
-        )
+    if str(selected.get("StudyInstanceUID", "")) != expected_study_uid:
+        raise RuntimeError(f"{patient}: frozen StudyInstanceUID drift")
+    if str(selected.get("SeriesDescription", "")) != expected_description:
+        raise RuntimeError(f"{patient}: frozen SeriesDescription drift")
+    if int(selected.get("instanceCount", -1)) != expected_count:
+        raise RuntimeError(f"{patient}: frozen series instance-count drift")
     return selected
 
 
@@ -286,18 +321,21 @@ def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
     radiology_root = data_root / "prostate_fused_manifest" / "prostate_fused_mri_pathology"
     hecap_root = data_root / "hecap"
 
+    frozen_series = load_frozen_series_identity()
     resolved: dict[str, dict[str, Any]] = {}
-    for patient, suffix in FROZEN_T2_SERIES_SUFFIXES.items():
+    for patient, identity in frozen_series.items():
         rows, cohort_response = _idc_series_rows(patient)
-        selected = resolve_frozen_series(rows, patient=patient, suffix=suffix)
+        selected = resolve_frozen_series(rows, patient=patient, identity=identity)
 
         uid = str(selected["SeriesInstanceUID"])
         study_uid = str(selected["StudyInstanceUID"])
-        series_dir = radiology_root / patient / study_uid / suffix
+        legacy_folder = str(identity["legacy_folder"])
+        series_dir = radiology_root / patient / study_uid / legacy_folder
         object_count, series_manifest_sha256 = _download_idc_series(patient, uid, series_dir)
 
         resolved[patient] = {
-            "frozen_series_suffix": suffix,
+            "legacy_series_folder": legacy_folder,
+            "frozen_series_identity": identity,
             "series_instance_uid": uid,
             "study_instance_uid": study_uid,
             "series_description": selected.get("SeriesDescription"),
@@ -323,6 +361,9 @@ def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
         "idc_rest_base": IDC_REST_BASE,
         "idc_release": idc_version,
         "idc_index_version": installed_idc_index,
+        "series_identity_path": str(
+            SERIES_IDENTITY_PATH.relative_to(Path(__file__).resolve().parents[1])
+        ),
         "frozen_t2_series": resolved,
         "hecap_source_url": HECAP_ARCHIVE_URL,
         "hecap_archive_sha256": hecap_archive_sha256,
