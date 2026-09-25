@@ -70,6 +70,7 @@ jobs:
         with:
           name: truemargin-known-gt-geometry-preflight
           path: |
+            research/KNOWN_GT_GEOMETRY_REQUEST.json
             outputs/known_gt_data_acquisition.json
             outputs/hyperparameter_known_gt_geometry.json
             outputs/hyperparameter_known_gt_geometry.sha256
