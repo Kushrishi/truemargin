@@ -178,3 +178,33 @@ def test_idc_manifest_download_command_uses_required_manifest_option(tmp_path: P
         "--download-dir",
         str(download_root),
     ]
+
+def test_patient_subset_defaults_to_full_frozen_cohort() -> None:
+    fetcher = _load_fetcher()
+
+    assert fetcher._normalize_patients(None) == tuple(fetcher.FROZEN_T2_SERIES_SUFFIXES)
+
+
+def test_patient_subset_accepts_exact_unique_frozen_patients() -> None:
+    fetcher = _load_fetcher()
+
+    assert fetcher._normalize_patients(["aaa0072"]) == ("aaa0072",)
+    assert fetcher._normalize_patients(["aaa0044", "aaa0087"]) == (
+        "aaa0044",
+        "aaa0087",
+    )
+
+
+@pytest.mark.parametrize(
+    ("patients", "message"),
+    [
+        ([], "At least one patient"),
+        (["aaa0044", "aaa0044"], "must be unique"),
+        (["not-a-frozen-patient"], "Unknown frozen patient"),
+    ],
+)
+def test_patient_subset_rejects_invalid_requests(patients, message) -> None:
+    fetcher = _load_fetcher()
+
+    with pytest.raises(ValueError, match=message):
+        fetcher._normalize_patients(patients)
