@@ -307,6 +307,7 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
             repo_root=str(tmp_path),
         )
 
+
 def test_topology_scale_schedule_is_frozen() -> None:
     runner = _load_runner()
     assert runner.TOPOLOGY_SCALES == (
