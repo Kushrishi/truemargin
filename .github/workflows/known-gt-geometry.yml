@@ -7,6 +7,7 @@ on:
       - "research/KNOWN_GT_GEOMETRY_REQUEST.json"
       - "research/KNOWN_GT_GEOMETRY_RETRY.json"
       - "research/KNOWN_GT_GEOMETRY_RETRY_2.json"
+      - "research/KNOWN_GT_GEOMETRY_RETRY_3.json"
 
 permissions:
   contents: read
@@ -93,6 +94,28 @@ jobs:
           for key, value in retry2_expected.items():
               assert retry2.get(key) == value, (key, retry2.get(key), value)
 
+          retry3_path = Path("research/KNOWN_GT_GEOMETRY_RETRY_3.json")
+          retry3 = json.loads(retry3_path.read_text())
+          retry3_expected = {
+              "schema_version": 1,
+              "study": "hyperparameter-known-gt-v1",
+              "retry_number": 3,
+              "retry_of_workflow_run_id": 36165197037,
+              "failed_source_git_sha": "b4d3970d95c0a8c54af2a790930c562cc4e52518",
+              "failure_stage": "fetch_frozen_public_inputs",
+              "failure_class": "implementation_cli_argument_error",
+              "scientific_configuration_changed": False,
+              "result_bearing_authorized": False,
+              "original_geometry_request_blob_sha": (
+                  "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7"
+              ),
+              "full_series_identity_blob_sha": (
+                  "4bb28ed69680179b02c78b75cb28f83a1966018c"
+              ),
+          }
+          for key, value in retry3_expected.items():
+              assert retry3.get(key) == value, (key, retry3.get(key), value)
+
           request_blob = subprocess.check_output(
               ["git", "hash-object", str(request_path)], text=True
           ).strip()
@@ -102,7 +125,9 @@ jobs:
           ).strip()
           assert request_blob == retry["original_geometry_request_blob_sha"]
           assert request_blob == retry2["original_geometry_request_blob_sha"]
+          assert request_blob == retry3["original_geometry_request_blob_sha"]
           assert identity_blob == retry2["full_series_identity_blob_sha"]
+          assert identity_blob == retry3["full_series_identity_blob_sha"]
           print("TECHNICAL_RETRY_GUARDS=PASS")
           print("GEOMETRY_AUTHORIZATION=PASS")
           PY
@@ -132,6 +157,7 @@ jobs:
             research/KNOWN_GT_GEOMETRY_REQUEST.json
             research/KNOWN_GT_GEOMETRY_RETRY.json
             research/KNOWN_GT_GEOMETRY_RETRY_2.json
+            research/KNOWN_GT_GEOMETRY_RETRY_3.json
             research/KNOWN_GT_SERIES_IDENTITY.json
             outputs/known_gt_data_acquisition.json
             outputs/hyperparameter_known_gt_geometry.json
