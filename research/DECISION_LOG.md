@@ -62,3 +62,22 @@ debug scripts, or internal orchestration.
 
 Decision: private history remains provenance; this repository is the
 reader-facing, reproducible scientific surface.
+
+## 2026-09-25 — Make frozen protocol identity public and self-verifying
+
+The curated public repository contains byte-identical copies of the known-GT
+base protocol and Amendment 1 from their original private freeze commits.
+
+Verified identities:
+
+- base protocol: private freeze commit
+  `44afb8653c8c90b33a438107481f7be4586b0e68`, Git blob
+  `98a747c502a4aca6d8e65f8373bc4e62a8f1b7a0`;
+- Amendment 1: private freeze commit
+  `d37b5a4a7931fdd3947870ba651b097f712ebdb3`, Git blob
+  `1eafe77bb847b1a77229e267ef32e6bbedd27bc2`.
+
+Decision: public execution pins and verifies the immutable Git blob identities,
+not inaccessible private commit objects. The private commit SHAs remain
+historical provenance only. No protocol text, scientific endpoint, cohort,
+seed, estimator setting, geometry rule, or inferential rule changed.
