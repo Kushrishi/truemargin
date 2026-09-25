@@ -16,9 +16,10 @@ import SimpleITK as sitk
 from scipy.stats import binomtest, pearsonr, spearmanr
 
 from truemargin import calibration as cal
+from truemargin import comparators, provenance
 from truemargin import hyperparameter as hyper
 from truemargin import io_utils as ioutil
-from truemargin import provenance
+from truemargin import known_gt_comparison as comparison
 
 REPO_ROOT = os.path.join(os.path.dirname(__file__), "..")
 DATA = os.path.join(REPO_ROOT, "data")
@@ -35,6 +36,19 @@ PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT = "d37b5a4a7931fdd3947870ba651b097f712e
 PROTOCOL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_protocol_amendment_1.md"
 PROTOCOL_AMENDMENT_2_BLOB_SHA = "bcd0a6b970891724c755cde75111f56d6fad7492"
 PROTOCOL_AMENDMENT_2_PATH = "docs/hyperparameter_known_gt_protocol_amendment_2.md"
+COMPARATOR_PROTOCOL_BLOB_SHA = "2d383d3bed7503e2ceaecf36f599e7965726a18d"
+COMPARATOR_PROTOCOL_PATH = "docs/hyperparameter_known_gt_comparator_protocol.md"
+EXECUTION_CONTROL_AMENDMENT_BLOB_SHA = "9dc7c2680e128b3a67d9bd864ab465a47d6e7e53"
+EXECUTION_CONTROL_AMENDMENT_PATH = "docs/hyperparameter_known_gt_execution_control_amendment_1.md"
+GEOMETRY_PREFLIGHT_RECORD = "results/hyperparameter_known_gt_geometry_preflight.json"
+GEOMETRY_PREFLIGHT_BLOB_SHA = "fb90f421c6d11dcaff407d9f8267503925dd4aaa"
+GEOMETRY_PREFLIGHT_UPLOADED_SHA256 = (
+    "fbf0b60f50e8bd6af2af2af036fe94b4491ad0ffe4ab15863b0ce8f95515c2d2"
+)
+ACQUISITION_RECORD = "results/known_gt_data_acquisition.json"
+ACQUISITION_BLOB_SHA = "7481390f2565fbe49aff8faf00f1e59ca0f82c9c"
+CD_FEASIBILITY_RECORD = "research/KNOWN_GT_CD_FEASIBILITY.json"
+CD_FEASIBILITY_BLOB_SHA = "0d8a264fb1ee22369c80965840a90702cf55638e"
 
 HELD_OUT_CASES = {
     "aaa0044": {"t2_series": "13614"},
@@ -78,6 +92,7 @@ N_BOOTSTRAPS = 10_000
 BOOTSTRAP_SEED = 0
 RANK_DEGENERACY_TOL = 1e-12
 NDIM = 3
+DIRECT_COMPARATOR_METHODS = ("ice", "residual", "jacdev")
 SECONDARY_METRICS = (
     "pearson_sigma_known_error",
     "known_error_median_mm",
@@ -106,6 +121,8 @@ def verify_protocol_identities(repo_root: str = REPO_ROOT) -> dict[str, str]:
         PROTOCOL_PATH: PROTOCOL_MAIN_BLOB_SHA,
         PROTOCOL_AMENDMENT_PATH: PROTOCOL_AMENDMENT_BLOB_SHA,
         PROTOCOL_AMENDMENT_2_PATH: PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        COMPARATOR_PROTOCOL_PATH: COMPARATOR_PROTOCOL_BLOB_SHA,
+        EXECUTION_CONTROL_AMENDMENT_PATH: EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
     }
     observed: dict[str, str] = {}
     for relative_path, expected_sha in expected.items():
@@ -488,6 +505,11 @@ def _case_manifest(
             "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
             "protocol_amendment_private_freeze_commit": PROTOCOL_AMENDMENT_PRIVATE_FREEZE_COMMIT,
             "protocol_amendment_path": PROTOCOL_AMENDMENT_PATH,
+            "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+            "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+            "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
+            "cd_feasibility_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+            "cd_feasible": False,
             "hyperparameter_configs": [
                 {
                     "metric_bins": bins,
@@ -521,13 +543,35 @@ def _case_manifest(
             "scripts/19_hyperparameter_known_gt_validation.py",
             PROTOCOL_PATH,
             PROTOCOL_AMENDMENT_PATH,
+            PROTOCOL_AMENDMENT_2_PATH,
+            COMPARATOR_PROTOCOL_PATH,
+            EXECUTION_CONTROL_AMENDMENT_PATH,
+            CD_FEASIBILITY_RECORD,
             "src/truemargin/hyperparameter.py",
+            "src/truemargin/comparators.py",
+            "src/truemargin/known_gt_comparison.py",
             "src/truemargin/registration.py",
             "src/truemargin/ensemble.py",
             "src/truemargin/io_utils.py",
             "src/truemargin/calibration.py",
         ],
     )
+
+
+def _prefixed_direct_metrics(
+    method: str,
+    score: np.ndarray,
+    known_error: np.ndarray,
+) -> dict[str, Any]:
+    metrics = comparison.score_case_metrics(score, known_error)
+    return {
+        f"spearman_{method}_known_error": metrics["spearman_known_error"],
+        f"{method}_rank_degenerate": metrics["rank_degenerate"],
+        f"{method}_score_median": metrics["score_median"],
+        f"{method}_score_iqr": metrics["score_iqr"],
+        f"{method}_quartile_known_error_delta_mm": metrics["quartile_known_error_delta_mm"],
+        f"{method}_blind_spot_rate": metrics["blind_spot_rate"],
+    }
 
 
 def _run_case(
@@ -560,9 +604,11 @@ def _run_case(
             anatomy_index=anatomy_index,
             replicate=replicate,
         )
+        fixed = np.asarray(synthetic["fixed"])
+        moving = np.asarray(synthetic["moving"])
         result = hyper.run_hyperparameter_ensemble(
-            np.asarray(synthetic["fixed"]),
-            np.asarray(synthetic["moving"]),
+            fixed,
+            moving,
             spacing=spacing,
             crop_diagonal_mm=float(synthetic["crop_diagonal_mm"]),
         )
@@ -575,8 +621,21 @@ def _run_case(
             "member_reasons": np.asarray(result.member_reasons, dtype="U1024"),
             "member_mean_displacement_mm": result.member_mean_displacement_mm,
             "spacing_xyz_mm": np.asarray(spacing, dtype=np.float64),
-            "crop_diagonal_mm": np.asarray(synthetic["crop_diagonal_mm"], dtype=np.float64),
+            "crop_diagonal_mm": np.asarray(
+                synthetic["crop_diagonal_mm"],
+                dtype=np.float64,
+            ),
+            "reverse_complete": np.asarray(False),
+            "reverse_member_reasons": np.asarray([], dtype="U1024"),
         }
+        for method in DIRECT_COMPARATOR_METHODS:
+            arrays[f"{method}_valid"] = np.asarray(False)
+            arrays[f"{method}_score"] = np.asarray([], dtype=np.float64)
+            arrays[f"{method}_failure_reason"] = np.asarray(
+                "forward_target_incomplete",
+                dtype="U4096",
+            )
+
         if result.complete:
             assert result.u_mean is not None
             assert result.sigma is not None
@@ -586,6 +645,44 @@ def _run_case(
             error = cal.displacement_error(u_est, np.asarray(synthetic["u_true"]))
             arrays["error"] = np.asarray(error, dtype=np.float64)
             arrays["sigma"] = np.asarray(sigma_at, dtype=np.float64)
+
+            direct = comparison.run_direct_comparators(
+                fixed=fixed,
+                moving=moving,
+                forward_u_mean=result.u_mean,
+                idx_zyx=idx_zyx,
+                spacing=spacing,
+                crop_diagonal_mm=float(synthetic["crop_diagonal_mm"]),
+            )
+            arrays["reverse_complete"] = np.asarray(direct.reverse_complete)
+            arrays["reverse_member_reasons"] = np.asarray(
+                direct.reverse_member_reasons,
+                dtype="U1024",
+            )
+            direct_scores = {
+                "ice": direct.ice,
+                "residual": direct.residual,
+                "jacdev": direct.jacdev,
+            }
+            direct_failures = {
+                "ice": direct.ice_failure_reason,
+                "residual": direct.residual_failure_reason,
+                "jacdev": direct.jacdev_failure_reason,
+            }
+            for method in DIRECT_COMPARATOR_METHODS:
+                score = direct_scores[method]
+                failure = direct_failures[method]
+                arrays[f"{method}_valid"] = np.asarray(score is not None)
+                arrays[f"{method}_score"] = (
+                    np.asarray(score, dtype=np.float64)
+                    if score is not None
+                    else np.asarray([], dtype=np.float64)
+                )
+                arrays[f"{method}_failure_reason"] = np.asarray(
+                    failure or "",
+                    dtype="U4096",
+                )
+
         provenance.save_checkpoint(checkpoint_path, arrays=arrays, manifest=manifest)
 
     complete = bool(np.asarray(arrays["complete"]).item())
@@ -597,6 +694,10 @@ def _run_case(
         "complete": complete,
         "failed_member_count": int(np.sum(np.asarray(arrays["member_reasons"]) != "ok")),
         "member_reasons": " | ".join(str(value) for value in arrays["member_reasons"]),
+        "reverse_complete": bool(np.asarray(arrays["reverse_complete"]).item()),
+        "reverse_member_reasons": " | ".join(
+            str(value) for value in arrays["reverse_member_reasons"]
+        ),
     }
     true_mag = np.sqrt(np.sum(np.asarray(arrays["u_true"]) ** 2, axis=0))
     row.update(
@@ -607,8 +708,23 @@ def _run_case(
             "true_displacement_max_mm": float(np.max(true_mag)),
         }
     )
+
     if complete:
-        row.update(case_metrics(np.asarray(arrays["error"]), np.asarray(arrays["sigma"])))
+        error = np.asarray(arrays["error"], dtype=np.float64)
+        row.update(case_metrics(error, np.asarray(arrays["sigma"], dtype=np.float64)))
+        for method in DIRECT_COMPARATOR_METHODS:
+            valid = bool(np.asarray(arrays[f"{method}_valid"]).item())
+            failure_reason = str(np.asarray(arrays[f"{method}_failure_reason"]).item())
+            row[f"{method}_valid"] = valid
+            row[f"{method}_failure_reason"] = failure_reason
+            if valid:
+                score = np.asarray(arrays[f"{method}_score"], dtype=np.float64)
+                row.update(_prefixed_direct_metrics(method, score, error))
+    else:
+        for method in DIRECT_COMPARATOR_METHODS:
+            row[f"{method}_valid"] = False
+            row[f"{method}_failure_reason"] = "forward_target_incomplete"
+
     return row
 
 
@@ -703,6 +819,126 @@ def positive_association_label(observed: float, p_value: float) -> bool:
     return bool(observed > 0.0 and p_value <= 0.05)
 
 
+def direct_comparator_summaries(
+    case_rows: list[dict[str, Any]],
+    target_anatomy_summary: list[dict[str, Any]],
+) -> tuple[dict[str, dict[str, Any]], dict[str, list[dict[str, Any]]]]:
+    """Aggregate the frozen direct comparators without changing the primary test."""
+    target_by_patient = {row["patient"]: row for row in target_anatomy_summary}
+    summary: dict[str, dict[str, Any]] = {}
+    anatomy_by_method: dict[str, list[dict[str, Any]]] = {}
+    p_methods: list[str] = []
+    p_values: list[float] = []
+
+    for method in DIRECT_COMPARATOR_METHODS:
+        anatomy = comparison.anatomy_summary(
+            case_rows,
+            patients=list(HELD_OUT_CASES),
+            method=method,
+            min_complete_cases=MIN_ASSESSABLE_CASES_PER_ANATOMY,
+        )
+        anatomy_by_method[method] = anatomy
+        assessable_rows = [row for row in anatomy if bool(row["assessable"])]
+        assessable = len(assessable_rows) >= MIN_ASSESSABLE_ANATOMIES
+        method_summary: dict[str, Any] = {
+            "assessable_anatomies": len(assessable_rows),
+            "assessable": assessable,
+            "median_anatomy_spearman": None,
+            "positive_anatomies": None,
+            "sign_test_n": None,
+            "raw_exact_sign_p": None,
+            "holm_adjusted_sign_p": None,
+            "bootstrap_95_ci": None,
+            "median_anatomy_quartile_known_error_delta_mm": None,
+            "median_anatomy_blind_spot_rate": None,
+            "paired_joint_anatomies": 0,
+            "paired_target_minus_comparator_median": None,
+            "paired_target_minus_comparator_bootstrap_95_ci": None,
+            "paired_target_minus_comparator_values": None,
+        }
+
+        if assessable:
+            effects = np.asarray(
+                [row["median_case_spearman"] for row in assessable_rows],
+                dtype=np.float64,
+            )
+            positives, sign_n, p_value = exact_positive_sign_test(anatomy)
+            ci_lo, ci_hi = bootstrap_interval(anatomy)
+            method_summary.update(
+                {
+                    "median_anatomy_spearman": float(np.median(effects)),
+                    "positive_anatomies": positives,
+                    "sign_test_n": sign_n,
+                    "raw_exact_sign_p": p_value,
+                    "bootstrap_95_ci": [ci_lo, ci_hi],
+                }
+            )
+            p_methods.append(method)
+            p_values.append(p_value)
+
+            for metric in (
+                "median_quartile_known_error_delta_mm",
+                "median_blind_spot_rate",
+            ):
+                values = np.asarray(
+                    [row[metric] for row in assessable_rows if metric in row],
+                    dtype=np.float64,
+                )
+                finite = values[np.isfinite(values)]
+                if len(finite):
+                    method_summary[f"median_anatomy_{metric.removeprefix('median_')}"] = float(
+                        np.median(finite)
+                    )
+
+        jointly_assessable = [
+            patient
+            for patient in HELD_OUT_CASES
+            if bool(target_by_patient[patient]["assessable"])
+            and bool(next(row for row in anatomy if row["patient"] == patient)["assessable"])
+        ]
+        method_summary["paired_joint_anatomies"] = len(jointly_assessable)
+        if len(jointly_assessable) >= MIN_ASSESSABLE_ANATOMIES:
+            comparator_by_patient = {row["patient"]: row for row in anatomy}
+            target_values = np.asarray(
+                [
+                    target_by_patient[patient]["median_case_spearman"]
+                    for patient in jointly_assessable
+                ],
+                dtype=np.float64,
+            )
+            comparator_values = np.asarray(
+                [
+                    comparator_by_patient[patient]["median_case_spearman"]
+                    for patient in jointly_assessable
+                ],
+                dtype=np.float64,
+            )
+            observed, ci_lo, ci_hi = comparators.paired_median_bootstrap(
+                target_values,
+                comparator_values,
+                n_bootstraps=N_BOOTSTRAPS,
+                seed=BOOTSTRAP_SEED,
+            )
+            method_summary.update(
+                {
+                    "paired_target_minus_comparator_median": observed,
+                    "paired_target_minus_comparator_bootstrap_95_ci": [ci_lo, ci_hi],
+                    "paired_target_minus_comparator_values": (
+                        target_values - comparator_values
+                    ).tolist(),
+                }
+            )
+
+        summary[method] = method_summary
+
+    if p_values:
+        adjusted = comparators.holm_adjust(np.asarray(p_values, dtype=np.float64))
+        for method, value in zip(p_methods, adjusted, strict=True):
+            summary[method]["holm_adjusted_sign_p"] = float(value)
+
+    return summary, anatomy_by_method
+
+
 def _write_csv(path: str, rows: list[dict[str, Any]]) -> None:
     clean_rows = [
         {key: value for key, value in row.items() if not key.startswith("_")} for row in rows
@@ -721,24 +957,37 @@ def verify_result_bearing_authorization(
 ) -> dict[str, Any]:
     if not os.path.exists(path):
         raise SystemExit(
-            "Result-bearing execution is not authorized. Run --geometry-only first; "
-            "then commit a reviewed research/KNOWN_GT_RUN_REQUEST.json."
+            "Result-bearing execution is not authorized. Complete comparator "
+            "implementation/CD feasibility first; then commit a reviewed "
+            "research/KNOWN_GT_RUN_REQUEST.json."
         )
 
     with open(path) as handle:
         request = json.load(handle)
 
+    forward_registrations = len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
+    reverse_registrations = forward_registrations
     expected = {
-        "schema_version": 1,
+        "schema_version": 2,
         "study": "hyperparameter-known-gt-v1",
-        "authorized": True,
+        "authorized_mode": "result-bearing",
+        "result_bearing_authorized": True,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "n_replicates": N_REPLICATES,
-        "n_estimator_members": len(hyper.CONFIGS),
-        "planned_registrations": len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS),
+        "n_forward_members": len(hyper.CONFIGS),
+        "n_reverse_members": len(hyper.CONFIGS),
+        "planned_forward_registrations": forward_registrations,
+        "planned_reverse_registrations": reverse_registrations,
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
+        "geometry_preflight_record": GEOMETRY_PREFLIGHT_RECORD,
+        "geometry_preflight_git_blob_sha": GEOMETRY_PREFLIGHT_BLOB_SHA,
+        "geometry_preflight_uploaded_sha256": GEOMETRY_PREFLIGHT_UPLOADED_SHA256,
+        "acquisition_record": ACQUISITION_RECORD,
+        "acquisition_git_blob_sha": ACQUISITION_BLOB_SHA,
     }
     for key, value in expected.items():
         if request.get(key) != value:
@@ -747,31 +996,34 @@ def verify_result_bearing_authorization(
                 f"expected {value!r}, got {request.get(key)!r}"
             )
 
-    preflight_record = request.get("geometry_preflight_record")
-    preflight_sha256 = request.get("geometry_preflight_sha256")
-    if not isinstance(preflight_record, str) or not preflight_record:
-        raise SystemExit("Authorization must name the reviewed geometry preflight record.")
-    if (
-        not isinstance(preflight_sha256, str)
-        or len(preflight_sha256) != 64
-        or any(char not in "0123456789abcdef" for char in preflight_sha256.lower())
+    fixed_cd_fields = {
+        "cd_feasible": False,
+        "cd_registration_count": 0,
+        "total_planned_registrations": forward_registrations + reverse_registrations,
+        "cd_feasibility_record": CD_FEASIBILITY_RECORD,
+        "cd_feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+    }
+    for key, value in fixed_cd_fields.items():
+        if request.get(key) != value:
+            raise SystemExit(
+                f"Invalid result-bearing authorization field {key!r}: "
+                f"expected {value!r}, got {request.get(key)!r}"
+            )
+
+    for relative_path, expected_blob in (
+        (GEOMETRY_PREFLIGHT_RECORD, GEOMETRY_PREFLIGHT_BLOB_SHA),
+        (ACQUISITION_RECORD, ACQUISITION_BLOB_SHA),
+        (CD_FEASIBILITY_RECORD, CD_FEASIBILITY_BLOB_SHA),
     ):
-        raise SystemExit("Authorization must pin a 64-character geometry preflight SHA-256.")
-
-    record_path = os.path.join(repo_root, preflight_record)
-    if not os.path.isfile(record_path):
-        raise SystemExit(f"Reviewed geometry preflight record is missing: {record_path}")
-
-    digest = hashlib.sha256()
-    with open(record_path, "rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    actual_sha256 = digest.hexdigest()
-    if actual_sha256 != preflight_sha256.lower():
-        raise SystemExit(
-            "Reviewed geometry preflight record hash does not match authorization: "
-            f"expected {preflight_sha256.lower()}, got {actual_sha256}"
-        )
+        full_path = os.path.join(repo_root, relative_path)
+        if not os.path.isfile(full_path):
+            raise SystemExit(f"Authorized evidence file is missing: {full_path}")
+        actual_blob = _git_blob_sha(full_path)
+        if actual_blob != expected_blob:
+            raise SystemExit(
+                f"Authorized evidence blob drift for {relative_path}: "
+                f"expected {expected_blob}, got {actual_blob}"
+            )
 
     return request
 
@@ -810,6 +1062,13 @@ def main() -> None:
     print(
         f"Protocol amendment 2: {PROTOCOL_AMENDMENT_2_PATH} "
         f"@ blob {PROTOCOL_AMENDMENT_2_BLOB_SHA}"
+    )
+    print(
+        f"Comparator protocol: {COMPARATOR_PROTOCOL_PATH} " f"@ blob {COMPARATOR_PROTOCOL_BLOB_SHA}"
+    )
+    print(
+        f"Execution-control amendment: {EXECUTION_CONTROL_AMENDMENT_PATH} "
+        f"@ blob {EXECUTION_CONTROL_AMENDMENT_BLOB_SHA}"
     )
     print(f"Held-out anatomies: {list(HELD_OUT_CASES)}")
     print(f"Frozen hyperparameter configs: {hyper.CONFIGS}")
@@ -874,6 +1133,8 @@ def main() -> None:
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
         "git_sha": head,
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
         "passed_cases": len(geometry),
@@ -944,20 +1205,44 @@ def main() -> None:
             case_rows.append(row)
 
     anatomy_summary = anatomy_rows(case_rows)
+    direct_summary, direct_anatomy = direct_comparator_summaries(
+        case_rows,
+        anatomy_summary,
+    )
     assessable_count = sum(bool(row["assessable"]) for row in anatomy_summary)
     assessable = assessable_count >= MIN_ASSESSABLE_ANATOMIES
 
     case_metrics_path = os.path.join(OUT, "hyperparameter_known_gt_case_metrics.csv")
     anatomy_metrics_path = os.path.join(OUT, "hyperparameter_known_gt_anatomy_metrics.csv")
+    comparator_anatomy_path = os.path.join(
+        OUT,
+        "hyperparameter_known_gt_comparator_anatomy_metrics.csv",
+    )
     summary_path = os.path.join(OUT, "hyperparameter_known_gt_summary.json")
     _write_csv(case_metrics_path, case_rows)
     _write_csv(anatomy_metrics_path, anatomy_summary)
+    _write_csv(
+        comparator_anatomy_path,
+        [{"method": method, **row} for method, rows in direct_anatomy.items() for row in rows],
+    )
 
     secondary_summary = global_secondary_summary(anatomy_summary)
     summary: dict[str, Any] = {
         "protocol_main_blob_sha": PROTOCOL_MAIN_BLOB_SHA,
         "protocol_amendment_blob_sha": PROTOCOL_AMENDMENT_BLOB_SHA,
         "protocol_amendment_2_blob_sha": PROTOCOL_AMENDMENT_2_BLOB_SHA,
+        "comparator_protocol_blob_sha": COMPARATOR_PROTOCOL_BLOB_SHA,
+        "execution_control_amendment_blob_sha": EXECUTION_CONTROL_AMENDMENT_BLOB_SHA,
+        "geometry_preflight_git_blob_sha": GEOMETRY_PREFLIGHT_BLOB_SHA,
+        "geometry_preflight_uploaded_sha256": GEOMETRY_PREFLIGHT_UPLOADED_SHA256,
+        "acquisition_git_blob_sha": ACQUISITION_BLOB_SHA,
+        "cd_feasibility_record": CD_FEASIBILITY_RECORD,
+        "cd_feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+        "planned_forward_registrations": (len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)),
+        "planned_reverse_registrations": (len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)),
+        "total_planned_registrations": (
+            2 * len(HELD_OUT_CASES) * N_REPLICATES * len(hyper.CONFIGS)
+        ),
         "git_sha": head,
         "held_out_anatomies": list(HELD_OUT_CASES),
         "planned_cases": len(HELD_OUT_CASES) * N_REPLICATES,
@@ -972,6 +1257,13 @@ def main() -> None:
         "primary_anatomy_spearman_values": None,
         "primary_bootstrap_95_ci": None,
         "secondary_across_anatomy_medians": secondary_summary,
+        "direct_comparators": direct_summary,
+        "contrastive_discrepancy": {
+            "feasibility_decision": "infeasible_for_current_confirmatory_study",
+            "feasibility_record": CD_FEASIBILITY_RECORD,
+            "feasibility_record_blob_sha": CD_FEASIBILITY_BLOB_SHA,
+            "included_in_this_run": False,
+        },
     }
 
     print("\n=== Predeclared known-GT pointwise-informativeness evaluation ===")
@@ -1006,11 +1298,32 @@ def main() -> None:
     else:
         print("KNOWN_GT_POINTWISE_ASSOCIATION_POSITIVE=False -- evaluation not assessable")
 
+    print("\n=== Frozen direct local comparator summaries ===")
+    for method in DIRECT_COMPARATOR_METHODS:
+        values = direct_summary[method]
+        print(
+            f"{method.upper()}_ASSESSABLE={values['assessable']} "
+            f"anatomies={values['assessable_anatomies']}/10"
+        )
+        if values["assessable"]:
+            print(
+                f"{method.upper()}_MEDIAN_ANATOMY_SPEARMAN="
+                f"{values['median_anatomy_spearman']:.9g} "
+                f"raw_sign_p={values['raw_exact_sign_p']:.9g} "
+                f"holm_p={values['holm_adjusted_sign_p']:.9g}"
+            )
+            if values["paired_target_minus_comparator_median"] is not None:
+                print(
+                    f"{method.upper()}_PAIRED_TARGET_MINUS_COMPARATOR_MEDIAN="
+                    f"{values['paired_target_minus_comparator_median']:.9g}"
+                )
+
     with open(summary_path, "w") as handle:
         json.dump(summary, handle, indent=2, sort_keys=True)
 
     print(f"Case metrics: {case_metrics_path}")
     print(f"Anatomy metrics: {anatomy_metrics_path}")
+    print(f"Comparator anatomy metrics: {comparator_anatomy_path}")
     print(f"Machine-readable summary: {summary_path}")
 
 

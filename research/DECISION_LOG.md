@@ -264,3 +264,42 @@ registration budget before any result-bearing execution.
 
 The direct frozen budget is 270 forward + 270 reverse registrations = 540
 registrations before any feasible CD-specific additional work.
+
+## 2026-09-25 — Freeze CD infeasible for the current confirmatory study
+
+Before any result-bearing known-ground-truth registration, the prospective
+Contrastive Discrepancy feasibility gate was completed.
+
+The authors' current publication page links code only through
+`https://anonymous.4open.science/r/dbc-B401/`. The public paper description
+establishes CD as a label-free deformation-field discrepancy for testing-time
+hyperparameter/model selection under transformed observations, but does not pin
+the exact perturbation parameters and aggregation semantics required for a
+faithful reproduction.
+
+Three clean-hosted source-retrieval attempts were made before any estimator
+outcome:
+
+- workflow `36181998705`: historical Anonymous-GitHub API route -> HTTP 403;
+- workflow `36182323709`: current public files route, confirmed against the
+  current `tdurieux/anonymous_github` implementation -> HTTP 403;
+- workflow `36182461898`: real headless Chrome on the public repository page
+  -> Cloudflare security-verification page only.
+
+Decision: set `CD_FEASIBLE=False` for this confirmatory study and preserve the
+machine-readable audit in `research/KNOWN_GT_CD_FEASIBILITY.json`.
+
+This is a reproducibility/implementation decision, not evidence against CD's
+scientific validity. Do not implement a bespoke CD analogue from the abstract
+or high-level description, and do not add a different case-level comparator
+after seeing known-GT outcomes.
+
+The frozen result-bearing budget is therefore exactly:
+
+```text
+270 forward registrations + 270 reverse registrations = 540 registrations
+```
+
+The result-bearing authorization guard is hard-locked to this CD decision and
+budget. No primary or comparator known-GT outcome existed when this decision
+was frozen.

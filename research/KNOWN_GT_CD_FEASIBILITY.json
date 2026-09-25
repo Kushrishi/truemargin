@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "decision_date": "2026-09-25",
+  "decision": "infeasible_for_current_confirmatory_study",
+  "cd_feasible": false,
+  "cd_registration_count": 0,
+  "result_bearing_outcomes_observed_at_decision": false,
+  "known_gt_estimator_registrations_run_at_decision": 0,
+  "released_code_url": "https://anonymous.4open.science/r/dbc-B401/",
+  "paper_doi": "10.1016/j.media.2026.104210",
+  "paper_role": "case_level_testing_time_hyperparameter_selection",
+  "audit_attempts": [
+    {
+      "workflow_run_id": 36181998705,
+      "method": "legacy_anonymous_github_api",
+      "url": "https://anonymous.4open.science/api/repo/dbc-B401/files/",
+      "result": "http_403"
+    },
+    {
+      "workflow_run_id": 36182323709,
+      "method": "current_anonymous_github_files_api_with_browser_headers",
+      "url": "https://anonymous.4open.science/api/repo/dbc-B401/files?path=",
+      "result": "http_403"
+    },
+    {
+      "workflow_run_id": 36182461898,
+      "method": "headless_chrome_public_repository_page",
+      "url": "https://anonymous.4open.science/r/dbc-B401/",
+      "result": "cloudflare_security_verification_page_only"
+    }
+  ],
+  "current_service_route_evidence": {
+    "repository": "tdurieux/anonymous_github",
+    "default_branch_commit_observed": "c65dccd8378007705f55be070f22084deaaffd39",
+    "public_files_route": "/api/repo/:repoId/files",
+    "frontend_files_request": "/api/repo/<repoId>/files/?path=<path>"
+  },
+  "reason": "The authors' current publication page links the released code only through the Anonymous-GitHub snapshot. A clean hosted reproducibility environment cannot retrieve the snapshot through either the service's current public files API or a real headless-browser session because the live edge serves HTTP 403 / Cloudflare security verification. The public paper metadata and abstract establish CD's high-level transformation-consistency/model-selection role but do not pin the exact transformation parameters and aggregation semantics required for a faithful implementation. Implementing a bespoke analogue would violate the prospective comparator protocol.",
+  "consequence": {
+    "include_cd_in_current_study": false,
+    "replace_with_bespoke_analogue": false,
+    "planned_forward_registrations": 270,
+    "planned_reverse_registrations": 270,
+    "total_planned_registrations": 540
+  }
+}
