@@ -1,6 +1,6 @@
 # Current research state
 
-**Updated:** 2026-09-24  
+**Updated:** 2026-09-25  
 **Status:** active public research program  
 **Publication status:** no submitted, accepted, or published paper
 
@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; result not yet recorded.
+**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; geometry-only preflight authorized; result-bearing study remains unauthorized.
 
 Primary design:
 
@@ -112,14 +112,13 @@ the new protocol explicitly corrects a transform-direction ambiguity.
 
 Before result-bearing execution:
 
-1. refresh the contemporary registration-uncertainty/validation literature;
-2. determine which comparators are necessary for a defensible paper;
-3. update and verify the known-GT implementation against the base protocol plus Amendment 1;
-4. run the 30-case geometry-only preflight before any estimator registration;
-5. preserve and review that geometry record;
-6. keep result-bearing execution unauthorized until the reviewed preflight is pinned by a run request;
-7. preserve the primary hyperparameter-estimator definition unchanged;
-8. define any additional comparator protocols before their outcomes are seen.
+1. execute the authorized 30-case geometry-only preflight;
+2. preserve and review its acquisition and geometry records;
+3. keep result-bearing execution unauthorized until the reviewed preflight is pinned by a separate run request;
+4. preserve the primary hyperparameter-estimator definition unchanged;
+5. freeze the paper-level comparator protocol before comparator outcomes are seen.
+
+The literature and implementation audits are complete enough to proceed to geometry validation; comparator implementation remains downstream of the frozen primary preflight.
 
 The existing 30-case primary evaluation must not be retuned based on future
 results.
