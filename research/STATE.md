@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + Amendments 1 and 2 are frozen. The full amended geometry preflight passed 30/30 cases from all 10 frozen anatomies. Twenty-nine cases used topology scale 1.00; only `aaa0072`, replicate 1, seed 7001 used the prospectively frozen 0.95 backtracking scale, moving the evaluated minimum Jacobian from -0.0105857 to +0.0503618. No result-bearing estimator registration has run. The comparator protocol is now frozen; comparator implementation/preflight and the Contrastive Discrepancy feasibility decision are the active gate.
+**Status:** base protocol + Amendments 1 and 2 are frozen. The full amended geometry preflight passed 30/30 cases from all 10 frozen anatomies. Twenty-nine cases used topology scale 1.00; only `aaa0072`, replicate 1, seed 7001 used the prospectively frozen 0.95 backtracking scale, moving the evaluated minimum Jacobian from -0.0105857 to +0.0503618. No result-bearing estimator registration has run. The comparator protocol, direct-comparator implementation, and CD feasibility decision are now frozen and tested; M3 is complete.
 
 Primary design:
 
@@ -110,21 +110,37 @@ the new protocol explicitly corrects a transform-direction ambiguity.
 
 ## Current bottleneck
 
-Geometry-only M2 is complete and its reviewed evidence is preserved under
-`results/`.
+M1-M3 are complete.
+
+The frozen direct local comparison now includes:
+
+- the primary nine-member sigma target;
+- ensemble-mean inverse-consistency error using the same nine-member grid in reverse;
+- same-modality absolute post-registration residual;
+- ensemble-mean Jacobian deviation.
+
+Contrastive Discrepancy is prospectively excluded from the current confirmatory
+study. The authors' current publication page links only an Anonymous-GitHub
+snapshot; direct current/legacy API access returned HTTP 403 in clean hosted
+runners and a real hosted Chrome session reached only Cloudflare security
+verification. Without the released source, the public paper metadata does not
+pin enough implementation detail to reproduce CD faithfully without inventing
+choices. The exact pre-result decision is frozen in
+`research/KNOWN_GT_CD_FEASIBILITY.json`.
 
 Before result-bearing execution:
 
-1. implement and test the frozen direct local comparators: ensemble-mean inverse consistency, same-modality absolute residual, and Jacobian deviation;
-2. complete the non-result-bearing Contrastive Discrepancy feasibility audit;
-3. preserve the primary hyperparameter estimator unchanged;
-4. pin the successful geometry record, comparator protocol, exact implementation identities, CD feasibility decision, registration budget, and result-bearing source revision in a separate run request;
-5. keep all result-bearing registrations unauthorized until that request is reviewed and committed.
+1. preserve the primary estimator and all comparator semantics unchanged;
+2. create a separate result-bearing run request that pins the successful M2
+   evidence, all protocol blobs, the CD-feasibility record, the exact
+   implementation source revision, and the exact registration budget;
+3. require the runner's authorization guard to verify all pinned evidence before
+   the first registration.
 
-The frozen forward study requires 270 registrations. The frozen ICE comparator adds 270 reverse registrations, for 540 registrations before any feasible CD-specific work.
+The frozen budget is exactly **270 forward + 270 reverse = 540
+registrations**. CD adds zero registrations.
 
-The existing 30-case primary evaluation must not be retuned based on future
-results.
+The existing 30-case evaluation must not be retuned based on future results.
 
 ## Current source-of-truth order
 
