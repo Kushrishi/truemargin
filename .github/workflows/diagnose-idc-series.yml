@@ -1,0 +1,51 @@
+name: Diagnose known-GT IDC series identity
+
+on:
+  push:
+    branches: ["diagnose-idc-series-identity"]
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install acquisition dependency
+        run: python -m pip install idc-index==0.12.5
+      - name: Print aaa0044 MR series metadata
+        run: |
+          python - <<'PY'
+          import importlib.util
+          import json
+          from pathlib import Path
+
+          path = Path("scripts/fetch_known_gt_inputs.py")
+          spec = importlib.util.spec_from_file_location("fetcher", path)
+          assert spec is not None and spec.loader is not None
+          fetcher = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(fetcher)
+
+          rows, response = fetcher._idc_series_rows("aaa0044")
+          keep = [
+              "collection_id",
+              "PatientID",
+              "StudyInstanceUID",
+              "SeriesInstanceUID",
+              "SeriesDescription",
+              "ProtocolName",
+              "SeriesNumber",
+              "instanceCount",
+              "series_size_MB",
+              "Modality",
+          ]
+          print("filters_applied=", json.dumps(response.get("filters_applied"), sort_keys=True))
+          print("series_count=", len(rows))
+          for row in rows:
+              print(json.dumps({key: row.get(key) for key in keep}, sort_keys=True))
+          PY
