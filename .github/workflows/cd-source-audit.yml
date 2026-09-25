@@ -13,21 +13,35 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - name: Query released Anonymous-GitHub snapshot
+      - name: Probe released snapshot through Chrome
         run: |
           set -euo pipefail
-          URL='https://anonymous.4open.science/api/repo/dbc-B401/files?path='
-          curl --fail-with-body --location --silent --show-error \
-            --user-agent 'Mozilla/5.0' \
-            --header 'Accept: application/json' \
-            "$URL" -o /tmp/cd-files.json
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          "$CHROME" \
+            --headless=new \
+            --no-sandbox \
+            --disable-gpu \
+            --virtual-time-budget=8000 \
+            --dump-dom \
+            'https://anonymous.4open.science/r/dbc-B401/' \
+            > /tmp/cd-page.html
           python - <<'PY'
-          import json
+          from pathlib import Path
+          import re
 
-          with open("/tmp/cd-files.json", encoding="utf-8") as handle:
-              payload = json.load(handle)
-
-          print(f"CD_ROOT_ENTRY_COUNT={len(payload)}")
-          for entry in payload:
-              print(json.dumps(entry, sort_keys=True))
+          html = Path("/tmp/cd-page.html").read_text(encoding="utf-8", errors="replace")
+          print(f"CD_PAGE_BYTES={len(html.encode('utf-8'))}")
+          print(f"CD_HAS_FORBIDDEN={'403' in html or 'Forbidden' in html}")
+          print(f"CD_HAS_REPO_ID={'dbc-B401' in html}")
+          for pattern in (
+              r'href="([^"]+)"',
+              r'>([^<>]{2,120})<',
+          ):
+              values = []
+              for value in re.findall(pattern, html):
+                  clean = " ".join(value.split())
+                  if clean and clean not in values:
+                      values.append(clean)
+              for value in values[:120]:
+                  print(value)
           PY
