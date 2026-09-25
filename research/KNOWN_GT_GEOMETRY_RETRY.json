@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "retry_number": 1,
+  "retry_of_workflow_run_id": 36160471644,
+  "failed_source_git_sha": "5911ce404b1cc0f167aafb64b54aa95b8aebab0f",
+  "failure_stage": "fetch_frozen_public_inputs",
+  "failure_class": "infrastructure_network_timeout",
+  "scientific_configuration_changed": false,
+  "result_bearing_authorized": false,
+  "original_geometry_request_blob_sha": "a7bf7591850ed90f0cd7bd95ebae3552e77d32c7",
+  "transport_change": {
+    "from": "TCIA NBIA Search REST",
+    "to": "IDC REST v3 plus idc-index 0.12.5"
+  },
+  "note": "Technical acquisition retry only. Cohort, series suffixes, protocol blobs, seeds, deformation settings, ROI rules, geometry checks, and result-bearing authorization are unchanged."
+}

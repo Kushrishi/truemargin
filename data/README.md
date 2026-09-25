@@ -106,15 +106,24 @@ For ordinary local use, TCIA's collection page and current Data Retriever are
 the authoritative acquisition surfaces.
 
 For the frozen geometry preflight, `scripts/fetch_known_gt_inputs.py` uses
-TCIA's public NBIA Search API to resolve and download only the ten predeclared
-T2 series. Resolution is strict: the full SeriesInstanceUID must end in the
-already-frozen five-digit series suffix, exactly one public series must match,
-and its public metadata must identify it as T2. Missing or ambiguous resolution
-fails rather than selecting a substitute.
+NCI Imaging Data Commons (IDC) REST v3 to resolve only the ten predeclared T2
+series within the public `prostate_fused_mri_pathology` collection. It then
+uses pinned `idc-index==0.12.5` to transfer the exact public-series manifest.
+Resolution is strict: the final SeriesInstanceUID component must equal the
+already-frozen five-digit series identifier, exactly one public MR series must
+match, and its public metadata must identify it as T2. Missing, ambiguous, or
+wrong-modality resolution fails rather than selecting a substitute.
+
+The transport was moved from TCIA's legacy NBIA API after the first hosted
+preflight timed out before resolving any anatomy. The scientific data identity
+did not change: IDC hosts the same public collection and the workflow records
+the complete resolved StudyInstanceUID and SeriesInstanceUID for every selected
+series.
 
 The same helper retrieves TCIA's small **Fused Rad-Path Matlab Files** archive
 and copies only the ten required HECaP MHA files. The acquisition artifact
-records the resolved full UIDs and SHA-256 hashes. The collection page remains
+records the IDC release/API build, pinned acquisition-client version, resolved
+full UIDs, exact per-series manifest hashes, and HECaP SHA-256 hashes. The collection page remains
 the authoritative citation, version, license, and data-usage source; the
 workflow download endpoint is an implementation detail, not a replacement
 citation.

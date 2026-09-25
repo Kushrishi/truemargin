@@ -24,6 +24,9 @@ realdata = [
     "SimpleITK>=2.3,<3",
     "openslide-python>=1.3,<2",
 ]
+acquisition = [
+    "idc-index==0.12.5",
+]
 tracking = [
     "mlflow>=2.14,<3",
     "dvc>=3.51,<4",
