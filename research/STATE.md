@@ -88,7 +88,7 @@ spots, or generalizes.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + pre-result Amendment 1 frozen; implementation aligned on `research-reboot`; result not yet recorded.
+**Status:** base protocol + pre-result Amendment 1 frozen; public implementation aligned and provenance-verified; result not yet recorded.
 
 Primary design:
 
