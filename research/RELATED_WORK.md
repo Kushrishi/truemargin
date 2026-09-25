@@ -1,7 +1,7 @@
 # Related work and contribution boundary
 
 **Updated:** 2026-09-24  
-**Status:** active literature audit
+**Status:** active comparator/contribution audit
 
 The broad problem of medical image-registration uncertainty is mature. TrueMargin
 must not claim novelty for uncertainty estimation, perturbation ensembles,
@@ -150,7 +150,7 @@ Primary/review sources currently driving this boundary:
 - Le Folgoc et al. (2017), *Quantifying Registration Uncertainty With Sparse
   Bayesian Modelling*, IEEE Transactions on Medical Imaging 36(2):607-617.
 
-## Open literature questions before execution
+## Open literature questions before comparator-protocol freeze
 
 1. Is there a published benchmark directly comparing multiple registration-UQ
    surrogates on the same known-DVF cases with anatomy-aware inference?
@@ -164,4 +164,4 @@ Primary/review sources currently driving this boundary:
 5. Which comparator set is strong enough for publication without turning the
    project into an unfocused survey?
 
-Answer these before defining the comparator protocol.
+Answer these before freezing the comparator protocol. They do not alter the already-frozen primary known-GT geometry design.
