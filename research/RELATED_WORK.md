@@ -1,7 +1,7 @@
 # Related work and contribution boundary
 
 **Updated:** 2026-09-25  
-**Status:** comparator boundary frozen; implementation feasibility audit active
+**Status:** comparator boundary and implementation feasibility decisions frozen
 
 The broad problem of medical image-registration uncertainty is mature. TrueMargin
 must not claim novelty for uncertainty estimation, perturbation ensembles,
@@ -70,11 +70,18 @@ Direct local methods:
 4. **Jacobian deviation `abs(J - 1)`** — deformation-plausibility baseline,
    explicitly not a probabilistic uncertainty estimate.
 
-**Contrastive Discrepancy (CD)** is assigned to a separate case-level
-model-selection axis rather than forced into the pointwise local table. The
-peer-reviewed 2026 paper has a code link from the authors' publication page to
-snapshot `anonymous.4open.science/r/dbc-B401`; inclusion still requires a
-non-result-bearing faithful-reproduction audit before primary outcomes exist.
+**Contrastive Discrepancy (CD)** is assigned conceptually to a separate
+case-level model-selection axis rather than forced into the pointwise local
+table. The peer-reviewed 2026 paper's authors link released code only through
+snapshot `anonymous.4open.science/r/dbc-B401`. Before any primary outcome,
+three clean-hosted retrieval checks were performed: the historical API route
+returned HTTP 403, the current service files route returned HTTP 403, and
+headless Chrome received only Cloudflare security verification. The public
+paper metadata establishes CD's transformation-consistency/model-selection
+role but does not pin the exact transformation parameters and aggregation
+semantics needed for a faithful reproduction. CD is therefore prospectively
+excluded from the current confirmatory study; no bespoke analogue is
+substituted.
 
 **Transformation-equivariance UQ** remains related-work-only in the
 confirmatory classical study: the authors' current publication page still
@@ -170,13 +177,13 @@ The literature audit resolved the pre-freeze questions as follows:
    ICE work, but the current contribution remains a prospective same-case,
    anatomy-aware comparison of distinct surrogate semantics and blind spots;
 2. transformation-equivariance UQ is not used as a direct classical comparator;
-3. Contrastive Discrepancy has released code and is reserved for a faithful
-   case-level feasibility/model-selection evaluation rather than a pointwise
-   reinterpretation;
+3. Contrastive Discrepancy is not included in the current confirmatory study
+   because the linked released snapshot is not reproducibly retrievable from a
+   clean hosted environment and the available public description is
+   insufficient to reproduce exact scoring semantics without invention;
 4. ICE is defined prospectively through forward/reverse ensemble-mean cycle
    error in physical coordinates;
 5. the confirmatory local suite is intentionally small: target sigma, ICE,
-   residual, and Jacobian deviation.
-
-Implementation details and source identities must still pass the frozen
-pre-result implementation preflight before M3 is complete.
+   residual, and Jacobian deviation;
+6. the direct-comparator implementation and authorization invariants are frozen
+   and tested before any result-bearing registration.
