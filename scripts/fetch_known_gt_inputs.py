@@ -291,7 +291,12 @@ def _download_idc_series(patient: str, series_uid: str, destination: Path) -> tu
     return object_count, manifest_sha256
 
 
-def _extract_hecap_masks(archive: Path, destination: Path) -> dict[str, str]:
+def _extract_hecap_masks(
+    archive: Path,
+    destination: Path,
+    *,
+    patients: tuple[str, ...],
+) -> dict[str, str]:
     destination.mkdir(parents=True, exist_ok=True)
     copied: dict[str, str] = {}
     with tempfile.TemporaryDirectory() as tmp:
@@ -299,7 +304,7 @@ def _extract_hecap_masks(archive: Path, destination: Path) -> dict[str, str]:
         with zipfile.ZipFile(archive) as zf:
             zf.extractall(tmp_root)
         all_files = [path for path in tmp_root.rglob("*") if path.is_file()]
-        for patient in FROZEN_T2_SERIES_SUFFIXES:
+        for patient in patients:
             filename = f"{patient}-T2-AXIAL-SM-FOV_HECaP.mha"
             matches = [path for path in all_files if path.name == filename]
             if len(matches) != 1:
@@ -312,7 +317,29 @@ def _extract_hecap_masks(archive: Path, destination: Path) -> dict[str, str]:
     return copied
 
 
-def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
+def _normalize_patients(patients: list[str] | None) -> tuple[str, ...]:
+    if patients is None:
+        return tuple(FROZEN_T2_SERIES_SUFFIXES)
+
+    if not patients:
+        raise ValueError("At least one patient must be requested.")
+
+    requested = tuple(patients)
+    unknown = [patient for patient in requested if patient not in FROZEN_T2_SERIES_SUFFIXES]
+    if unknown:
+        raise ValueError(f"Unknown frozen patient(s): {unknown}")
+    if len(set(requested)) != len(requested):
+        raise ValueError("Requested patients must be unique.")
+    return requested
+
+
+def fetch_inputs(
+    data_root: Path,
+    output: Path,
+    *,
+    patients: list[str] | None = None,
+) -> dict[str, Any]:
+    selected_patients = _normalize_patients(patients)
     idc_version = _get_json(f"{IDC_REST_BASE}/version")
     if not str(idc_version.get("idc_version", "")).startswith("v"):
         raise RuntimeError(f"Unexpected IDC version response: {idc_version}")
@@ -328,7 +355,8 @@ def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
 
     frozen_series = load_frozen_series_identity()
     resolved: dict[str, dict[str, Any]] = {}
-    for patient, identity in frozen_series.items():
+    for patient in selected_patients:
+        identity = frozen_series[patient]
         rows, cohort_response = _idc_series_rows(patient)
         selected = resolve_frozen_series(rows, patient=patient, identity=identity)
 
@@ -354,7 +382,11 @@ def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
     with tempfile.TemporaryDirectory() as tmp:
         hecap_archive = Path(tmp) / "fused_prostate_matlab.zip"
         hecap_archive_sha256 = _download(HECAP_ARCHIVE_URL, hecap_archive)
-        hecap_files = _extract_hecap_masks(hecap_archive, hecap_root)
+        hecap_files = _extract_hecap_masks(
+            hecap_archive,
+            hecap_root,
+            patients=selected_patients,
+        )
 
     manifest = {
         "schema_version": 2,
@@ -373,6 +405,7 @@ def fetch_inputs(data_root: Path, output: Path) -> dict[str, Any]:
         "hecap_source_url": HECAP_ARCHIVE_URL,
         "hecap_archive_sha256": hecap_archive_sha256,
         "hecap_file_sha256": hecap_files,
+        "requested_patients": list(selected_patients),
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -383,13 +416,24 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data-root", type=Path, default=Path("data"))
     parser.add_argument(
+        "--patient",
+        action="append",
+        dest="patients",
+        choices=tuple(FROZEN_T2_SERIES_SUFFIXES),
+        help="fetch only this frozen patient; repeat for multiple patients",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path("outputs/known_gt_data_acquisition.json"),
     )
     args = parser.parse_args()
 
-    manifest = fetch_inputs(args.data_root, args.output)
+    manifest = fetch_inputs(
+        args.data_root,
+        args.output,
+        patients=args.patients,
+    )
     print(f"idc_release={manifest['idc_release'].get('idc_version')}")
     print(f"idc_index_version={manifest['idc_index_version']}")
     print(f"resolved_t2_series={len(manifest['frozen_t2_series'])}")
