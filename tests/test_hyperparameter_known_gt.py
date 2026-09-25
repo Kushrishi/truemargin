@@ -306,3 +306,38 @@ def test_result_bearing_authorization_pins_reviewed_preflight(tmp_path: Path) ->
             str(request_path),
             repo_root=str(tmp_path),
         )
+
+def test_topology_scale_schedule_is_frozen() -> None:
+    runner = _load_runner()
+    assert runner.TOPOLOGY_SCALES == (
+        1.00,
+        0.95,
+        0.90,
+        0.85,
+        0.80,
+        0.75,
+        0.70,
+        0.65,
+        0.60,
+        0.55,
+        0.50,
+    )
+
+
+def test_topology_backtracking_selects_largest_valid_scale(monkeypatch) -> None:
+    runner = _load_runner()
+    source = runner.sitk.Image([8, 8, 8], runner.sitk.sitkFloat32)
+    values = iter([-0.01, -0.01, 0.02])
+
+    monkeypatch.setattr(
+        runner,
+        "_transform_jacobian_min",
+        lambda source_img, transform: next(values),
+    )
+
+    _, meta = runner.make_topology_safe_known_transform(source, seed=7001)
+
+    assert meta["raw_jacobian_min"] == -0.01
+    assert meta["topology_scale"] == 0.95
+    assert meta["jacobian_min"] == 0.02
+    assert meta["topology_attenuated"] is True
