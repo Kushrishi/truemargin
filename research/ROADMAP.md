@@ -23,7 +23,7 @@ Completed requirements:
 
 ## M2 — Geometry-only preflight
 
-**State:** first complete preflight recorded at 29/30; Amendment 2 frozen; full amended rerun pending
+**State:** complete — amended full preflight passed 30 / 30 and reviewed evidence is preserved
 
 Goal: validate the frozen 30 synthetic cases before any estimator registration.
 
@@ -44,7 +44,7 @@ planned estimator registrations.
 
 ## M3 — Comparator protocol freeze
 
-**State:** not started
+**State:** active
 
 Goal: define the paper-level comparator set before comparator outcomes or the
 primary known-GT outcome can influence method selection.
