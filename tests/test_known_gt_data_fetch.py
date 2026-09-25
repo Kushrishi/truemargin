@@ -163,3 +163,17 @@ def test_series_resolution_ignores_rows_outside_frozen_collection_or_modality() 
 
     with pytest.raises(RuntimeError, match="resolved to 0 public series"):
         fetcher.resolve_frozen_series(rows, patient="aaa0044", identity=_identity())
+
+def test_idc_manifest_download_command_uses_required_manifest_option(tmp_path: Path) -> None:
+    fetcher = _load_fetcher()
+    manifest = tmp_path / "manifest.s5cmd"
+    download_root = tmp_path / "download"
+
+    assert fetcher._idc_download_command(manifest, download_root) == [
+        "idc",
+        "download-from-manifest",
+        "--manifest-file",
+        str(manifest),
+        "--download-dir",
+        str(download_root),
+    ]
