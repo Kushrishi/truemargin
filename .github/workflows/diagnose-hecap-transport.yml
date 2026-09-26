@@ -1,0 +1,54 @@
+name: Diagnose HECaP runner transport
+
+on:
+  push:
+    branches: ["diagnose-hecap-runner-transport"]
+
+permissions:
+  contents: read
+
+jobs:
+  transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Probe frozen HECaP archive transport
+        run: |
+          python - <<'PY'
+          import hashlib
+          import urllib.request
+
+          url = (
+              "https://wiki.cancerimagingarchive.net/download/attachments/23691514/"
+              "fused_prostate_matlab.zip?api=v2&modificationDate=1476802701461&version=1"
+          )
+          expected = "d7c1b7c048d2e55db68e2715f4c53e6563da7e2ae8390aa9bef8f88dd3cd5215"
+          request = urllib.request.Request(
+              url,
+              headers={"User-Agent": "TrueMargin acquisition diagnostic/1.0"},
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=90) as response:
+                  payload = response.read()
+              digest = hashlib.sha256(payload).hexdigest()
+              print(f"URLLIB_BYTES={len(payload)}")
+              print(f"URLLIB_SHA256={digest}")
+              print(f"URLLIB_HASH_MATCH={digest == expected}")
+          except Exception as exc:
+              print(f"URLLIB_FAILED={type(exc).__name__}:{exc}")
+          PY
+
+          URL='https://wiki.cancerimagingarchive.net/download/attachments/23691514/fused_prostate_matlab.zip?api=v2&modificationDate=1476802701461&version=1'
+          if curl --fail-with-body --location --silent --show-error --max-time 120 \
+              --user-agent 'TrueMargin acquisition diagnostic/1.0' \
+              "$URL" -o /tmp/fused_prostate_matlab.zip
+          then
+            echo "CURL_BYTES=$(stat -c '%s' /tmp/fused_prostate_matlab.zip)"
+            echo "CURL_SHA256=$(sha256sum /tmp/fused_prostate_matlab.zip | cut -d' ' -f1)"
+          else
+            echo "CURL_FAILED=1"
+          fi
