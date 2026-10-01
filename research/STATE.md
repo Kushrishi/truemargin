@@ -1,6 +1,6 @@
 # Current research state
 
-**Updated:** 2026-09-25  
+**Updated:** 2026-10-01  
 **Status:** active public research program  
 **Publication status:** no submitted, accepted, or published paper
 
@@ -8,11 +8,9 @@ This file is the canonical short-form state for TrueMargin.
 
 ## Research question
 
-When a deformable image-registration method reports local uncertainty, under
-what conditions does that signal contain useful information about true local
-spatial registration error?
+When a deformable image-registration method reports local uncertainty, under what conditions does that signal contain useful information about true local spatial registration error?
 
-The current program separates:
+The program separates:
 
 1. operational variability;
 2. pointwise error informativeness;
@@ -24,15 +22,9 @@ No one axis is treated as a substitute for the others.
 
 ## Historical evidence boundary
 
-Earlier T2-to-DCE experiments used a zero-displacement reference assumption on
-real data. That value is not independently verified pointwise registration
-ground truth.
+Earlier T2-to-DCE experiments used a zero-displacement reference assumption on real data. That value is not independently verified pointwise registration ground truth.
 
-Historical real-data results may motivate hypotheses and operational checks,
-but they must not be described as definitive pointwise error validation.
-
-The older manuscript, product framing, and historical real-data narrative are
-archived and are not the current paper.
+Historical real-data results may motivate hypotheses and operational checks, but they must not be described as definitive pointwise error validation. The older manuscript, product framing, and historical real-data narrative are archived and are not the current paper.
 
 ## Prospective rebuild sequence
 
@@ -40,29 +32,19 @@ archived and are not the current paper.
 
 **Result:** failed prospective Gate A.
 
-No tested nonzero relative-intensity perturbation satisfied the frozen
-combination of completeness, non-inertness, and proxy-error degradation limits.
-
-The perturbation grid was not widened after observing the result.
+No tested nonzero relative-intensity perturbation satisfied the frozen combination of completeness, non-inertness, and proxy-error degradation limits. The grid was not widened after observing the result.
 
 ### 2. Registration convergence
 
 **Result:** mesh 3 / 15 maximum iterations selected.
 
-The prospectively specified convergence gate found 15 iterations to be the
-smallest candidate budget passing the frozen global field-stability criterion.
-
-This is a regime-specific operational result, not a universal convergence
-claim.
+The prospectively specified convergence gate found 15 iterations to be the smallest candidate budget passing the frozen global field-stability criterion. This is a regime-specific operational result, not a universal convergence claim.
 
 ### 3. Initialization-sensitivity ensemble
 
 **Result:** failed prospective promotion.
 
-No tested nonzero B-spline initialization perturbation strength passed the
-frozen completeness/non-inertness rule.
-
-The grid was not widened after observing the result.
+No tested nonzero B-spline initialization perturbation strength passed the frozen completeness/non-inertness rule. The grid was not widened after observing the result.
 
 ### 4. Registration-hyperparameter ensemble
 
@@ -77,86 +59,74 @@ Frozen estimator:
 - maximum iterations: 15
 - center_first: false
 
-The mechanism completed all nine members in all five frozen sensitivity
-patients and exceeded the predeclared repeatability/resolution floor in four of
-five.
-
-This result establishes **operational promotion only**.
-
-It does not establish that sigma tracks true error, is calibrated, avoids blind
-spots, or generalizes.
+The mechanism completed all nine members in all five frozen sensitivity patients and exceeded the predeclared repeatability/resolution floor in four of five. This established operational promotion only and did not itself establish pointwise informativeness.
 
 ### 5. Hyperparameter known-ground-truth evaluation
 
-**Status:** base protocol + Amendments 1 and 2 are frozen. The full amended geometry preflight passed 30/30 cases from all 10 frozen anatomies. Twenty-nine cases used topology scale 1.00; only `aaa0072`, replicate 1, seed 7001 used the prospectively frozen 0.95 backtracking scale, moving the evaluated minimum Jacobian from -0.0105857 to +0.0503618. No result-bearing estimator registration has run. The comparator protocol, direct-comparator implementation, and CD feasibility decision are frozen and tested; M3 is complete. A separate source-pinned result-bearing request is now frozen on this authorization branch; no result-bearing outcome existed when it was created.
+**Result:** M4 completed successfully on 2026-09-26 under the frozen source-pinned authorization.
 
-Primary design:
+The amended geometry preflight had previously passed all 30 cases across 10 frozen held-out anatomies. The paper-level direct comparator suite and failure rules were frozen before result-bearing outcomes.
 
-- 10 anatomies not used for mechanism promotion;
+Result-bearing execution:
+
+- workflow run: `36188222836`, successful attempt 3;
+- execution Git SHA: `9add89e5055ba45eb6c6b93c42da38615891a225`;
+- final artifact ID: `10896650804`;
+- artifact digest: `sha256:bd1f76e20c7e4591b5b3113c061c90534ec413bda0a242747625ed6d5f96b728`;
+- 10 held-out anatomies;
 - 3 deformation replicates per anatomy;
-- 30 total synthetic cases;
-- exact known B-spline transform direction;
-- 9 estimator registrations per case;
-- 270 total planned registrations;
-- 50 spatial samples per case;
-- per-case Spearman association between uncertainty and true error;
-- anatomy-aware aggregation;
-- exact one-sided anatomy-level sign test;
-- 10,000-replicate anatomy bootstrap interval;
-- strict failure and assessability rules.
+- 30 / 30 complete primary cases;
+- 270 planned forward + 270 planned reverse registrations;
+- 50 frozen fixed-domain ROI locations per case.
 
-The old synthetic harness is not treated as authoritative for this stage because
-the new protocol explicitly corrects a transform-direction ambiguity.
+Primary anatomy-level result:
+
+- positive anatomy-level associations: **10 / 10**;
+- median Spearman association: **0.6840816**;
+- 10,000-replicate anatomy bootstrap 95% interval: **[0.3047779, 0.8283794]**;
+- exact one-sided anatomy sign-test: **p = 0.0009765625**;
+- median anatomy blind-spot rate under the frozen definition: **0.0**;
+- median high-vs-low uncertainty known-error delta: **1.7120 mm**.
+
+This supports the bounded claim that, in the frozen synthetic known-deformation study, the promoted hyperparameter-ensemble sigma contains useful pointwise rank information about true local spatial registration error.
+
+Direct comparator context:
+
+- inverse-consistency error median anatomy Spearman: **0.7203**;
+- same-modality residual: **0.2851**;
+- Jacobian deviation: **0.1689**.
+
+The paired target-minus-comparator anatomy bootstrap interval is wholly positive for residual and Jacobian deviation, supporting stronger rank informativeness of the target sigma than those two comparators in this study. The target-minus-ICE interval is **[-0.0903, 0.0736]**, so superiority over inverse-consistency error is not established.
+
+Method-specific invalid comparator cases were retained under the frozen failure rules. All direct methods remained assessable at the anatomy level across all ten anatomies.
+
+The durable result records are:
+
+- `docs/hyperparameter_known_gt_result.md`;
+- `research/KNOWN_GT_M4_RESULT.json`.
 
 ## Current bottleneck
 
-M1-M3 are complete.
+M1-M4 are complete. M5 is active.
 
-The frozen direct local comparison now includes:
+The immediate research work is no longer to determine whether the promoted estimator has any known-ground-truth signal. That question has a positive result within the frozen study.
 
-- the primary nine-member sigma target;
-- ensemble-mean inverse-consistency error using the same nine-member grid in reverse;
-- same-modality absolute post-registration residual;
-- ensemble-mean Jacobian deviation.
+The next work is to characterize the result without broadening it post hoc:
 
-Contrastive Discrepancy is prospectively excluded from the current confirmatory
-study. The authors' current publication page links only an Anonymous-GitHub
-snapshot; direct current/legacy API access returned HTTP 403 in clean hosted
-runners and a real hosted Chrome session reached only Cloudflare security
-verification. Without the released source, the public paper metadata does not
-pin enough implementation detail to reproduce CD faithfully without inventing
-choices. The exact pre-result decision is frozen in
-`research/KNOWN_GT_CD_FEASIBILITY.json`.
+1. preserve and analyze method-specific failures and high-error / low-reported-uncertainty blind spots;
+2. produce anatomy-aware comparator and failure-case figures/tables from frozen outputs;
+3. distinguish ranking informativeness from numerical calibration;
+4. update the related-work and contribution boundary around the observed comparator result, especially the strong inverse-consistency baseline;
+5. prospectively freeze any robustness study before result-bearing execution.
 
-M4 is now authorized prospectively by
-`research/KNOWN_GT_RUN_REQUEST.json`, but no result-bearing registration has
-run at the authorization freeze.
-
-The request pins:
-
-- implementation source `f52aee24b49327bf7989ae0746dbf2ad981510d1`;
-- its green CI run `36184383591`;
-- all protocol, geometry, acquisition, and CD-feasibility blobs;
-- the exact execution/orchestration blobs;
-- 10 frozen anatomy shards x 3 cases;
-- **270 forward + 270 reverse = 540 planned registrations**;
-- CD=false with zero CD registrations.
-
-Execution is sharded only for infrastructure robustness. Each anatomy shard
-produces the same canonical provenance checkpoints consumed by the unchanged
-scientific runner; a final job refuses to aggregate unless all 30 checkpoints
-are present.
-
-The existing 30-case evaluation must not be retuned based on future results.
-Scientific failures are retained and are not grounds for replacing cases,
-members, seeds, or comparators.
+The completed M4 estimator definition, comparator definitions, cohort, seeds, cases, ROI rule, and primary statistic must not be retuned based on the result.
 
 ## Current source-of-truth order
 
-1. frozen prospective protocol/result files in `docs/`;
+1. frozen prospective protocols, amendments, and completed result record in `docs/` and `research/`;
 2. this file;
 3. `research/CLAIMS.md`;
 4. current README;
 5. archived historical material.
 
-Website and LinkedIn copy must never be stronger than this state.
+Website, GitHub profile, CV, and LinkedIn wording must never be stronger than this state.
