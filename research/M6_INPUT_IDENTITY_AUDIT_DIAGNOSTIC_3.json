@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "record": "external-input-identity-audit-diagnostic-3",
+  "workflow_run_id": 36942271816,
+  "source_git_sha": "b7a9de83ab79a628d01699f0d95033de1b8dc0bd",
+  "audit_schema_version": 4,
+  "status": "failed_before_partition_identity_resolution",
+  "observed_boundary": {
+    "authorization_check_passed": true,
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "split_assignment_authorized": false,
+    "dicom_download_performed": false,
+    "heuristic_source_series_selection_performed": false
+  },
+  "failure": {
+    "stage": "TCIA v4 Training shared-list transport",
+    "endpoint": "https://services.cancerimagingarchive.net/services/v4/SharedList/query/ContentsByName?name=ISBI+Prostate+Challenge+-+Training",
+    "attempts": 3,
+    "attempt_outcomes": [
+      "urllib timeout",
+      "urllib timeout",
+      "urllib timeout"
+    ],
+    "error_type": "TransportUnavailable",
+    "partition_identity_result_observed": false,
+    "idc_result_observed": false,
+    "annotation_result_observed": false
+  },
+  "artifact": {
+    "github_artifact_id": 11201330581,
+    "artifact_sha256": "66a3f464e172fe9315a1bbdbe05cfe067adc73753b224865a451ae986277e8c1",
+    "audit_output_sha256": "26dc511ae0edfd0f4955dde7e00d87b61fe79b6002aa6ebe5a00d5209a4a225f"
+  },
+  "interpretation": [
+    "The v4 shared-list route did not return challenge metadata before the hosted-run transport timeout, so this diagnostic is not evidence against the published 60/10/10 partition counts.",
+    "No partition membership, IDC identity, annotation identity, registration, uncertainty, or calibration outcome was observed.",
+    "The next audit removes network API availability from the critical partition-identity path by using the three official TCIA challenge manifests directly."
+  ]
+}
