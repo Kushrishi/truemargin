@@ -1,0 +1,203 @@
+name: TrueMargin M6 external input identity audit
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-input-identity-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Verify metadata-only authorization
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          request = json.loads(
+              Path("research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json").read_text()
+          )
+          expected = {
+              "schema_version": 2,
+              "milestone": "M6",
+              "authorized_mode": "external-input-identity-audit",
+              "result_bearing_authorized": False,
+              "registration_authorized": False,
+              "calibration_fit_authorized": False,
+              "split_assignment_authorized": False,
+              "dicom_download_authorized": False,
+              "source_series_selection_authorized": False,
+              "expected_output": "outputs/m6_input_identity_audit.json",
+          }
+          for key, value in expected.items():
+              assert request.get(key) == value, (key, request.get(key), value)
+
+          challenge = request["challenge"]
+          assert challenge["doi"] == "10.7937/K9/TCIA.2015.zF0vlOPv"
+          assert challenge["expected_total_subjects"] == 80
+          assert challenge["expected_total_series"] == 80
+          assert challenge["license"] == "CC BY 3.0"
+
+          partitions = challenge["partitions"]
+          assert set(partitions) == {"training", "leaderboard", "test"}
+          assert (
+              partitions["training"]["expected_subjects"],
+              partitions["training"]["expected_series"],
+          ) == (60, 60)
+          assert (
+              partitions["leaderboard"]["expected_subjects"],
+              partitions["leaderboard"]["expected_series"],
+          ) == (10, 10)
+          assert (
+              partitions["test"]["expected_subjects"],
+              partitions["test"]["expected_series"],
+          ) == (10, 10)
+          assert (
+              partitions["training"]["official_image_manifest"]
+              == "ISBI-Prostate-Challenge-Training.tcia"
+          )
+          assert (
+              partitions["leaderboard"]["official_image_manifest"]
+              == "ISBI-Prostate-Challenge-LeaderBoard.tcia"
+          )
+          assert (
+              partitions["test"]["official_image_manifest"]
+              == "ISBI-Prostate-Challenge-Testing.tcia"
+          )
+
+          sources = request["sources"]
+          assert set(sources) == {"prostate_3t", "prostate_diagnosis"}
+          assert sources["prostate_3t"]["patient_prefix"] == "Prostate3T-01-"
+          assert sources["prostate_3t"]["idc_collection_id"] == "prostate_3t"
+          assert sources["prostate_diagnosis"]["patient_prefix"] == "ProstateDx-01-"
+          assert (
+              sources["prostate_diagnosis"]["idc_collection_id"]
+              == "prostate_diagnosis"
+          )
+
+          rules = request["audit_rules"]
+          for key in (
+              "derive_patient_ids_from_official_challenge_label_archives",
+              "derive_series_uids_from_official_partition_manifests",
+              "resolve_exact_official_series_in_idc",
+              "preserve_official_partition_identity",
+              "preserve_source_collection_identity",
+              "record_scanner_acquisition_metadata",
+          ):
+              assert rules[key] is True, key
+          for key in (
+              "heuristic_source_series_selection",
+              "assign_calibration_evaluation_reserve_roles",
+              "download_source_dicoms",
+              "run_registration",
+              "fit_calibration",
+          ):
+              assert rules[key] is False, key
+
+          print("M6_INPUT_IDENTITY_AUTHORIZATION=PASS")
+          print("M6_CHALLENGE_IDENTITY_SURFACE=80")
+          print("RESULT_BEARING_AUTHORIZED=False")
+          PY
+
+      - name: Run external input identity audit
+        id: audit
+        continue-on-error: true
+        run: python scripts/audit_m6_external_inputs.py
+
+      - name: Stamp and package audit evidence
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          output = Path("outputs/m6_input_identity_audit.json")
+          if not output.exists():
+              output.parent.mkdir(parents=True, exist_ok=True)
+              output.write_text(
+                  json.dumps(
+                      {
+                          "schema_version": 2,
+                          "milestone": "M6",
+                          "audit": "external-input-identity",
+                          "status": "workflow_failed_before_audit_record",
+                          "authorization_boundary": {
+                              "result_bearing_authorized": False,
+                              "registration_authorized": False,
+                              "calibration_fit_authorized": False,
+                              "split_assignment_authorized": False,
+                              "dicom_download_performed": False,
+                              "heuristic_source_series_selection_performed": False,
+                          },
+                      },
+                      indent=2,
+                      sort_keys=True,
+                  )
+                  + "\n"
+              )
+
+          payload = json.loads(output.read_text())
+
+          def blob(path: str) -> str:
+              return subprocess.check_output(
+                  ["git", "hash-object", path], text=True
+              ).strip()
+
+          payload["provenance"] = {
+              "source_git_sha": os.environ["GITHUB_SHA"],
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "request_blob_sha": blob(
+                  "research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json"
+              ),
+              "script_blob_sha": blob("scripts/audit_m6_external_inputs.py"),
+              "workflow_blob_sha": blob(
+                  ".github/workflows/m6-input-identity-audit.yml"
+              ),
+              "feasibility_blob_sha": blob("docs/m6_calibration_feasibility.md"),
+          }
+          output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+          digest = hashlib.sha256(output.read_bytes()).hexdigest()
+          Path("outputs/m6_input_identity_audit.sha256").write_text(
+              f"{digest}  {output.name}\n"
+          )
+          print(output.read_text())
+          print(Path("outputs/m6_input_identity_audit.sha256").read_text())
+          PY
+
+      - name: Upload audit evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-input-identity-audit
+          path: |
+            docs/m6_calibration_feasibility.md
+            research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json
+            scripts/audit_m6_external_inputs.py
+            outputs/m6_input_identity_audit.json
+            outputs/m6_input_identity_audit.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce audit outcome
+        if: always()
+        run: test "${{ steps.audit.outcome }}" = "success"
