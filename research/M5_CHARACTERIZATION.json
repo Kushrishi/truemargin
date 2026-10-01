@@ -1,0 +1,192 @@
+{
+  "analysis_type": "post_primary_descriptive_characterization",
+  "anatomy_order_by_sigma_rank_informativeness": [
+    {
+      "ice_median_case_spearman": -0.09762304921968785,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": -0.3014165666266506,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0069",
+      "residual_median_case_spearman": 0.20076830732292916,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.06,
+      "sigma_median_case_spearman": 0.033373349339735896
+    },
+    {
+      "ice_median_case_spearman": 0.2828811524609844,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": 0.03529411764705882,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0060",
+      "residual_median_case_spearman": 0.09118847539015605,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.02,
+      "sigma_median_case_spearman": 0.22439375750300117
+    },
+    {
+      "ice_median_case_spearman": 0.3462665066026411,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": -0.3671068427370948,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0087",
+      "residual_median_case_spearman": 0.2859543817527011,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.02,
+      "sigma_median_case_spearman": 0.3047779111644658
+    },
+    {
+      "ice_median_case_spearman": 0.7158223289315726,
+      "ice_valid_cases": 2,
+      "jacdev_median_case_spearman": 0.3025690276110444,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0051",
+      "residual_median_case_spearman": 0.5602400960384153,
+      "residual_valid_cases": 2,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.6099879951980792
+    },
+    {
+      "ice_median_case_spearman": 0.5898199279711884,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": -0.4306842737094838,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0072",
+      "residual_median_case_spearman": 0.2715486194477791,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.6633853541416566
+    },
+    {
+      "ice_median_case_spearman": 0.7950540216086435,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": 0.7999519807923169,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0071",
+      "residual_median_case_spearman": 0.2843217286914766,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.7047779111644659
+    },
+    {
+      "ice_median_case_spearman": 0.7832412965186073,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": -0.44672268907563023,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0086",
+      "residual_median_case_spearman": 0.2167106842737095,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.7763265306122449
+    },
+    {
+      "ice_median_case_spearman": 0.9063625450180072,
+      "ice_valid_cases": 2,
+      "jacdev_median_case_spearman": 0.6757743097238894,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0064",
+      "residual_median_case_spearman": 0.7831452581032412,
+      "residual_valid_cases": 2,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.7923649459783914
+    },
+    {
+      "ice_median_case_spearman": 0.7248499399759903,
+      "ice_valid_cases": 2,
+      "jacdev_median_case_spearman": 0.6581032412965185,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0044",
+      "residual_median_case_spearman": 0.3012725090036015,
+      "residual_valid_cases": 2,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.8804321728691475
+    },
+    {
+      "ice_median_case_spearman": 0.9165426170468187,
+      "ice_valid_cases": 3,
+      "jacdev_median_case_spearman": 0.6571428571428571,
+      "jacdev_valid_cases": 3,
+      "patient": "aaa0053",
+      "residual_median_case_spearman": 0.5456422569027611,
+      "residual_valid_cases": 3,
+      "sigma_median_blind_spot_rate": 0.0,
+      "sigma_median_case_spearman": 0.8902280912364946
+    }
+  ],
+  "blind_spot_definition": "Within each case: known error >= case 75th percentile and method score <= case 25th percentile. This is the frozen M4 definition.",
+  "comparator_operational_failures": {
+    "failure_reasons": {
+      "ice": {
+        "ice:ValueError:sample point lies outside the image domain": 3
+      },
+      "jacdev": {},
+      "residual": {
+        "residual:ValueError:sample point lies outside the image domain": 3
+      }
+    },
+    "invalid_case_counts": {
+      "ice": 3,
+      "jacdev": 0,
+      "residual": 3
+    }
+  },
+  "frozen_primary_result": {
+    "assessable_anatomies": 10,
+    "bootstrap_95_ci": [
+      0.3047779111644658,
+      0.8283793517406962
+    ],
+    "complete_cases": 30,
+    "exact_sign_p": 0.0009765625,
+    "median_anatomy_spearman": 0.6840816326530612,
+    "positive_anatomies": 10
+  },
+  "inferential_status": "No new confirmatory hypothesis test, winner metric, retuning decision, or registration execution is introduced by M5.",
+  "m4_provenance": {
+    "canonical_artifact_digest": "sha256:bd1f76e20c7e4591b5b3113c061c90534ec413bda0a242747625ed6d5f96b728",
+    "canonical_artifact_id": 10896650804,
+    "execution_git_sha": "9add89e5055ba45eb6c6b93c42da38615891a225",
+    "verified_canonical_output_sha256": {
+      "hyperparameter_known_gt_anatomy_metrics.csv": "c69143a510db9558336d5395756e5e98e00f21a0910d7f77fd2c87b36898f389",
+      "hyperparameter_known_gt_case_metrics.csv": "16f19a0fcbedfd06145615d17406f4901706a061f755bfbd6dd85e363e38f33c",
+      "hyperparameter_known_gt_comparator_anatomy_metrics.csv": "c02f963520a506d781fe09cde35b619d6eb6a6ae42b1fb1d3fca17069ba8f984",
+      "hyperparameter_known_gt_summary.json": "251f3e5545488e3130344a6a59922b6ee6c38fbf1f1fba4342802ddc2bce86f3"
+    },
+    "verified_shard_archive_sha256": {
+      "aaa0044": "c8268a9b1ab5e7e53c3dac7e731bc9fee490f8bb3c0bd4836ad8a63abb166fd7",
+      "aaa0051": "04ec0558a76f5be4d2edf0de72ec428bf33d6f38a17ca65cad39d751cf997db8",
+      "aaa0053": "24157610525f556e0b7afa97f880909832a2cc087ee802b8e9b69949b866fa2a",
+      "aaa0060": "652133d28abbca66c0d21a282d50728504ca2f44b7569924c4a68ac7090a1be7",
+      "aaa0064": "555c1589254f4c7a28a656ef7ddf085d61ab1050734b6261ee625c60df00d40e",
+      "aaa0069": "139a6f6e44031e3d1cf12207557128abc45b6c09b00ae6482567c1ec73146d1f",
+      "aaa0071": "899c75fa65a0fa4680c4ffbf22553cc2a7d6fe84642162947e570262c733012a",
+      "aaa0072": "0ea56ccea4bffc0f8fc319ab2c1f3dc533b3320f4bbfd03c2f1e87f8683980f9",
+      "aaa0086": "eeaa0caeadb48a24c77d0a1568a2753647c1b62e2f74876e9cf8262517a6ef4b",
+      "aaa0087": "9657cce36ea2fa548a168a6a8c4bcc94a131b55a7a24a826d42d877479103be1"
+    },
+    "workflow_run_id": 36188222836
+  },
+  "m5_case_characterization": {
+    "cases": 30,
+    "cases_with_nonpositive_quartile_error_enrichment": 7,
+    "median_case_spearman": 0.6465306122448979,
+    "negative_case_rankings": 6,
+    "positive_case_rankings": 24,
+    "worst_case": {
+      "patient": "aaa0053",
+      "replicate": 1,
+      "sigma_blind_spot_count": 10,
+      "sigma_case_spearman": -0.9020408163265305
+    }
+  },
+  "m5_pointwise_characterization": {
+    "anatomies_with_sigma_blind_spots": 7,
+    "cases_with_sigma_blind_spots": 11,
+    "ice_blind_spot_points": 34,
+    "ice_valid_points": 1350,
+    "joint_sigma_ice_blind_spot_points": 12,
+    "points": 1500,
+    "sigma_blind_spot_point_rate": 0.026,
+    "sigma_blind_spot_points": 39
+  },
+  "schema_version": 2
+}
