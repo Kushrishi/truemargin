@@ -13,7 +13,10 @@
     "name": "NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures",
     "doi": "10.7937/K9/TCIA.2015.zF0vlOPv",
     "expected_training_subjects": 60,
-    "license": "CC BY 3.0"
+    "expected_training_series": 60,
+    "license": "CC BY 3.0",
+    "official_training_image_manifest": "ISBI-Prostate-Challenge-Training.tcia",
+    "official_training_image_manifest_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/ISBI-Prostate-Challenge-Training.tcia?api=v2"
   },
   "sources": {
     "prostate_3t": {
@@ -33,8 +36,9 @@
   },
   "audit_rules": {
     "derive_patient_ids_from_official_training_label_archives": true,
-    "query_all_public_mr_series_for_each_derived_patient": true,
-    "select_source_series": false,
+    "derive_series_uids_from_official_training_image_manifest": true,
+    "resolve_exact_official_training_series_in_idc": true,
+    "heuristic_source_series_selection": false,
     "assign_calibration_evaluation_reserve_roles": false,
     "download_source_dicoms": false,
     "run_registration": false,
