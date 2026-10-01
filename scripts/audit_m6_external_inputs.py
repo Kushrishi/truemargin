@@ -584,9 +584,7 @@ def map_series_identity(
     )
     partition_patient_ids: dict[str, list[str]] = {
         partition: sorted(
-            record["patient_id"]
-            for record in series_records
-            if record["partition"] == partition
+            record["patient_id"] for record in series_records if record["partition"] == partition
         )
         for partition in PARTITIONS
     }
