@@ -137,19 +137,18 @@ Not established:
 
 ## Durable M5 outputs
 
-`results/m5/` contains the compact reviewed evidence:
+`results/m5/` contains compact reviewed evidence:
 
 - `m5_sigma_blind_spots.csv` — the 39 target-sigma blind-spot locations under the frozen rule;
 - `m5_case_characterization.csv` — all 30 cases;
 - `m5_case_failure_table.csv` — cases meeting at least one M5 failure/weakness condition;
-- `m5_anatomy_comparator_table.csv` — anatomy-aware target/comparator summaries;
-- `m5_anatomy_comparator_spearman.svg`;
-- `m5_sigma_case_spearman.svg`.
+- `m5_anatomy_comparator_table.csv` — anatomy-aware target/comparator summaries.
 
-`research/M5_CHARACTERIZATION.json` is the machine-readable result record. The analysis script can
-regenerate a complete 1,500-location pointwise table in its requested output directory; that large
-derived table need not be versioned because the ten source artifacts are hash-pinned. The analysis
-code lives in `src/truemargin/m5_characterization.py` with the CLI entry point
+`research/M5_CHARACTERIZATION.json` is the machine-readable result record. The analysis code
+reconstructs the complete 1,500-location pointwise state from the ten hash-pinned source artifacts
+and generates anatomy-comparator and case-heterogeneity SVG figures in its requested output
+directory. Those larger derived outputs are intentionally not versioned. The implementation lives
+in `src/truemargin/m5_characterization.py` with the CLI entry point
 `scripts/21_known_gt_m5_characterization.py`.
 
 M5 is complete. M6 may now address numerical calibration as a separate question; any later
