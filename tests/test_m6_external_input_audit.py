@@ -55,9 +55,7 @@ def test_parse_tcia_series_uids_rejects_duplicate_uid():
 def test_extract_patient_id_accepts_corrected_label_filename():
     extract_patient_id = _function("extract_patient_id")
     assert (
-        extract_patient_id(
-            "Training/ProstateDx-01-0006_correctedLabels.nrrd", "ProstateDx-01-"
-        )
+        extract_patient_id("Training/ProstateDx-01-0006_correctedLabels.nrrd", "ProstateDx-01-")
         == "ProstateDx-01-0006"
     )
 

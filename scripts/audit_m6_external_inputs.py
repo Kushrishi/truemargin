@@ -364,9 +364,7 @@ def build_audit() -> dict[str, Any]:
 
     sources = {key: audit_label_source(key, config) for key, config in SOURCES.items()}
     labels_by_source = {source_key: source["labels"] for source_key, source in sources.items()}
-    all_patient_ids = [
-        patient for source in sources.values() for patient in source["patient_ids"]
-    ]
+    all_patient_ids = [patient for source in sources.values() for patient in source["patient_ids"]]
     if len(all_patient_ids) != 60 or len(set(all_patient_ids)) != 60:
         raise RuntimeError(
             f"Expected 60 unique challenge training PatientIDs; found {len(set(all_patient_ids))}"
