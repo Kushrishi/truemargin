@@ -10,6 +10,7 @@ def test_perfect_calibration_is_near_diagonal():
     rng = np.random.default_rng(0)
     H = W = 200
     sigma = np.full((H, W), 1.0)
+    # Synthetic errors drawn directly from the assumed 2D Gaussian component model.
     e = rng.standard_normal((2, H, W)) * sigma[None]
     err = cal.displacement_error(e, np.zeros_like(e))
     lv, emp = cal.reliability_curve(err, sigma, ndim=2)
@@ -19,7 +20,7 @@ def test_perfect_calibration_is_near_diagonal():
 def test_recalibration_reduces_error():
     rng = np.random.default_rng(1)
     H = W = 200
-    sigma_pred = np.full((H, W), 0.4)
+    sigma_pred = np.full((H, W), 0.4)  # deliberately too small under the synthetic model
     true_sigma = 1.0
     e = rng.standard_normal((2, H, W)) * true_sigma
     err = cal.displacement_error(e, np.zeros_like(e))
@@ -27,9 +28,12 @@ def test_recalibration_reduces_error():
     s = cal.fit_variance_scale(err, sigma_pred, ndim=2)
     lv, emp_fix = cal.reliability_curve(err, s * sigma_pred, ndim=2)
     assert cal.expected_calibration_error(lv, emp_fix) < cal.expected_calibration_error(lv, emp_raw)
-    assert abs(s - (true_sigma / 0.4)) < 0.15
+    assert abs(s - (true_sigma / 0.4)) < 0.15  # recovers the synthetic scale (~2.5)
 
 
+# ----------------------------------------------------------------------
+# 3D parametric coverage math under the assumed Gaussian component model.
+# ----------------------------------------------------------------------
 def test_perfect_calibration_ndim3_is_near_diagonal():
     rng = np.random.default_rng(2)
     n = 20000
@@ -41,6 +45,8 @@ def test_perfect_calibration_ndim3_is_near_diagonal():
 
 
 def test_coverage_radius_ndim3_matches_chi_distribution():
+    # For iid N(0, sigma^2) components in 3D, magnitude^2 / sigma^2 follows
+    # chi-squared(3), so empirical coverage should track the requested level.
     rng = np.random.default_rng(3)
     n = 200000
     sigma = 2.0
@@ -52,6 +58,10 @@ def test_coverage_radius_ndim3_matches_chi_distribution():
         assert abs(empirical - p) < 0.01, f"p={p}: empirical={empirical}"
 
 
+# ----------------------------------------------------------------------
+# Ordinary split-conformal helper behavior in exchangeable synthetic data.
+# These tests do not model the grouped anatomy structure required for M6.
+# ----------------------------------------------------------------------
 def test_conformal_radius_exact_order_statistic():
     # Ten calibration scores 1..10, alpha=0.1:
     # k = ceil((10 + 1) * 0.9) = 10, so q_hat is the largest score.
@@ -66,8 +76,8 @@ def test_conformal_radius_exact_order_statistic():
 
 
 def test_conformal_radius_infinite_when_not_enough_calibration_points():
-    # If k exceeds n, the requested ordinary split-conformal level has no
-    # finite calibration order statistic under this construction.
+    # If k exceeds n, this construction has no finite calibration order statistic
+    # for the requested ordinary split-conformal level.
     err = np.array([1.0, 2.0, 3.0])
     sigma = np.ones(3)
     q_hat = cal.conformal_radius(err, sigma, alpha=0.01)
@@ -75,9 +85,8 @@ def test_conformal_radius_infinite_when_not_enough_calibration_points():
 
 
 def test_conformal_coverage_achieves_target_on_exchangeable_data():
-    # Monte Carlo sanity check for the helper under an actually exchangeable
-    # synthetic point-level setting. This test does not model the grouped M6
-    # anatomy structure and therefore does not validate an M6 coverage claim.
+    # Monte Carlo sanity check under an exchangeable synthetic point-level setting.
+    # This does not validate coverage for spatial points nested within anatomies.
     rng = np.random.default_rng(4)
     n_total = 400
     sigma = np.full(n_total, 1.5)
@@ -96,14 +105,14 @@ def test_conformal_coverage_achieves_target_on_exchangeable_data():
         coverage = cal.conformal_coverage(err[val_idx], sigma[val_idx], q_hat)
         if coverage < target:
             below_target_count += 1
+    # This synthetic check is intentionally weak; it only guards gross helper regressions.
     assert below_target_count / n_trials < 0.5
 
 
 def test_conformal_coverage_min_sigma_matches_calibration_side():
-    # Verify that the evaluation helper applies the same retained-domain rule
-    # as the calibration helper. Coverage reported after filtering is coverage
-    # on that retained domain; excluded low-sigma observations must be reported
-    # separately in a scientific analysis.
+    # Verify that calibration and evaluation apply the same retained-domain rule.
+    # Coverage after filtering is conditional on that retained domain; excluded
+    # low-sigma observations remain scientifically relevant and must be reported.
     rng = np.random.default_rng(5)
     n_good = 300
     sigma_good = np.full(n_good, 1.5)
@@ -111,8 +120,8 @@ def test_conformal_coverage_min_sigma_matches_calibration_side():
     err_good = cal.displacement_error(e_good, np.zeros_like(e_good))
 
     n_blind = 100
-    sigma_blind = np.full(n_blind, 0.0001)
-    err_blind = np.full(n_blind, 2.0)
+    sigma_blind = np.full(n_blind, 0.0001)  # deliberately near-zero predicted scale
+    err_blind = np.full(n_blind, 2.0)  # nonzero error on the low-sigma domain
 
     err_all = np.concatenate([err_good, err_blind])
     sigma_all = np.concatenate([sigma_good, sigma_blind])
@@ -121,11 +130,17 @@ def test_conformal_coverage_min_sigma_matches_calibration_side():
     alpha = 0.10
     q_hat = cal.conformal_radius(err_good, sigma_good, alpha=alpha, min_sigma=min_sigma)
 
+    # With filtering disabled, the low-sigma/nonzero-error points reduce coverage.
     coverage_unfiltered = cal.conformal_coverage(err_all, sigma_all, q_hat, min_sigma=0.0)
-    assert coverage_unfiltered < 0.80
+    assert (
+        coverage_unfiltered < 0.80
+    ), "expected unfiltered coverage to be dragged down by blind-spot points"
 
+    # Applying the same threshold reports coverage only on the retained domain.
     coverage_filtered = cal.conformal_coverage(err_all, sigma_all, q_hat, min_sigma=min_sigma)
-    assert coverage_filtered >= 0.85
+    assert (
+        coverage_filtered >= 0.85
+    ), f"expected filtered coverage near target 0.90, got {coverage_filtered}"
 
 
 def test_conformal_coverage_raises_when_all_points_below_min_sigma():
