@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "record": "external-input-identity-audit-diagnostic-2",
+  "workflow_run_id": 36940363311,
+  "source_git_sha": "db9a13bb1822bb064e90998cc063ef722ec701b0",
+  "audit_schema_version": 3,
+  "status": "failed_before_partition_identity_resolution",
+  "observed_boundary": {
+    "authorization_check_passed": true,
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "split_assignment_authorized": false,
+    "dicom_download_performed": false,
+    "heuristic_source_series_selection_performed": false
+  },
+  "failure": {
+    "stage": "legacy NBIA analysis-DOI series lookup",
+    "endpoint_family": "getCollectionOrSeriesForDOI",
+    "requested_challenge_series": 80,
+    "returned_series": 0,
+    "response_size_bytes": 2,
+    "response_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e5d0b4c5023f2d7874d6f91",
+    "error_type": "RuntimeError",
+    "error": "Expected 80 series from TCIA DOI API; found 0",
+    "partition_identity_result_observed": false,
+    "annotation_result_observed": false
+  },
+  "artifact": {
+    "github_artifact_id": 11199497694,
+    "artifact_sha256": "50cc052f9120fd9762a507d53053df3b30c9e14004c68acbaea73e6e71d65cf8",
+    "audit_output_sha256": "621745b2695d9ecdbfbbdf6791f6522e2a415c73b147a319caecf4e42844832e"
+  },
+  "interpretation": [
+    "The hosted runner successfully obtained TCIA authentication and a syntactically valid empty JSON response, so this diagnostic is distinct from the preceding attachment-transport failure.",
+    "The empty legacy DOI lookup does not contradict TCIA's published 60/10/10 challenge counts and does not establish that any official challenge partition is absent.",
+    "The legacy DOI endpoint is removed from the critical identity path before any result-bearing M6 execution."
+  ]
+}
