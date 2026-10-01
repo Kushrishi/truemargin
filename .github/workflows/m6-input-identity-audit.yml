@@ -52,7 +52,15 @@ jobs:
           challenge = request["challenge"]
           assert challenge["doi"] == "10.7937/K9/TCIA.2015.zF0vlOPv"
           assert challenge["expected_training_subjects"] == 60
+          assert challenge["expected_training_series"] == 60
           assert challenge["license"] == "CC BY 3.0"
+          assert (
+              challenge["official_training_image_manifest"]
+              == "ISBI-Prostate-Challenge-Training.tcia"
+          )
+          assert challenge["official_training_image_manifest_url"].endswith(
+              "/ISBI-Prostate-Challenge-Training.tcia?api=v2"
+          )
 
           sources = request["sources"]
           assert set(sources) == {"prostate_3t", "prostate_diagnosis"}
@@ -65,10 +73,14 @@ jobs:
           assert sources["prostate_diagnosis"]["expected_training_subjects"] == 30
 
           rules = request["audit_rules"]
-          assert rules["derive_patient_ids_from_official_training_label_archives"] is True
-          assert rules["query_all_public_mr_series_for_each_derived_patient"] is True
           for key in (
-              "select_source_series",
+              "derive_patient_ids_from_official_training_label_archives",
+              "derive_series_uids_from_official_training_image_manifest",
+              "resolve_exact_official_training_series_in_idc",
+          ):
+              assert rules[key] is True, key
+          for key in (
+              "heuristic_source_series_selection",
               "assign_calibration_evaluation_reserve_roles",
               "download_source_dicoms",
               "run_registration",
@@ -111,7 +123,7 @@ jobs:
                               "calibration_fit_authorized": False,
                               "split_assignment_authorized": False,
                               "dicom_download_performed": False,
-                              "source_series_selected": False,
+                              "heuristic_source_series_selection_performed": False,
                           },
                       },
                       indent=2,
