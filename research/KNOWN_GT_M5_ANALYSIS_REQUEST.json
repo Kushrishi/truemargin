@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "created": "2026-10-01",
+  "milestone": "M5",
+  "purpose": "Frozen secondary analysis of completed M4 known-ground-truth outputs for anatomy heterogeneity, quartile enrichment, blind spots, comparator failures, and durable pointwise evidence preservation.",
+  "m4_execution_git_sha": "9add89e5055ba45eb6c6b93c42da38615891a225",
+  "m4_final_artifact": {
+    "id": 10896650804,
+    "name": "truemargin-known-gt-result-bearing",
+    "digest": "sha256:bd1f76e20c7e4591b5b3113c061c90534ec413bda0a242747625ed6d5f96b728"
+  },
+  "shard_artifacts": {
+    "aaa0044": {"id": 10888669063, "digest": "sha256:c8268a9b1ab5e7e53c3dac7e731bc9fee490f8bb3c0bd4836ad8a63abb166fd7"},
+    "aaa0051": {"id": 10888708567, "digest": "sha256:04ec0558a76f5be4d2edf0de72ec428bf33d6f38a17ca65cad39d751cf997db8"},
+    "aaa0053": {"id": 10888607096, "digest": "sha256:24157610525f556e0b7afa97f880909832a2cc087ee802b8e9b69949b866fa2a"},
+    "aaa0060": {"id": 10888331339, "digest": "sha256:652133d28abbca66c0d21a282d50728504ca2f44b7569924c4a68ac7090a1be7"},
+    "aaa0064": {"id": 10888379480, "digest": "sha256:555c1589254f4c7a28a656ef7ddf085d61ab1050734b6261ee625c60df00d40e"},
+    "aaa0069": {"id": 10888494346, "digest": "sha256:139a6f6e44031e3d1cf12207557128abc45b6c09b00ae6482567c1ec73146d1f"},
+    "aaa0071": {"id": 10889000884, "digest": "sha256:899c75fa65a0fa4680c4ffbf22553cc2a7d6fe84642162947e570262c733012a"},
+    "aaa0072": {"id": 10887691141, "digest": "sha256:0ea56ccea4bffc0f8fc319ab2c1f3dc533b3320f4bbfd03c2f1e87f8683980f9"},
+    "aaa0086": {"id": 10887828727, "digest": "sha256:eeaa0caeadb48a24c77d0a1568a2753647c1b62e2f74876e9cf8262517a6ef4b"},
+    "aaa0087": {"id": 10896047897, "digest": "sha256:9657cce36ea2fa548a168a6a8c4bcc94a131b55a7a24a826d42d877479103be1"}
+  },
+  "expected_structure": {
+    "anatomies": 10,
+    "replicates_per_anatomy": 3,
+    "cases": 30,
+    "points_per_case": 50,
+    "point_rows": 1500
+  },
+  "methods": ["sigma", "ice", "residual", "jacdev"],
+  "frozen_case_metrics": {
+    "rank_informativeness": "Spearman(method_score, known_error)",
+    "quartile_enrichment": "median known error among top score quartile minus median known error among bottom score quartile",
+    "blind_spot": "known_error >= case 75th percentile AND method_score <= case 25th percentile",
+    "blind_spot_rate": "blind_spot_count / all case points"
+  },
+  "m5_descriptive_blind_spot_metrics": {
+    "blind_spot_count": "number of points satisfying the frozen blind-spot definition",
+    "high_error_count": "number of points at or above the case 75th known-error percentile",
+    "blind_spot_fraction_of_high_error": "blind_spot_count / high_error_count",
+    "blind_spot_error_median_mm": "median known error among blind-spot points; NaN if none",
+    "blind_spot_error_max_mm": "maximum known error among blind-spot points; NaN if none"
+  },
+  "aggregation": {
+    "case_to_anatomy": "median across valid cases within each anatomy",
+    "anatomy_to_cohort": "descriptive median and range across assessable anatomies",
+    "formal_unit": "anatomy",
+    "pooled_landmark_inference": false
+  },
+  "failure_handling": {
+    "target_sigma": "all M4-complete cases required",
+    "comparators": "retain method-specific invalid cases and exact recorded failure reasons; do not impute or repair",
+    "minimum_valid_cases_per_anatomy": 2
+  },
+  "durable_outputs": [
+    "pointwise evidence table reconstructed directly from immutable shard checkpoints",
+    "case-level M5 blind-spot severity table",
+    "anatomy-level method table",
+    "method failure inventory",
+    "machine-readable M5 summary",
+    "predefined anatomy-aware figures",
+    "M5 result document"
+  ],
+  "figure_plan": [
+    "anatomy-level Spearman values for all four methods",
+    "anatomy-level top-minus-bottom known-error quartile deltas for all four methods",
+    "anatomy-level blind-spot rates for all four methods",
+    "paired anatomy-level target-minus-ICE Spearman differences"
+  ],
+  "prohibited_post_result_changes": [
+    "new superiority p-values",
+    "pooled-landmark inferential tests",
+    "changing the frozen quartile or blind-spot thresholds",
+    "dropping weak anatomies or failed comparator cases",
+    "selecting only favorable cases for a primary figure",
+    "changing M4 primary or comparator conclusions based on M5"
+  ],
+  "claim_boundary": "M5 is secondary/descriptive interpretation of completed M4 evidence. It cannot convert ranking informativeness into calibration, clinical validity, external generalization, or superiority over ICE."
+}
