@@ -35,7 +35,7 @@ jobs:
               Path("research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json").read_text()
           )
           expected = {
-              "schema_version": 1,
+              "schema_version": 2,
               "milestone": "M6",
               "authorized_mode": "external-input-identity-audit",
               "result_bearing_authorized": False,
@@ -51,32 +51,55 @@ jobs:
 
           challenge = request["challenge"]
           assert challenge["doi"] == "10.7937/K9/TCIA.2015.zF0vlOPv"
-          assert challenge["expected_training_subjects"] == 60
-          assert challenge["expected_training_series"] == 60
+          assert challenge["expected_total_subjects"] == 80
+          assert challenge["expected_total_series"] == 80
           assert challenge["license"] == "CC BY 3.0"
+
+          partitions = challenge["partitions"]
+          assert set(partitions) == {"training", "leaderboard", "test"}
           assert (
-              challenge["official_training_image_manifest"]
+              partitions["training"]["expected_subjects"],
+              partitions["training"]["expected_series"],
+          ) == (60, 60)
+          assert (
+              partitions["leaderboard"]["expected_subjects"],
+              partitions["leaderboard"]["expected_series"],
+          ) == (10, 10)
+          assert (
+              partitions["test"]["expected_subjects"],
+              partitions["test"]["expected_series"],
+          ) == (10, 10)
+          assert (
+              partitions["training"]["official_image_manifest"]
               == "ISBI-Prostate-Challenge-Training.tcia"
           )
-          assert challenge["official_training_image_manifest_url"].endswith(
-              "/ISBI-Prostate-Challenge-Training.tcia?api=v2"
+          assert (
+              partitions["leaderboard"]["official_image_manifest"]
+              == "ISBI-Prostate-Challenge-LeaderBoard.tcia"
+          )
+          assert (
+              partitions["test"]["official_image_manifest"]
+              == "ISBI-Prostate-Challenge-Testing.tcia"
           )
 
           sources = request["sources"]
           assert set(sources) == {"prostate_3t", "prostate_diagnosis"}
+          assert sources["prostate_3t"]["patient_prefix"] == "Prostate3T-01-"
           assert sources["prostate_3t"]["idc_collection_id"] == "prostate_3t"
-          assert sources["prostate_3t"]["expected_training_subjects"] == 30
+          assert sources["prostate_diagnosis"]["patient_prefix"] == "ProstateDx-01-"
           assert (
               sources["prostate_diagnosis"]["idc_collection_id"]
               == "prostate_diagnosis"
           )
-          assert sources["prostate_diagnosis"]["expected_training_subjects"] == 30
 
           rules = request["audit_rules"]
           for key in (
-              "derive_patient_ids_from_official_training_label_archives",
-              "derive_series_uids_from_official_training_image_manifest",
-              "resolve_exact_official_training_series_in_idc",
+              "derive_patient_ids_from_official_challenge_label_archives",
+              "derive_series_uids_from_official_partition_manifests",
+              "resolve_exact_official_series_in_idc",
+              "preserve_official_partition_identity",
+              "preserve_source_collection_identity",
+              "record_scanner_acquisition_metadata",
           ):
               assert rules[key] is True, key
           for key in (
@@ -89,6 +112,7 @@ jobs:
               assert rules[key] is False, key
 
           print("M6_INPUT_IDENTITY_AUTHORIZATION=PASS")
+          print("M6_CHALLENGE_IDENTITY_SURFACE=80")
           print("RESULT_BEARING_AUTHORIZED=False")
           PY
 
@@ -113,7 +137,7 @@ jobs:
               output.write_text(
                   json.dumps(
                       {
-                          "schema_version": 1,
+                          "schema_version": 2,
                           "milestone": "M6",
                           "audit": "external-input-identity",
                           "status": "workflow_failed_before_audit_record",
@@ -149,6 +173,7 @@ jobs:
               "workflow_blob_sha": blob(
                   ".github/workflows/m6-input-identity-audit.yml"
               ),
+              "feasibility_blob_sha": blob("docs/m6_calibration_feasibility.md"),
           }
           output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
           digest = hashlib.sha256(output.read_bytes()).hexdigest()
@@ -165,6 +190,7 @@ jobs:
         with:
           name: truemargin-m6-input-identity-audit
           path: |
+            docs/m6_calibration_feasibility.md
             research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json
             scripts/audit_m6_external_inputs.py
             outputs/m6_input_identity_audit.json
