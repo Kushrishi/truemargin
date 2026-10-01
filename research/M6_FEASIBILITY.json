@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "status": "design_gate",
+  "result_bearing_authorized": false,
+  "question": "Can the frozen hyperparameter-ensemble spread support numerically interpretable local error radii under an anatomy-aware calibration design?",
+  "existing_annotated_cohort": {
+    "total_anatomies": 15,
+    "mechanism_promotion_anatomies": 5,
+    "m4_evaluation_anatomies": 10,
+    "unused_anatomies": 0
+  },
+  "current_cohort_blockers": [
+    "M4 evaluation outcomes have already been observed and cannot serve as a previously unseen confirmatory calibration test set.",
+    "Five promotion anatomies are insufficient for a finite 90% ordinary split-conformal quantile when anatomy is the exchangeability unit.",
+    "Pointwise ROI observations are nested within anatomies and must not be treated as independent exchangeable calibration samples."
+  ],
+  "preferred_external_substrate": {
+    "name": "NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures",
+    "data_doi": "10.7937/K9/TCIA.2015.zF0vlOPv",
+    "training_subjects": 60,
+    "modality": "axial T2-weighted prostate MRI",
+    "roi_source": "central-gland and peripheral-zone expert outlines",
+    "license": "CC BY 3.0"
+  },
+  "candidate_split": {
+    "calibration_anatomies": 20,
+    "confirmatory_evaluation_anatomies": 20,
+    "future_reserve_anatomies": 20,
+    "assignment_rule": "must be deterministic and frozen before registration outcomes"
+  },
+  "candidate_design": {
+    "independence_unit": "anatomy",
+    "preferred_deformation_replicates_per_anatomy": 1,
+    "candidate_roi_points_per_anatomy": 50,
+    "primary_nominal_coverage": 0.9,
+    "secondary_nominal_coverage": [0.8, 0.95],
+    "candidate_nonconformity_score": "known_error_mm / ensemble_sigma_mm",
+    "preferred_primary_low_sigma_semantics": "do not silently exclude near-zero sigma; permit large or infinite radius when warranted",
+    "estimator_retuning_allowed": false
+  },
+  "method_boundary": {
+    "current_iid_conformal_helper_confirmatory_authorized": false,
+    "hierarchical_group_aware_method_required": true,
+    "calibration_novelty_claim_allowed": false
+  },
+  "next_authorized_work": [
+    "external dataset acquisition and identity audit",
+    "geometry-only eligibility and deterministic split design",
+    "hierarchical conformal implementation audit",
+    "legacy calibration-module documentation cleanup",
+    "prospective M6 protocol review"
+  ]
+}
