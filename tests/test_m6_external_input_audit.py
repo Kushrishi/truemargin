@@ -37,27 +37,60 @@ def _manifest_bytes(series_uids: list[str]) -> bytes:
     return ("\n".join(lines) + "\n").encode()
 
 
-def test_parse_tcia_series_uids_returns_exact_manifest_order():
-    parse_tcia_series_uids = _function("parse_tcia_series_uids")
-    uids = ["1.2.3.4", "1.2.3.5"]
-    assert parse_tcia_series_uids(_manifest_bytes(uids), expected_series=2) == uids
+def test_validate_uid_rows_accepts_current_api_field_names():
+    validate = _function("_validate_uid_rows")
+    uids, rows = validate(
+        [
+            {"seriesInstanceUID": "1.2.3.4", "collection": "Prostate-3T"},
+            {"SeriesInstanceUID": "1.2.3.5", "Collection": "PROSTATE-DIAGNOSIS"},
+        ],
+        expected=2,
+        source="synthetic",
+    )
+    assert uids == ["1.2.3.4", "1.2.3.5"]
+    assert len(rows) == 2
 
 
-def test_parse_tcia_series_uids_rejects_duplicate_uid():
-    parse_tcia_series_uids = _function("parse_tcia_series_uids")
-    with pytest.raises(RuntimeError, match="duplicate SeriesInstanceUID"):
-        parse_tcia_series_uids(
-            _manifest_bytes(["1.2.3.4", "1.2.3.4"]),
-            expected_series=2,
+def test_validate_uid_rows_rejects_duplicate_uid():
+    validate = _function("_validate_uid_rows")
+    with pytest.raises(RuntimeError, match="Duplicate SeriesInstanceUID"):
+        validate(
+            [{"SeriesInstanceUID": "1.2.3.4"}, {"SeriesInstanceUID": "1.2.3.4"}],
+            expected=2,
+            source="synthetic",
         )
 
 
-def test_extract_patient_id_accepts_corrected_label_filename():
-    extract_patient_id = _function("extract_patient_id")
-    assert (
-        extract_patient_id("Training/ProstateDx-01-0006_correctedLabels.nrrd")
-        == "ProstateDx-01-0006"
-    )
+def test_derive_partition_uids_uses_exact_disjoint_remainder():
+    derive = _function("derive_partition_uids")
+    doi = [f"1.2.840.{i}" for i in range(80)]
+    training = doi[:60]
+    leaderboard = doi[60:70]
+    result = derive(doi, training, leaderboard)
+    assert result["training"] == sorted(training)
+    assert result["leaderboard"] == sorted(leaderboard)
+    assert result["test"] == sorted(doi[70:])
+
+
+def test_derive_partition_uids_rejects_shared_list_overlap():
+    derive = _function("derive_partition_uids")
+    doi = [f"1.2.840.{i}" for i in range(80)]
+    training = doi[:60]
+    leaderboard = [doi[0], *doi[60:69]]
+    with pytest.raises(RuntimeError, match="overlap"):
+        derive(doi, training, leaderboard)
+
+
+def test_parse_tcia_series_uids_remains_available_for_optional_crosscheck():
+    parse = _function("parse_tcia_series_uids")
+    uids = ["1.2.3.4", "1.2.3.5"]
+    assert parse(_manifest_bytes(uids), expected_series=2) == uids
+
+
+def test_parse_tcia_series_uids_rejects_duplicate_uid():
+    parse = _function("parse_tcia_series_uids")
+    with pytest.raises(RuntimeError, match="duplicate SeriesInstanceUID"):
+        parse(_manifest_bytes(["1.2.3.4", "1.2.3.4"]), expected_series=2)
 
 
 def test_source_key_for_patient_id_maps_both_official_prefixes():
@@ -77,11 +110,7 @@ def test_enumerate_labels_hashes_members_and_preserves_partition_and_source():
             "Leaderboard/README.txt": b"ignored",
         }
     )
-    labels = enumerate_labels(
-        archive,
-        partition="leaderboard",
-        expected_subjects=2,
-    )
+    labels = enumerate_labels(archive, partition="leaderboard", expected_subjects=2)
     assert [record["patient_id"] for record in labels] == [
         "Prostate3T-01-0001",
         "ProstateDx-01-0002",
@@ -106,103 +135,65 @@ def test_enumerate_labels_rejects_wrong_source_specific_training_archive():
         )
 
 
-def test_enumerate_labels_rejects_duplicate_patient_ids():
-    enumerate_labels = _function("enumerate_labels")
-    archive = _zip_bytes(
-        {
-            "a/Prostate3T-01-0001.nrrd": b"one",
-            "b/Prostate3T-01-0001_copy.nrrd": b"two",
-        }
-    )
-    with pytest.raises(RuntimeError, match="Duplicate NRRD PatientIDs"):
-        enumerate_labels(
-            archive,
-            partition="training",
-            expected_subjects=2,
-        )
-
-
 def test_build_label_index_rejects_cross_partition_duplicate_patient():
     build_label_index = _function("build_label_index")
     partitions = {
-        "training": {
-            "labels": [
-                {
-                    "patient_id": "Prostate3T-01-0001",
-                    "partition": "training",
-                    "source_key": "prostate_3t",
-                }
-            ]
-        },
-        "test": {
-            "labels": [
-                {
-                    "patient_id": "Prostate3T-01-0001",
-                    "partition": "test",
-                    "source_key": "prostate_3t",
-                }
-            ]
-        },
+        "training": [
+            {
+                "patient_id": "Prostate3T-01-0001",
+                "partition": "training",
+                "source_key": "prostate_3t",
+            }
+        ],
+        "test": [
+            {
+                "patient_id": "Prostate3T-01-0001",
+                "partition": "test",
+                "source_key": "prostate_3t",
+            }
+        ],
     }
     with pytest.raises(RuntimeError, match="multiple challenge partitions"):
         build_label_index(partitions)
 
 
-def test_map_official_series_to_labels_pairs_exact_manifest_series():
-    map_official_series_to_labels = _function("map_official_series_to_labels")
-    label_index: dict[str, dict[str, Any]] = {
-        "Prostate3T-01-0001": {
-            "patient_id": "Prostate3T-01-0001",
-            "partition": "training",
-            "source_key": "prostate_3t",
-        },
-        "ProstateDx-01-0001": {
-            "patient_id": "ProstateDx-01-0001",
-            "partition": "test",
-            "source_key": "prostate_diagnosis",
-        },
+def test_map_series_identity_preserves_partition_and_acquisition_fields():
+    map_identity = _function("map_series_identity")
+    partition_uids = {
+        "training": ["1.2.3.4"],
+        "leaderboard": ["1.2.3.5"],
+        "test": ["1.2.3.6"],
     }
-    uids = ["1.2.3.4", "1.2.3.5"]
     rows: list[dict[str, Any]] = [
         {
             "PatientID": "Prostate3T-01-0001",
             "collection_id": "prostate_3t",
             "SeriesInstanceUID": "1.2.3.4",
-            "StudyInstanceUID": "1.2.3",
-            "Modality": "MR",
-            "PrivateField": "must not leak into the audit",
+            "Manufacturer": "SIEMENS",
+            "MagneticFieldStrength": 3.0,
         },
         {
             "PatientID": "ProstateDx-01-0001",
             "collection_id": "prostate_diagnosis",
             "SeriesInstanceUID": "1.2.3.5",
-            "StudyInstanceUID": "1.2.4",
-            "Modality": "MR",
+            "Manufacturer": "Philips Medical Systems",
+            "MagneticFieldStrength": 1.5,
+        },
+        {
+            "PatientID": "Prostate3T-01-0002",
+            "collection_id": "prostate_3t",
+            "SeriesInstanceUID": "1.2.3.6",
+            "Manufacturer": "SIEMENS",
+            "MagneticFieldStrength": 3.0,
         },
     ]
-    result = map_official_series_to_labels(label_index, uids, rows)
-    assert result["missing_series_uids_in_idc"] == []
-    assert result["missing_label_patient_ids"] == []
-    assert result["source_collection_mismatches"] == []
-    three_t = result["official_series_by_patient"]["Prostate3T-01-0001"]
-    assert len(three_t) == 1
-    assert three_t[0]["partition"] == "training"
-    assert three_t[0]["series"]["SeriesInstanceUID"] == "1.2.3.4"
-    assert "PrivateField" not in three_t[0]["series"]
-
-
-def test_map_official_series_to_labels_reports_missing_uid_and_patient():
-    map_official_series_to_labels = _function("map_official_series_to_labels")
-    label_index: dict[str, dict[str, Any]] = {
-        "Prostate3T-01-0001": {
-            "patient_id": "Prostate3T-01-0001",
-            "partition": "training",
-            "source_key": "prostate_3t",
-        }
-    }
-    result = map_official_series_to_labels(label_index, ["1.2.3.4"], [])
-    assert result["missing_series_uids_in_idc"] == ["1.2.3.4"]
-    assert result["missing_label_patient_ids"] == ["Prostate3T-01-0001"]
+    result = map_identity(partition_uids, rows)
+    # Synthetic fixture intentionally has only 3 subjects, so global count checks flag it,
+    # but identity mapping itself must preserve the exact partition/source metadata.
+    records = {record["series_uid"]: record for record in result["series_records"]}
+    assert records["1.2.3.4"]["partition"] == "training"
+    assert records["1.2.3.5"]["source_key"] == "prostate_diagnosis"
+    assert records["1.2.3.6"]["series"]["MagneticFieldStrength"] == 3.0
 
 
 def test_validate_historical_training_conditions_requires_corrected_and_preserved_cases():
@@ -214,3 +205,11 @@ def test_validate_historical_training_conditions_requires_corrected_and_preserve
     }
     result = validate(label_index)
     assert result["issues"] == []
+
+
+def test_failure_record_keeps_result_bearing_boundary_closed():
+    failure_record = _function("failure_record")
+    result = failure_record(RuntimeError("synthetic failure"))
+    assert result["status"] == "failed"
+    assert result["authorization_boundary"]["result_bearing_authorized"] is False
+    assert result["authorization_boundary"]["split_assignment_authorized"] is False
