@@ -55,39 +55,55 @@ def test_parse_tcia_series_uids_rejects_duplicate_uid():
 def test_extract_patient_id_accepts_corrected_label_filename():
     extract_patient_id = _function("extract_patient_id")
     assert (
-        extract_patient_id("Training/ProstateDx-01-0006_correctedLabels.nrrd", "ProstateDx-01-")
+        extract_patient_id("Training/ProstateDx-01-0006_correctedLabels.nrrd")
         == "ProstateDx-01-0006"
     )
 
 
-def test_extract_patient_id_rejects_wrong_source_prefix():
-    extract_patient_id = _function("extract_patient_id")
-    with pytest.raises(ValueError, match="unexpected source PatientID"):
-        extract_patient_id("Training/Prostate3T-01-0001.nrrd", "ProstateDx-01-")
+def test_source_key_for_patient_id_maps_both_official_prefixes():
+    source_key_for_patient_id = _function("source_key_for_patient_id")
+    assert source_key_for_patient_id("Prostate3T-01-0001") == "prostate_3t"
+    assert source_key_for_patient_id("ProstateDx-01-0001") == "prostate_diagnosis"
+    with pytest.raises(ValueError, match="exactly one source"):
+        source_key_for_patient_id("Unknown-01-0001")
 
 
-def test_enumerate_labels_hashes_members_and_preserves_original_name():
+def test_enumerate_labels_hashes_members_and_preserves_partition_and_source():
     enumerate_labels = _function("enumerate_labels")
     archive = _zip_bytes(
         {
-            "Training/ProstateDx-01-0006_correctedLabels.nrrd": b"corrected-label",
-            "Training/ProstateDx-01-0055.nrrd": b"dimension-mismatch-case",
-            "Training/README.txt": b"ignored",
+            "Leaderboard/Prostate3T-01-0001.nrrd": b"three-t",
+            "Leaderboard/ProstateDx-01-0002.nrrd": b"diagnosis",
+            "Leaderboard/README.txt": b"ignored",
         }
     )
     labels = enumerate_labels(
         archive,
-        expected_prefix="ProstateDx-01-",
+        partition="leaderboard",
         expected_subjects=2,
     )
     assert [record["patient_id"] for record in labels] == [
-        "ProstateDx-01-0006",
-        "ProstateDx-01-0055",
+        "Prostate3T-01-0001",
+        "ProstateDx-01-0002",
     ]
-    assert labels[0]["corrected_label_filename"] is True
-    assert labels[0]["archive_member"].endswith("_correctedLabels.nrrd")
-    assert labels[1]["corrected_label_filename"] is False
+    assert [record["source_key"] for record in labels] == [
+        "prostate_3t",
+        "prostate_diagnosis",
+    ]
+    assert all(record["partition"] == "leaderboard" for record in labels)
     assert all(len(record["sha256"]) == 64 for record in labels)
+
+
+def test_enumerate_labels_rejects_wrong_source_specific_training_archive():
+    enumerate_labels = _function("enumerate_labels")
+    archive = _zip_bytes({"Training/Prostate3T-01-0001.nrrd": b"wrong-source"})
+    with pytest.raises(RuntimeError, match="expected source prostate_diagnosis"):
+        enumerate_labels(
+            archive,
+            partition="training",
+            expected_subjects=1,
+            expected_source_key="prostate_diagnosis",
+        )
 
 
 def test_enumerate_labels_rejects_duplicate_patient_ids():
@@ -101,16 +117,50 @@ def test_enumerate_labels_rejects_duplicate_patient_ids():
     with pytest.raises(RuntimeError, match="Duplicate NRRD PatientIDs"):
         enumerate_labels(
             archive,
-            expected_prefix="Prostate3T-01-",
+            partition="training",
             expected_subjects=2,
         )
 
 
+def test_build_label_index_rejects_cross_partition_duplicate_patient():
+    build_label_index = _function("build_label_index")
+    partitions = {
+        "training": {
+            "labels": [
+                {
+                    "patient_id": "Prostate3T-01-0001",
+                    "partition": "training",
+                    "source_key": "prostate_3t",
+                }
+            ]
+        },
+        "test": {
+            "labels": [
+                {
+                    "patient_id": "Prostate3T-01-0001",
+                    "partition": "test",
+                    "source_key": "prostate_3t",
+                }
+            ]
+        },
+    }
+    with pytest.raises(RuntimeError, match="multiple challenge partitions"):
+        build_label_index(partitions)
+
+
 def test_map_official_series_to_labels_pairs_exact_manifest_series():
     map_official_series_to_labels = _function("map_official_series_to_labels")
-    labels_by_source: dict[str, list[dict[str, Any]]] = {
-        "prostate_3t": [{"patient_id": "Prostate3T-01-0001"}],
-        "prostate_diagnosis": [{"patient_id": "ProstateDx-01-0001"}],
+    label_index: dict[str, dict[str, Any]] = {
+        "Prostate3T-01-0001": {
+            "patient_id": "Prostate3T-01-0001",
+            "partition": "training",
+            "source_key": "prostate_3t",
+        },
+        "ProstateDx-01-0001": {
+            "patient_id": "ProstateDx-01-0001",
+            "partition": "test",
+            "source_key": "prostate_diagnosis",
+        },
     }
     uids = ["1.2.3.4", "1.2.3.5"]
     rows: list[dict[str, Any]] = [
@@ -130,22 +180,37 @@ def test_map_official_series_to_labels_pairs_exact_manifest_series():
             "Modality": "MR",
         },
     ]
-    result = map_official_series_to_labels(labels_by_source, uids, rows)
+    result = map_official_series_to_labels(label_index, uids, rows)
     assert result["missing_series_uids_in_idc"] == []
     assert result["missing_label_patient_ids"] == []
     assert result["source_collection_mismatches"] == []
     three_t = result["official_series_by_patient"]["Prostate3T-01-0001"]
     assert len(three_t) == 1
-    assert three_t[0]["SeriesInstanceUID"] == "1.2.3.4"
-    assert "PrivateField" not in three_t[0]
+    assert three_t[0]["partition"] == "training"
+    assert three_t[0]["series"]["SeriesInstanceUID"] == "1.2.3.4"
+    assert "PrivateField" not in three_t[0]["series"]
 
 
 def test_map_official_series_to_labels_reports_missing_uid_and_patient():
     map_official_series_to_labels = _function("map_official_series_to_labels")
-    labels_by_source: dict[str, list[dict[str, Any]]] = {
-        "prostate_3t": [{"patient_id": "Prostate3T-01-0001"}],
-        "prostate_diagnosis": [],
+    label_index: dict[str, dict[str, Any]] = {
+        "Prostate3T-01-0001": {
+            "patient_id": "Prostate3T-01-0001",
+            "partition": "training",
+            "source_key": "prostate_3t",
+        }
     }
-    result = map_official_series_to_labels(labels_by_source, ["1.2.3.4"], [])
+    result = map_official_series_to_labels(label_index, ["1.2.3.4"], [])
     assert result["missing_series_uids_in_idc"] == ["1.2.3.4"]
     assert result["missing_label_patient_ids"] == ["Prostate3T-01-0001"]
+
+
+def test_validate_historical_training_conditions_requires_corrected_and_preserved_cases():
+    validate = _function("validate_historical_training_conditions")
+    label_index = {
+        "ProstateDx-01-0006": {"corrected_label_filename": True},
+        "ProstateDx-01-0055": {"corrected_label_filename": False},
+        "ProstateDx-01-0035": {"corrected_label_filename": False},
+    }
+    result = validate(label_index)
+    assert result["issues"] == []
