@@ -1,19 +1,19 @@
-"""
-calibration.py
---------------
-The heart of TrueMargin: given (a) the TRUE displacement between two images and
-(b) an estimator's predicted displacement + predicted per-point uncertainty,
-answer the one question that makes this a company:
+"""Calibration and coverage helpers for registration-uncertainty research.
 
-    "When the model says it's 90% sure the true point is inside this bubble,
-     is the true point actually inside 90% of the time?"
+This module contains generic primitives for:
 
-That is CALIBRATION. Most registration work reports average error (TRE) and stops.
-Nobody ships an honest, guaranteed confidence volume. This module builds it.
+- displacement-error magnitudes;
+- parametric Gaussian-scale reliability diagnostics;
+- robust scalar or binned scale fitting; and
+- an ordinary split-conformal radius based on ``error / sigma`` scores.
 
-All functions are numpy-only so they run anywhere, on synthetic OR real
-registration output. Later, the same functions consume SimpleITK/elastix/ProsRegNet
-displacement fields instead of synthetic ones -- the calibration harness never changes.
+These helpers are not, by themselves, the TrueMargin M6 confirmatory method. Ordinary
+split conformal requires exchangeability of the calibration and future score units. The
+M6 design treats spatial observations as nested within anatomies, so a separately
+reviewed group-aware protocol is required before any confirmatory coverage claim.
+
+No clinical, generalization, or formal M6 coverage claim follows from calling these
+functions alone.
 """
 
 from __future__ import annotations
@@ -25,22 +25,28 @@ import numpy as np
 # Error and uncertainty primitives
 # ----------------------------------------------------------------------
 def displacement_error(u_est: np.ndarray, u_true: np.ndarray) -> np.ndarray:
-    """Per-point error-vector magnitude |u_est - u_true|.
+    """Return per-point error-vector magnitude ``|u_est - u_true|``.
 
-    u_est, u_true: arrays shaped (D, ...) where D is spatial dim (2 or 3).
-    Returns: array shaped (...) of error magnitudes (e.g. in mm if inputs are mm).
+    ``u_est`` and ``u_true`` are arrays shaped ``(D, ...)`` where ``D`` is the
+    spatial dimension. The returned array has shape ``(...)`` and inherits the
+    input distance units.
     """
     e = u_est - u_true
     return np.sqrt(np.sum(e * e, axis=0))
 
 
 def coverage_radius(sigma: np.ndarray, p: float, ndim: int = 2) -> np.ndarray:
-    """Radius of the predicted 'confidence bubble' at nominal level p.
+    """Return a parametric radius at nominal level ``p``.
 
-    Model assumption: each component of the error ~ N(0, sigma^2), independent.
-    Then the error MAGNITUDE follows a chi distribution scaled by sigma.
-      - ndim=2 (Rayleigh):    r_p = sigma * sqrt(-2 ln(1 - p))
-      - ndim=3 (Maxwell):     r_p = sigma * sqrt(chi2.ppf(p, df=3))
+    The reference model assumes independent zero-mean Gaussian error components
+    with common scale ``sigma``. Under that model, the error magnitude follows a
+    chi distribution scaled by ``sigma``:
+
+    - ``ndim=2``: ``r_p = sigma * sqrt(-2 ln(1 - p))``;
+    - ``ndim=3``: ``r_p = sigma * sqrt(chi2.ppf(p, df=3))``.
+
+    This is a model-based reference calculation, not a distribution-free coverage
+    guarantee.
     """
     p = float(np.clip(p, 1e-6, 1 - 1e-9))
     if ndim == 2:
@@ -55,7 +61,7 @@ def coverage_radius(sigma: np.ndarray, p: float, ndim: int = 2) -> np.ndarray:
 
 
 def empirical_coverage(err_mag: np.ndarray, sigma: np.ndarray, p: float, ndim: int = 2) -> float:
-    """Fraction of points whose TRUE error falls inside the predicted level-p bubble."""
+    """Return the observed fraction with error below the parametric level-``p`` radius."""
     r = coverage_radius(sigma, p, ndim=ndim)
     return float(np.mean(err_mag <= r))
 
@@ -66,11 +72,11 @@ def empirical_coverage(err_mag: np.ndarray, sigma: np.ndarray, p: float, ndim: i
 def reliability_curve(
     err_mag: np.ndarray, sigma: np.ndarray, ndim: int = 2, levels: np.ndarray | None = None
 ):
-    """Return (nominal_levels, empirical_coverage) — the reliability diagram data.
+    """Return nominal levels and empirical coverage under the parametric radius model.
 
-    Perfectly calibrated  -> empirical == nominal (the diagonal).
-    Below the diagonal     -> OVERCONFIDENT (bubbles too small; truth escapes).
-    Above the diagonal     -> underconfident (bubbles needlessly large).
+    Agreement with the diagonal indicates that the assumed scale model is
+    numerically compatible with the evaluated sample at those levels. The curve
+    alone does not establish exchangeability, external validity, or clinical use.
     """
     if levels is None:
         levels = np.linspace(0.05, 0.99, 40)
@@ -79,40 +85,30 @@ def reliability_curve(
 
 
 def expected_calibration_error(levels: np.ndarray, emp: np.ndarray) -> float:
-    """Mean absolute gap between the reliability curve and the diagonal.
-    0 == perfectly calibrated. Bigger == more dishonest confidence.
-    """
+    """Return the mean absolute gap between nominal and empirical coverage."""
     return float(np.mean(np.abs(emp - levels)))
 
 
 # ----------------------------------------------------------------------
-# Recalibration (the 'fix' — paper #2 in the plan)
+# Parametric scale fitting
 # ----------------------------------------------------------------------
 def fit_variance_scale(
     err_mag_cal: np.ndarray, sigma_cal: np.ndarray, ndim: int = 2, min_sigma: float = 1e-6
 ) -> float:
-    """Fit ONE global scale s so that s*sigma is well-calibrated, on a calibration split.
+    """Fit one robust global multiplier for ``sigma`` on a calibration sample.
 
-    Under the Gaussian model, ratio_i = err_i^2 / (ndim * sigma_i^2) satisfies
-    ratio_i = s^2 * (chi2(ndim) sample / ndim). The textbook MLE takes the MEAN
-    of these ratios (mean of chi2(ndim)/ndim is exactly 1, so s^2 = mean(ratio)
-    directly). But the mean is not robust: a handful of points where the
-    ensemble's 5 registration attempts happened to land on nearly the exact
-    same answer (near-zero sigma -- genuinely observed on real 3D data with a
-    coarse mesh, not a bug) blow the ratio up toward infinity for any nonzero
-    error, and those few extreme values can dominate the mean entirely (seen
-    in practice: a mean-based fit gave s in the hundreds/thousands, clearly
-    not a real calibration number).
+    Under the isotropic Gaussian component model,
+    ``err^2 / (ndim * sigma^2)`` scales with ``chi2(ndim) / ndim``. This helper
+    estimates a multiplicative scale from the median ratio and normalizes by the
+    population median of that reference distribution. The median is used for
+    robustness to extreme ratios from very small positive ``sigma`` values.
 
-    This uses the MEDIAN instead, which is far less sensitive to that kind of
-    contamination, then corrects for the fact that median(chi2(ndim)/ndim) is
-    NOT 1 (unlike the mean) -- dividing by that known correction factor keeps
-    the estimate mathematically unbiased rather than just "more robust but
-    quietly wrong."
+    Points with ``sigma < min_sigma`` are excluded from the fit. That exclusion
+    changes the population to which the fitted scale applies and must be reported
+    when the helper is used in an analysis.
 
-    min_sigma: points with sigma below this are still excluded outright (not
-    just epsilon-protected) since a literal sigma=0 is a divide-by-zero, not
-    a small-but-real value.
+    This is a parametric scale estimator, not a conformal procedure and not an M6
+    confirmatory method.
     """
     from scipy.stats import chi2
 
@@ -123,7 +119,7 @@ def fit_variance_scale(
             "nothing usable to fit a scale from."
         )
     ratio = (err_mag_cal[keep] ** 2) / (ndim * (sigma_cal[keep] ** 2))
-    correction = chi2.ppf(0.5, df=ndim) / ndim  # median(chi2(ndim)/ndim), != 1
+    correction = chi2.ppf(0.5, df=ndim) / ndim
     s2 = np.median(ratio) / correction
     return float(np.sqrt(s2))
 
@@ -135,29 +131,20 @@ def fit_variance_scale_binned(
     n_bins: int = 5,
     min_sigma: float = 1e-6,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Like fit_variance_scale, but fits a SEPARATE scale per bin of predicted
-    sigma, instead of one global number for every point.
+    """Fit separate robust scale multipliers across bins of predicted ``sigma``.
 
-    Why: a single global scale assumes the model is wrong by the same relative
-    amount everywhere. On real data that assumption can fail -- e.g. it might
-    be mildly overconfident where sigma is already large, and wildly
-    overconfident where sigma is small, in which case one global scale either
-    undercorrects the bad region or overcorrects the already-okay one (this is
-    exactly what we saw on the real 15-patient result: one scale turned
-    overconfidence into overcorrection).
-
-    Points with sigma < min_sigma are dropped BEFORE binning (see
-    fit_variance_scale's docstring for why): sorting by sigma means these
-    degenerate points would otherwise cluster into the first bin(s) and blow
-    up that bin's fitted scale into a meaningless number.
-
-    Points are sorted by predicted sigma and split into n_bins equal-sized
-    groups; fit_variance_scale() is applied within each group independently.
+    This exploratory helper relaxes the assumption that one multiplicative scale
+    is adequate across the full ``sigma`` range. Points with ``sigma < min_sigma``
+    are removed before binning, then the retained points are sorted by ``sigma``
+    and split into approximately equal-sized groups. ``fit_variance_scale`` is
+    applied within each group.
 
     Returns:
-        bin_edges: sigma values marking bin boundaries (length n_bins+1)
-        scales: fitted scale per bin (length n_bins)
-    Use apply_binned_scale() to apply this to new (unseen) points.
+        ``bin_edges``: sigma values marking bin boundaries, length ``n_bins + 1``.
+        ``scales``: fitted scale for each bin, length ``n_bins``.
+
+    This data-adaptive binned fit is not a distribution-free calibration guarantee
+    and is not authorized as the confirmatory M6 method.
     """
     keep = sigma_cal >= min_sigma
     n_dropped = (~keep).sum()
@@ -180,18 +167,15 @@ def fit_variance_scale_binned(
             for e, s in zip(bins_err, bins_sigma, strict=True)
         ]
     )
-    # Bin edges = the sigma value at the start of each bin, plus the max sigma
-    # seen, so apply_binned_scale can look up which bin a new point falls into.
     edges = np.array([b[0] for b in bins_sigma] + [sigma_sorted[-1]])
     return edges, scales
 
 
 def apply_binned_scale(sigma: np.ndarray, bin_edges: np.ndarray, scales: np.ndarray) -> np.ndarray:
-    """Apply per-bin scales (from fit_variance_scale_binned) to new sigma values.
+    """Apply previously fitted per-bin scales to ``sigma`` values.
 
-    Each point's sigma is matched to the bin whose edges it falls within, and
-    scaled by that bin's fitted factor. Points outside the fitted range are
-    clamped to the nearest bin's scale rather than extrapolated.
+    Values outside the fitted sigma range are assigned the nearest edge bin rather
+    than extrapolated beyond the learned scales.
     """
     bin_idx = np.searchsorted(bin_edges, sigma, side="right") - 1
     bin_idx = np.clip(bin_idx, 0, len(scales) - 1)
@@ -199,51 +183,29 @@ def apply_binned_scale(sigma: np.ndarray, bin_edges: np.ndarray, scales: np.ndar
 
 
 # ----------------------------------------------------------------------
-# Split-conformal prediction (a formally guaranteed alternative to
-# fit_variance_scale -- see milestone 3, docs/roadmap.md)
+# Ordinary split-conformal score primitive
 # ----------------------------------------------------------------------
 def conformal_radius(
     err_mag_cal: np.ndarray, sigma_cal: np.ndarray, alpha: float = 0.10, min_sigma: float = 0.01
 ) -> float:
-    """Split-conformal calibration: a DISTRIBUTION-FREE alternative to
-    fit_variance_scale.
+    """Return an ordinary split-conformal multiplier for ``error / sigma`` scores.
 
-    fit_variance_scale (and fit_variance_scale_binned) assume the error
-    follows a specific parametric model (error components ~ N(0, sigma^2)),
-    then fit a scale to make that assumed model match the data as well as
-    possible on average. That's a reasonable, standard approach, but the
-    resulting coverage guarantee is only as good as the Gaussian assumption
-    -- if real errors are heavier-tailed or skewed, the "1-alpha confidence
-    region" may not actually contain the true point 1-alpha of the time.
+    For retained calibration units, the nonconformity score is
+    ``err_mag_cal / sigma_cal``. Let ``n`` be the number of retained calibration
+    scores and ``k = ceil((n + 1) * (1 - alpha))``. The returned multiplier is the
+    ``k``-th smallest score; if ``k > n``, no finite order statistic can provide
+    the requested ordinary split-conformal level and the function returns infinity.
 
-    Split-conformal prediction sidesteps the parametric assumption entirely.
-    It only assumes the calibration and future (validation/test) points are
-    EXCHANGEABLE (a weaker, more defensible assumption than "errors are
-    Gaussian" -- roughly, that calibration and future points are drawn the
-    same way, not that they follow any particular distribution). Under that
-    assumption, scaling sigma by the returned q_hat gives a MATHEMATICALLY
-    GUARANTEED marginal coverage of at least (1-alpha), regardless of the
-    true error distribution's shape.
+    The standard finite-sample marginal guarantee applies only when the calibration
+    scores and the future score unit satisfy the required exchangeability conditions
+    and the same score/domain rule is used prospectively. In particular, this helper
+    does **not** make spatial points nested within the same anatomy exchangeable.
+    TrueMargin M6 therefore requires a separately reviewed anatomy-aware method.
 
-    Method: compute a nonconformity score for each calibration point,
-    s_i = err_i / sigma_i (how many "sigma-units" the true error actually
-    was). q_hat is the ceil((n+1)(1-alpha))/n empirical quantile of these
-    scores -- NOT simply the (1-alpha) quantile; this finite-sample
-    correction (from Vovk et al.'s conformal prediction theory) is what
-    makes the guarantee exact rather than approximate for finite n.
-
-    min_sigma: calibration points with sigma below this are excluded. This
-    matters MORE here than in fit_variance_scale: the ratio-based
-    nonconformity score s_i = err_i/sigma_i is directly, catastrophically
-    sensitive to near-zero sigma (a single point with real error and
-    sigma=0.0007 produces a score in the thousands, dominating the whole
-    quantile), whereas fit_variance_scale's median-based estimator is far
-    more robust to a handful of such points. The default (0.01) matches the
-    blind-spot threshold used throughout this project's diagnostics (see
-    docs/real_data_findings.md Result 3) rather than an arbitrary small
-    epsilon (1e-6 was tried first here and was not aggressive enough --
-    see docs/roadmap.md milestone 3 for the empirical finding that
-    motivated raising this default).
+    ``min_sigma`` defines a retained-score domain. Any coverage interpretation after
+    filtering applies only to that prospectively defined retained population; excluded
+    low-sigma observations must be reported separately and cannot be silently removed
+    to improve coverage.
     """
     keep = sigma_cal >= min_sigma
     if keep.sum() == 0:
@@ -253,19 +215,6 @@ def conformal_radius(
         )
     scores = err_mag_cal[keep] / sigma_cal[keep]
     n = len(scores)
-    # Exact split-conformal quantile (Vovk et al.): q_hat is the k-th SMALLEST
-    # of the n calibration scores (1-indexed), where k = ceil((n+1)(1-alpha)).
-    # This was previously computed via np.quantile(scores, k/n, method="higher"),
-    # which is NOT equivalent -- np.quantile's "higher" interpolation rounds a
-    # continuous rank UP to the next order statistic, silently returning the
-    # (k+1)-th smallest value instead of the k-th for interior k. That bug was
-    # caught by an independent audit (verified via direct order-statistic
-    # comparison and a 200,000-trial Monte Carlo check): it made the interval
-    # slightly too conservative rather than invalid, but it did not implement
-    # the formula the code claimed to. Fixed here by taking the k-th order
-    # statistic directly, with the standard conformal-prediction convention
-    # that if k > n (not enough calibration points to guarantee this alpha
-    # at all), q_hat is infinite -- no finite radius can offer the guarantee.
     k = int(np.ceil((n + 1) * (1 - alpha)))
     if k > n:
         return float("inf")
@@ -275,29 +224,16 @@ def conformal_radius(
 def conformal_coverage(
     err_mag: np.ndarray, sigma: np.ndarray, q_hat: float, min_sigma: float = 0.01
 ) -> float:
-    """Empirical fraction of points whose true error falls within the
-    conformal radius q_hat * sigma. On held-out exchangeable data, this
-    should come out close to (or above) the target (1-alpha) used to fit
-    q_hat -- that's the guarantee conformal_radius provides, and this
-    function is how you empirically check it actually held.
+    """Return empirical coverage of ``q_hat * sigma`` on the retained domain.
 
-    min_sigma MUST match the value passed to conformal_radius when q_hat was
-    fit. Bug found and fixed here: conformal_radius excludes calibration
-    points with sigma < min_sigma before fitting q_hat (see its docstring --
-    near-zero sigma makes the ratio-based nonconformity score blow up), but
-    this function previously had no min_sigma filter at all, so it tested
-    q_hat against a validation set that still included those same degenerate
-    points. Since q_hat * sigma is tiny whenever sigma is near zero, any
-    validation point with near-zero sigma and nonzero real error is
-    essentially guaranteed to "fail" coverage regardless of how good q_hat
-    is -- an asymmetry between calibration and validation that breaks
-    conformal prediction's exchangeability assumption and its guarantee
-    along with it (calibration and test scores must be produced by the SAME
-    rule). Excluding these points from BOTH sides restores that symmetry.
-    Points with sigma < min_sigma are a real, disclosed blind spot (tracked
-    separately throughout this project, e.g. scripts/06's blind-spot
-    diagnostic) -- this function's result should be reported alongside how
-    many/which fraction of points were excluded, not silently.
+    The same ``min_sigma`` rule used during calibration should be applied when the
+    intended evaluation population is the retained domain. This function reports an
+    empirical fraction only; it does not itself establish conformal validity. Any
+    finite-sample guarantee depends on the design assumptions used to obtain
+    ``q_hat``, including the relevant exchangeability unit.
+
+    Observations excluded by ``min_sigma`` remain scientifically relevant failures or
+    abstentions and should be counted and reported separately.
     """
     keep = sigma >= min_sigma
     if keep.sum() == 0:
@@ -309,10 +245,10 @@ def conformal_coverage(
 
 
 # ----------------------------------------------------------------------
-# Geometric metrics (accuracy, for context — NOT the moat)
+# Geometric accuracy summaries
 # ----------------------------------------------------------------------
 def tre(u_est: np.ndarray, u_true: np.ndarray, landmarks=None) -> dict:
-    """Target Registration Error summary (mm) over all points or at landmarks."""
+    """Return target-registration-error summary statistics."""
     err = displacement_error(u_est, u_true)
     if landmarks is not None:
         err = err[landmarks]
