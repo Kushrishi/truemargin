@@ -114,7 +114,8 @@ def _request(
             if attempt + 1 == NETWORK_ATTEMPTS:
                 break
             time.sleep(NETWORK_BACKOFF_SECONDS[min(attempt, len(NETWORK_BACKOFF_SECONDS) - 1)])
-    raise RuntimeError(f"Network request failed after {NETWORK_ATTEMPTS} attempts: {url}") from last_error
+    message = f"Network request failed after {NETWORK_ATTEMPTS} attempts: {url}"
+    raise RuntimeError(message) from last_error
 
 
 def _post_json(url: str, payload: dict[str, Any]) -> dict[str, Any]:
