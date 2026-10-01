@@ -1,12 +1,10 @@
 # Research roadmap
 
-**Updated:** 2026-09-25  
+**Updated:** 2026-10-01  
 **Active program:** known-ground-truth registration-uncertainty evaluation  
-**Target:** a defensible comparative study of when local registration-uncertainty
-or quality surrogates are informative about true local spatial error
+**Target:** a defensible comparative study of when local registration-uncertainty or quality surrogates are informative about true local spatial error
 
-Frozen protocols and amendments remain authoritative for result-defining
-choices. This roadmap defines project-level milestones only.
+Frozen protocols and amendments remain authoritative for result-defining choices. This roadmap defines project-level milestones only.
 
 ## M1 — Curated public research surface
 
@@ -16,7 +14,7 @@ Completed requirements:
 
 - public repository separated from legacy product/manuscript history;
 - current research question, claims, decisions, and related work recorded;
-- known-ground-truth protocol + pre-result Amendment 1 preserved;
+- known-ground-truth protocol and pre-result amendments preserved;
 - public protocol contents self-verifying against immutable Git blob identity;
 - current implementation aligned;
 - Ruff, Black, mypy, and the full test suite green.
@@ -25,84 +23,85 @@ Completed requirements:
 
 **State:** complete — amended full preflight passed 30 / 30 and reviewed evidence is preserved
 
-Goal: validate the frozen 30 synthetic cases before any estimator registration.
+The frozen 30 synthetic cases across ten held-out anatomies passed the amended geometry/provenance preflight before estimator registration.
 
-Required checks:
-
-- all 10 held-out anatomies resolve to the frozen T2 series;
-- required HECaP masks resolve with recorded provenance;
-- 3 deformation replicates exist per anatomy;
-- transform direction matches the frozen protocol;
-- warped fixed-domain ROI is valid;
-- exactly 50 unique eligible points are sampled per case;
-- sampled points remain in the intended source/fixed domain;
-- no prohibited folding or invalid geometry occurs;
-- acquisition and geometry evidence are preserved and reviewed.
-
-This milestone authorizes geometry only. It does not authorize any of the 270
-planned estimator registrations.
+This milestone validated geometry only and did not establish uncertainty informativeness.
 
 ## M3 — Comparator protocol freeze
 
 **State:** complete
 
-Goal: define and implement the paper-level comparator set before comparator outcomes or the
-primary known-GT outcome can influence method selection.
+The prospectively frozen direct local set is:
 
-Frozen direct local set:
-
-1. the frozen nine-member hyperparameter-ensemble sigma target;
+1. nine-member hyperparameter-ensemble sigma;
 2. ensemble-mean inverse-consistency error;
 3. same-modality absolute post-registration residual;
 4. ensemble-mean Jacobian deviation `abs(J - 1)`.
 
-Contrastive Discrepancy was prospectively audited and is excluded from the
-current confirmatory study because its authors' released Anonymous-GitHub
-snapshot cannot be retrieved reproducibly from clean hosted runners: both
-current/legacy public API requests returned HTTP 403 and hosted Chrome received
-only Cloudflare security verification. No bespoke analogue is substituted.
+Contrastive Discrepancy was prospectively audited and excluded from the current confirmatory study because the authors' released code snapshot could not be retrieved reproducibly from clean hosted runners. No bespoke analogue was substituted.
 
-Transformation-equivariance UQ and CONReg remain related work rather than forced
-direct baselines because their demonstrated model/training setting does not
-match the classical B-spline study.
-
-The direct-comparator primitives, orchestration, method-specific failure
-handling, anatomy aggregation, Holm correction, paired bootstrap summaries, and
-result-bearing authorization guard are implemented and tested before outcomes.
-The frozen result-bearing budget is 540 registrations.
+The direct-comparator primitives, method-specific failure handling, anatomy aggregation, multiplicity handling for secondary sign tests, paired bootstrap summaries, execution orchestration, and result-bearing authorization guard were implemented before outcomes. The frozen result-bearing budget was 540 registrations.
 
 ## M4 — Primary known-ground-truth experiment
 
-**State:** authorized prospectively; execution pending
+**State:** complete — primary pointwise informativeness result positive within the frozen study
 
-Frozen primary design:
+The source-pinned result-bearing workflow completed on 2026-09-26.
+
+Frozen design:
 
 - 10 held-out anatomies;
 - 3 deformation replicates per anatomy;
 - 30 cases;
 - 9 hyperparameter-ensemble registrations per case;
-- 270 total planned registrations;
+- 270 forward registrations;
+- 270 reverse registrations for the ICE comparator;
 - 50 frozen fixed-domain ROI locations per case;
-- per-case Spearman association between local uncertainty and known error;
+- per-case Spearman association between uncertainty and known error;
 - anatomy-level aggregation;
 - exact one-sided anatomy-level sign test;
 - 10,000-replicate anatomy bootstrap interval.
 
-Authorization is frozen in `research/KNOWN_GT_RUN_REQUEST.json`. It pins the reviewed M2 geometry record, completed M3 comparator implementation, exact source/orchestration identities, CD=false decision, and the 540-registration budget. Ten frozen anatomy shards create provenance-checked checkpoints; the unchanged canonical runner performs the sole final 30-case aggregation. No primary statistic, anatomy, seed, estimator, ROI rule, or comparator definition may be retuned after observing the result.
+Primary result:
 
-## M5 — Informativeness and blind-spot comparison
+- 30 / 30 primary cases complete;
+- 10 / 10 anatomy-level associations positive;
+- median anatomy Spearman = **0.6841**;
+- anatomy-bootstrap 95% interval = **[0.3048, 0.8284]**;
+- exact one-sided anatomy sign-test **p = 0.0009766**;
+- median anatomy blind-spot rate = **0.0** under the frozen definition.
 
-**State:** contingent on M3-M4
+Comparator context:
 
-Evaluate methods on distinct questions rather than a single winner score:
+- ICE median anatomy Spearman = **0.7203**;
+- residual = **0.2851**;
+- Jacobian deviation = **0.1689**.
 
-- local rank informativeness;
-- high-error enrichment at high reported uncertainty/quality;
-- frequency and severity of high-error / low-uncertainty blind spots;
-- operational failures and invalid registrations;
-- anatomy-level variability.
+Paired target-minus-comparator bootstrap intervals were positive for residual and Jacobian deviation, but the target-minus-ICE interval crossed zero. M4 therefore supports pointwise rank informativeness of the promoted sigma but does not establish superiority over ICE.
 
-Negative comparator results remain part of the study.
+Durable records:
+
+- `docs/hyperparameter_known_gt_result.md`;
+- `research/KNOWN_GT_M4_RESULT.json`.
+
+No completed M4 statistic, anatomy, seed, estimator member, ROI rule, comparator definition, or case may be retuned after observing the result.
+
+## M5 — Informativeness, comparator, and blind-spot analysis
+
+**State:** active
+
+Goal: turn the completed M4 outputs into paper-level interpretation without introducing a post-hoc winner metric.
+
+Required work:
+
+- preserve method-specific invalid cases and operational failures;
+- characterize high-error / low-reported-uncertainty blind spots by anatomy and case;
+- produce anatomy-aware comparator figures and tables from frozen outputs;
+- report high-vs-low uncertainty error enrichment separately from rank association;
+- identify anatomies/regimes where the primary signal is weak;
+- treat the strong ICE result as a contribution-boundary constraint rather than tuning around it.
+
+Negative and null comparator findings remain part of the study.
 
 ## M6 — Calibration
 
@@ -110,22 +109,17 @@ Negative comparator results remain part of the study.
 
 Calibration is evaluated separately from informativeness.
 
-Only methods with a meaningful uncertainty scale or interval may make a
-coverage/calibration claim. Good marginal calibration must not be presented as
-proof of useful pointwise ranking.
+Only methods with a meaningful uncertainty scale or interval may make a coverage/calibration claim. Good pointwise ranking must not be presented as numerical calibration, and good marginal calibration would not by itself prove useful ranking.
 
 ## M7 — Robustness and generalization
 
-**State:** contingent on earlier evidence
+**State:** contingent on M5-M6
 
-Prospectively freeze a small number of scientifically justified stress axes,
-potentially including deformation magnitude, spatial extent, image degradation,
-texture-poor regions, or optimizer instability.
+Prospectively freeze a small number of scientifically justified stress axes, potentially including deformation magnitude, spatial extent, image degradation, texture-poor regions, or optimizer instability.
 
 Do not add stress regimes because they produce favorable rankings.
 
-External-dataset generalization is a separate claim and requires a genuinely
-independent substrate.
+External-dataset generalization is a separate claim and requires a genuinely independent substrate.
 
 ## M8 — Paper and reproducibility release
 
@@ -142,25 +136,22 @@ Deliverables:
 - manuscript/preprint;
 - tagged public release.
 
-## Stop rules
+## Stop / narrow rules
 
-Narrow or stop the paper hypothesis rather than tune around failure if:
+Narrow the paper claim rather than tune around unfavorable evidence if:
 
-- the promoted hyperparameter ensemble is not meaningfully informative about
-  known local error;
-- comparator methods already dominate the intended contribution under the same
-  controlled setting;
-- a faithful comparator suite cannot be implemented without changing the
-  scientific problem; or
-- contemporary work already establishes the same controlled multi-method
-  known-ground-truth result.
+- M5 shows the apparent primary result is dominated by a small subset of anatomies or unacceptable blind spots;
+- the strong ICE comparator makes a proposed method-superiority framing unsupported;
+- a faithful broader comparator suite would require changing the scientific problem;
+- robustness testing does not preserve the bounded informativeness claim; or
+- contemporary work closes the intended contribution gap.
+
+The completed positive M4 result is not a reason to widen claims beyond the frozen study.
 
 ## Repository roles
 
 `Kushrishi/truemargin` is the active scientific source of truth.
 
-The private `Kushrishi/truemargin-lab` repository is historical provenance
-only and must not resume active result-bearing development.
+The private `Kushrishi/truemargin-lab` repository is historical provenance only and must not resume active result-bearing development.
 
-Website, GitHub profile, CV, and LinkedIn wording may summarize only completed
-milestones and must not exceed `research/CLAIMS.md`.
+Website, GitHub profile, CV, and LinkedIn wording may summarize only completed milestones and must not exceed `research/CLAIMS.md`.
