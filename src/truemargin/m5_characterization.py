@@ -85,9 +85,7 @@ def _npz_scalar(npz: Any, key: str) -> Any:
 
 def _assert_close(label: str, observed: float, expected: float) -> None:
     if not np.isclose(observed, expected, atol=1e-12, rtol=0.0, equal_nan=True):
-        raise ValueError(
-            f"Frozen M4 reconstruction mismatch for {label}: {observed} != {expected}"
-        )
+        raise ValueError(f"Frozen M4 reconstruction mismatch for {label}: {observed} != {expected}")
 
 
 def _score_metrics(error: np.ndarray, score: np.ndarray) -> dict[str, Any]:
@@ -108,9 +106,7 @@ def _score_metrics(error: np.ndarray, score: np.ndarray) -> dict[str, Any]:
     }
 
 
-def _verify_inputs(
-    canonical_root: Path, shard_root: Path
-) -> tuple[dict[str, str], dict[str, str]]:
+def _verify_inputs(canonical_root: Path, shard_root: Path) -> tuple[dict[str, str], dict[str, str]]:
     canonical_hashes: dict[str, str] = {}
     for name, expected in EXPECTED_CANONICAL_SHA256.items():
         path = canonical_root / name
@@ -140,8 +136,7 @@ def _reconstruct(
         with zipfile.ZipFile(shard_root / f"{patient}.zip") as archive:
             for replicate in range(N_REPLICATES):
                 member = (
-                    f"checkpoints/hyperparameter_known_gt/{patient}/"
-                    f"replicate_{replicate}.npz"
+                    f"checkpoints/hyperparameter_known_gt/{patient}/" f"replicate_{replicate}.npz"
                 )
                 with archive.open(member) as handle:
                     npz = np.load(io.BytesIO(handle.read()), allow_pickle=False)
@@ -224,9 +219,7 @@ def _reconstruct(
                         "sigma_case_spearman": sigma_metrics["spearman"],
                         "sigma_blind_spot_count": int(np.sum(sigma_metrics["blind_spot"])),
                         "sigma_blind_spot_rate": sigma_metrics["blind_spot_rate"],
-                        "sigma_quartile_error_delta_mm": sigma_metrics[
-                            "quartile_error_delta_mm"
-                        ],
+                        "sigma_quartile_error_delta_mm": sigma_metrics["quartile_error_delta_mm"],
                         "known_error_q75_mm": sigma_metrics["error_q75"],
                         "sigma_q25_mm": sigma_metrics["score_q25"],
                         "ice_valid": comparator_data["ice"]["valid"],
@@ -241,9 +234,7 @@ def _reconstruct(
                             else ""
                         ),
                         "invalid_comparators": ",".join(
-                            method
-                            for method in COMPARATORS
-                            if not comparator_data[method]["valid"]
+                            method for method in COMPARATORS if not comparator_data[method]["valid"]
                         ),
                     }
                 )
@@ -302,9 +293,7 @@ def _anatomy_table(
         }
         for method in COMPARATORS:
             candidate = lookup[(patient, method)]
-            out[f"{method}_median_case_spearman"] = _as_float(
-                candidate["median_case_spearman"]
-            )
+            out[f"{method}_median_case_spearman"] = _as_float(candidate["median_case_spearman"])
             out[f"{method}_valid_cases"] = int(candidate["valid_cases"])
         table.append(out)
     return table
@@ -322,11 +311,7 @@ def _summary(
     sigma_blind = [row for row in points if row["sigma_blind_spot"]]
     ice_valid = [row for row in points if row["ice_valid"]]
     ice_blind = [row for row in ice_valid if row["ice_blind_spot"]]
-    joint = [
-        row
-        for row in sigma_blind
-        if row["ice_valid"] and row["ice_blind_spot"]
-    ]
+    joint = [row for row in sigma_blind if row["ice_valid"] and row["ice_blind_spot"]]
     spearman = [float(row["sigma_case_spearman"]) for row in cases]
     deltas = [float(row["sigma_quartile_error_delta_mm"]) for row in cases]
     worst = min(cases, key=lambda row: row["sigma_case_spearman"])
@@ -370,9 +355,7 @@ def _summary(
             "assessable_anatomies": int(frozen["assessable_anatomies"]),
             "complete_cases": int(frozen["complete_cases"]),
             "positive_anatomies": int(frozen["primary_positive_anatomies"]),
-            "median_anatomy_spearman": float(
-                frozen["primary_median_anatomy_spearman"]
-            ),
+            "median_anatomy_spearman": float(frozen["primary_median_anatomy_spearman"]),
             "bootstrap_95_ci": list(frozen["primary_bootstrap_95_ci"]),
             "exact_sign_p": float(frozen["primary_exact_sign_p"]),
         },
@@ -380,12 +363,8 @@ def _summary(
             "points": len(points),
             "sigma_blind_spot_points": len(sigma_blind),
             "sigma_blind_spot_point_rate": len(sigma_blind) / len(points),
-            "cases_with_sigma_blind_spots": sum(
-                row["sigma_blind_spot_count"] > 0 for row in cases
-            ),
-            "anatomies_with_sigma_blind_spots": len(
-                {row["patient"] for row in sigma_blind}
-            ),
+            "cases_with_sigma_blind_spots": sum(row["sigma_blind_spot_count"] > 0 for row in cases),
+            "anatomies_with_sigma_blind_spots": len({row["patient"] for row in sigma_blind}),
             "ice_valid_points": len(ice_valid),
             "ice_blind_spot_points": len(ice_blind),
             "joint_sigma_ice_blind_spot_points": len(joint),
@@ -486,9 +465,7 @@ def run_characterization(
         canonical_root / "hyperparameter_known_gt_comparator_anatomy_metrics.csv"
     )
     frozen = json.loads(
-        (canonical_root / "hyperparameter_known_gt_summary.json").read_text(
-            encoding="utf-8"
-        )
+        (canonical_root / "hyperparameter_known_gt_summary.json").read_text(encoding="utf-8")
     )
     points, cases = _reconstruct(shard_zip_root, canonical_rows)
     anatomy = _anatomy_table(anatomy_rows, comparator_rows)
