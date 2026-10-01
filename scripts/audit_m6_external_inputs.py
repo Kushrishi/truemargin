@@ -516,7 +516,9 @@ def label_records(raw: bytes, partition: str, expected: int) -> list[dict[str, A
     if duplicates:
         raise RuntimeError(f"Duplicate NRRD PatientIDs: {duplicates}")
     if len(records) != expected:
-        raise RuntimeError(f"Expected {expected} NRRD subjects for {partition}; found {len(records)}")
+        raise RuntimeError(
+            f"Expected {expected} NRRD subjects for {partition}; found {len(records)}"
+        )
     return records
 
 
@@ -580,7 +582,9 @@ def audit_annotations(image_patient_ids: dict[str, list[str]]) -> dict[str, Any]
             for label in labels:
                 patient_id = label["patient_id"]
                 if patient_id in index:
-                    issues.setdefault("cross_partition_duplicate_patient_ids", []).append(patient_id)
+                    issues.setdefault("cross_partition_duplicate_patient_ids", []).append(
+                        patient_id
+                    )
                 index[patient_id] = label
         if len(index) != EXPECTED_TOTAL:
             issues["unique_label_patient_count"] = len(index)
