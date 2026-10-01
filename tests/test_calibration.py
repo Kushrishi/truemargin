@@ -8,28 +8,26 @@ from truemargin import calibration as cal
 
 def test_perfect_calibration_is_near_diagonal():
     rng = np.random.default_rng(0)
-    h = w = 200
-    sigma = np.full((h, w), 1.0)
-    e = rng.standard_normal((2, h, w)) * sigma[None]
+    H = W = 200
+    sigma = np.full((H, W), 1.0)
+    e = rng.standard_normal((2, H, W)) * sigma[None]
     err = cal.displacement_error(e, np.zeros_like(e))
-    levels, empirical = cal.reliability_curve(err, sigma, ndim=2)
-    assert cal.expected_calibration_error(levels, empirical) < 0.03
+    lv, emp = cal.reliability_curve(err, sigma, ndim=2)
+    assert cal.expected_calibration_error(lv, emp) < 0.03
 
 
 def test_recalibration_reduces_error():
     rng = np.random.default_rng(1)
-    h = w = 200
-    sigma_pred = np.full((h, w), 0.4)
+    H = W = 200
+    sigma_pred = np.full((H, W), 0.4)
     true_sigma = 1.0
-    e = rng.standard_normal((2, h, w)) * true_sigma
+    e = rng.standard_normal((2, H, W)) * true_sigma
     err = cal.displacement_error(e, np.zeros_like(e))
-    levels, empirical_raw = cal.reliability_curve(err, sigma_pred, ndim=2)
-    scale = cal.fit_variance_scale(err, sigma_pred, ndim=2)
-    levels, empirical_scaled = cal.reliability_curve(err, scale * sigma_pred, ndim=2)
-    assert cal.expected_calibration_error(levels, empirical_scaled) < cal.expected_calibration_error(
-        levels, empirical_raw
-    )
-    assert abs(scale - (true_sigma / 0.4)) < 0.15
+    lv, emp_raw = cal.reliability_curve(err, sigma_pred, ndim=2)
+    s = cal.fit_variance_scale(err, sigma_pred, ndim=2)
+    lv, emp_fix = cal.reliability_curve(err, s * sigma_pred, ndim=2)
+    assert cal.expected_calibration_error(lv, emp_fix) < cal.expected_calibration_error(lv, emp_raw)
+    assert abs(s - (true_sigma / 0.4)) < 0.15
 
 
 def test_perfect_calibration_ndim3_is_near_diagonal():
@@ -38,8 +36,8 @@ def test_perfect_calibration_ndim3_is_near_diagonal():
     sigma = np.full(n, 1.0)
     e = rng.standard_normal((3, n)) * sigma[None]
     err = cal.displacement_error(e, np.zeros_like(e))
-    levels, empirical = cal.reliability_curve(err, sigma, ndim=3)
-    assert cal.expected_calibration_error(levels, empirical) < 0.03
+    lv, emp = cal.reliability_curve(err, sigma, ndim=3)
+    assert cal.expected_calibration_error(lv, emp) < 0.03
 
 
 def test_coverage_radius_ndim3_matches_chi_distribution():
@@ -49,8 +47,8 @@ def test_coverage_radius_ndim3_matches_chi_distribution():
     e = rng.standard_normal((3, n)) * sigma
     err = cal.displacement_error(e, np.zeros_like(e))
     for p in (0.1, 0.5, 0.9, 0.99):
-        radius = cal.coverage_radius(np.full(n, sigma), p, ndim=3)
-        empirical = np.mean(err <= radius)
+        r = cal.coverage_radius(np.full(n, sigma), p, ndim=3)
+        empirical = np.mean(err <= r)
         assert abs(empirical - p) < 0.01, f"p={p}: empirical={empirical}"
 
 
@@ -112,12 +110,12 @@ def test_conformal_coverage_min_sigma_matches_calibration_side():
     e_good = rng.standard_normal((3, n_good)) * sigma_good[None]
     err_good = cal.displacement_error(e_good, np.zeros_like(e_good))
 
-    n_low_sigma = 100
-    sigma_low = np.full(n_low_sigma, 0.0001)
-    err_low = np.full(n_low_sigma, 2.0)
+    n_blind = 100
+    sigma_blind = np.full(n_blind, 0.0001)
+    err_blind = np.full(n_blind, 2.0)
 
-    err_all = np.concatenate([err_good, err_low])
-    sigma_all = np.concatenate([sigma_good, sigma_low])
+    err_all = np.concatenate([err_good, err_blind])
+    sigma_all = np.concatenate([sigma_good, sigma_blind])
 
     min_sigma = 0.01
     alpha = 0.10
