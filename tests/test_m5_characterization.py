@@ -30,9 +30,7 @@ def test_build_failure_table_preserves_all_failure_classes() -> None:
     nonpositive_enrichment = clean | {"sigma_quartile_error_delta_mm": 0.0}
     invalid = clean | {"invalid_comparators": "ice,residual"}
 
-    failures = build_failure_table(
-        [clean, blind, inverted, nonpositive_enrichment, invalid]
-    )
+    failures = build_failure_table([clean, blind, inverted, nonpositive_enrichment, invalid])
 
     assert failures == [blind, inverted, nonpositive_enrichment, invalid]
 
