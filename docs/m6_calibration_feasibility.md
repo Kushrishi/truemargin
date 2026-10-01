@@ -20,50 +20,83 @@ The M4 evaluation outcomes have already been observed. They therefore cannot be 
 
 The 5 promotion anatomies are also not an adequate standalone confirmatory split-conformal calibration cohort at the anatomy level. For ordinary split conformal at nominal 90% coverage, the finite-sample order statistic is `ceil((n + 1) * 0.90)`; with `n = 5` this is 6, so no finite calibration radius can supply that guarantee.
 
-Most importantly, the 50 ROI points within a case are spatially dependent and multiple deformation realizations share the same anatomy. A confirmatory M6 analysis must not obtain an artificially large calibration sample by treating all pointwise observations as independent exchangeable units.
+Most importantly, the sampled ROI points within an anatomy are spatially dependent. A confirmatory M6 analysis must not obtain an artificially large calibration sample by treating pointwise observations as independent exchangeable units.
 
 ## Related-work boundary
 
 Calibration itself is not a novelty claim.
 
-- Gheiji et al., **CONReg: Uncertainty-Aware Medical Image Registration Using Conformal Prediction** (2026), DOI `10.1007/s10278-026-01878-3`, already applies conformal calibration to medical image registration and reports voxel- and case-level uncertainty intervals.
+- Gheiji et al., **CONReg: Uncertainty-Aware Medical Image Registration Using Conformal Prediction** (2026), DOI `10.1007/s10278-026-01878-3`, already applies conformal prediction to medical image registration.
 - Dunn, Wasserman, and Ramdas, **Distribution-Free Prediction Sets for Two-Layer Hierarchical Models** (JASA 2023), DOI `10.1080/01621459.2022.2060112`, addresses conformal prediction when observations are nested within exchangeable groups rather than i.i.d.
 
-TrueMargin therefore must not claim to introduce conformal prediction for registration. A defensible contribution would be narrower: test whether a prospectively frozen registration-ensemble spread can support useful numerical error intervals while respecting anatomy-level dependence, and keep calibration separate from the already-established rank-informativeness and blind-spot results.
+TrueMargin therefore must not claim to introduce conformal prediction for registration. A defensible contribution is narrower: test whether a prospectively frozen registration-sensitivity signal can support useful numerical error intervals while respecting anatomy-level dependence, and keep calibration separate from the already-established rank-informativeness and blind-spot results.
 
 ## Preferred independent substrate
 
-The preferred feasibility target is the public **NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures** data hosted by The Cancer Imaging Archive.
+The preferred feasibility target is the public **NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures** data hosted by The Cancer Imaging Archive, DOI `10.7937/K9/TCIA.2015.zF0vlOPv`.
 
-Relevant properties:
+The official challenge surface contains **80 labeled subjects**:
 
-- 60 training subjects with axial T2-weighted prostate MRI;
-- central-gland and peripheral-zone expert outlines suitable for defining a prostate ROI;
-- source data drawn from 1.5 T and 3 T acquisitions;
-- CC BY 3.0;
-- data DOI `10.7937/K9/TCIA.2015.zF0vlOPv`.
+- 60 training subjects;
+- 10 leaderboard subjects;
+- 10 test subjects.
 
-This substrate is independent of the current Prostate Fused-MRI-Pathology cohort and is large enough to create calibration, confirmatory evaluation, and future-reserve anatomy sets before any result-bearing registration.
+For all three challenge partitions, TCIA currently exposes the corresponding source-image manifests and segmentation archives. The source images were drawn from **PROSTATE-DIAGNOSIS** and **Prostate-3T**, spanning materially different acquisition regimes: 1.5 T Philips Achieva imaging with an endorectal receiver coil and 3 T Siemens TIM imaging with a surface coil.
+
+This challenge is a different TCIA analysis substrate from the Prostate Fused-MRI-Pathology collection used by M4. Before any paper-level wording calls it an external dataset, M6 must still verify that no patient or series identity overlaps the M4 substrate.
+
+## Why the first identity audit must cover all 80 subjects
+
+The earlier feasibility sketch considered only the 60 training subjects and proposed a provisional `20 / 20 / 20` calibration/evaluation/reserve split. That split is **not frozen** and should not be preserved merely because it was written first.
+
+Because the official challenge additionally exposes 20 labeled leaderboard/test subjects, the first metadata-only feasibility audit should inventory the complete 80-subject surface before any M6 roles are assigned. The audit must preserve:
+
+- official challenge partition identity;
+- exact official image-series identity;
+- exact segmentation identity and hashes;
+- source collection;
+- scanner/acquisition metadata needed to assess source balance;
+- known TCIA correction/mismatch cases.
+
+The audit must not assign calibration, evaluation, or reserve roles.
 
 ## Candidate M6 architecture
 
-This is a feasibility design, **not yet a frozen protocol**.
+This remains a feasibility design, **not yet a frozen protocol**.
 
 ### Unit of independence
 
 The primary exchangeability unit should be the **anatomy**, not the ROI point.
 
-Any conformal procedure must explicitly account for points nested within anatomies. The current `conformal_radius()` helper in `src/truemargin/calibration.py` is a generic i.i.d./exchangeable-score primitive and is **not authorized** as the confirmatory M6 method by itself.
+Any conformal procedure must explicitly match the nested structure of spatial locations within anatomies. The current `conformal_radius()` helper in `src/truemargin/calibration.py` is a generic exchangeable-score primitive and is **not authorized** as the confirmatory M6 method by itself.
 
-### Prospective cohort roles
+The final protocol must state precisely what coverage guarantee is targeted. In particular, a marginal guarantee for a random location in a new exchangeable anatomy must not be described as simultaneous whole-volume coverage or guaranteed per-anatomy 90% coverage.
 
-Subject to a clean metadata/geometry-only feasibility audit, a candidate split is:
+### Cohort roles remain provisional
 
-- 20 anatomies: calibration;
-- 20 anatomies: confirmatory evaluation;
-- 20 anatomies: untouched reserve for later robustness/generalization work.
+Do **not** freeze a split until the complete 80-subject identity and geometry audit is reviewed and the exact hierarchical conformal method is selected.
 
-Assignment must be deterministic and frozen before registration outcomes. Eligibility and replacement rules must also be frozen before any estimator execution.
+Plausible designs to compare prospectively include:
+
+- use all 60 official training subjects for M6 calibration and confirmatory evaluation, while preserving the 10 leaderboard and 10 test subjects untouched for M7 robustness;
+- within the 60 training subjects, use a balanced `30 / 30` calibration/evaluation design if eligibility and the chosen method support it;
+- retain a small training-side contingency/eligibility reserve only if the geometry audit shows that a deterministic replacement rule is genuinely necessary.
+
+The official leaderboard/test partitions are a stronger prospective robustness reserve than an arbitrary training-side holdout, but they remain part of the same challenge and source collections. They must not be described as a separate external-dataset validation set.
+
+### Source/acquisition balance
+
+Any deterministic calibration/evaluation assignment must be frozen before registration outcomes and should be stratified by source/acquisition regime when possible. A purely hash-based split is not acceptable if it accidentally creates materially imbalanced 1.5 T versus 3 T cohorts.
+
+The split design must therefore be based only on pre-outcome metadata such as:
+
+- official partition;
+- source collection;
+- field strength;
+- manufacturer/model;
+- geometry/ROI eligibility.
+
+No registration-error or uncertainty result may influence cohort assignment.
 
 ### Registration and estimator
 
@@ -74,28 +107,36 @@ To avoid turning M6 into estimator redevelopment:
 - retain the known-deformation generator unless a geometry-only audit establishes a necessary dataset-specific amendment;
 - do not tune ensemble members, optimizer settings, or deformation parameters from calibration outcomes.
 
-A single prospectively generated deformation realization per anatomy is preferred for the first confirmatory calibration design because it yields a clean two-level structure: anatomy -> sampled spatial locations. Additional within-anatomy deformation replicates would introduce another dependence layer and require a correspondingly more complex inferential design.
+A single prospectively generated deformation realization per anatomy remains preferred for the first confirmatory calibration design because it yields a clean two-level structure: anatomy -> sampled spatial locations. Additional within-anatomy deformation replicates would introduce another dependence layer and require a correspondingly more complex inferential design.
 
 ### Spatial sampling
 
-Use a prostate ROI derived prospectively from the supplied zone segmentations. The exact union/resampling rule, landmark margin, number of sampled locations, and deterministic seed construction must be frozen before registration.
+Use a prostate ROI derived prospectively from the supplied zone segmentations. The exact union/resampling rule, boundary margin, sampled-location count, and deterministic seed construction must be frozen before registration.
 
-The existing M4 value of 50 sampled ROI locations per anatomy is a reasonable starting point for comparability, but M6 must freeze it independently rather than inherit it implicitly.
+The M4 value of 50 sampled ROI locations per anatomy is a reasonable starting point for comparability, but M6 must freeze it independently rather than inherit it implicitly.
 
 ### Calibration target
 
-The target quantity is the true local **error magnitude in millimetres**, not a probability attached directly to ensemble sigma.
+The target quantity is true local **error magnitude in millimetres**, not a probability attached directly to ensemble sigma.
 
-A candidate nonconformity score is
+A candidate nonconformity score remains:
 
 `known_error_mm / ensemble_sigma_mm`.
 
-Near-zero sigma cannot be silently discarded to improve coverage. M6 must prospectively choose one of two explicit semantics:
+That ratio imposes a multiplicative, zero-intercept mapping from spread to error scale. If any alternative mapping is considered, the candidate family and model-selection rule must be frozen before confirmatory evaluation rather than chosen after seeing held-out coverage.
 
-1. include degenerate/near-degenerate sigma values, allowing the calibration radius to become very large or infinite when warranted; or
-2. define a deterministic abstention rule and make every coverage claim conditional on non-abstention while reporting the abstention rate and failure locations separately.
+Near-zero sigma cannot be silently discarded to improve coverage. The primary preference remains to include such points, allowing the calibrated radius to become very large or infinite when warranted. Any abstention alternative must be prospectively defined, must report abstention rate and locations, and must make coverage claims explicitly conditional on non-abstention.
 
-The first option is preferable as the primary analysis because it does not remove precisely the low-sigma/high-error failures M5 identified.
+### Comparator calibration
+
+M4 showed that inverse-consistency error (ICE) is a strong comparator and did not establish sigma superiority. Contemporary registration-validation literature also supports ICE as a serious error proxy.
+
+Therefore the M6 protocol should, if computationally feasible, predeclare:
+
+- **primary calibrated signal:** frozen TrueMargin ensemble sigma;
+- **secondary calibrated comparator:** ICE, using the same calibration/evaluation cohort roles and reporting rules.
+
+This comparison must be frozen before result-bearing execution. It is not authorized merely by this feasibility document. If reverse-registration cost makes ICE infeasible, that decision and rationale must be recorded prospectively rather than after seeing sigma results.
 
 ### Candidate coverage levels
 
@@ -115,8 +156,10 @@ A confirmatory M6 result should report at least:
 - interval/radius efficiency in millimetres;
 - zero/near-zero-sigma behavior;
 - failures and abstentions, if any;
-- uncalibrated reference coverage using the predeclared raw-sigma mapping;
-- calibration/evaluation cohort identities and source hashes.
+- the corresponding ICE-calibration result if prospectively authorized;
+- an uncalibrated reference using the predeclared raw-signal mapping;
+- calibration/evaluation cohort identities and source hashes;
+- source/acquisition composition of each cohort.
 
 Coverage and informativeness must remain separate. A calibrated interval can be uninformative if it is excessively wide, and strong rank informativeness does not imply calibrated numerical scale.
 
@@ -124,11 +167,13 @@ Coverage and informativeness must remain separate. A calibrated interval can be 
 
 Do not authorize M6 result-bearing registration if any of the following remain unresolved:
 
-- the external image/segmentation identities cannot be acquired reproducibly;
+- the complete official image/segmentation identities cannot be acquired reproducibly;
+- overlap with the prior M4 substrate has not been checked;
 - the prostate ROI cannot be constructed deterministically across the intended cohort;
 - fewer than the predeclared number of independent anatomies pass geometry-only eligibility;
 - the chosen conformal procedure does not match the nested data structure;
-- calibration and evaluation roles are assigned after observing registration outcomes;
+- cohort roles are assigned after observing registration outcomes;
+- source/acquisition imbalance is discovered after outcomes and then used to redesign the split;
 - a proposed sigma exclusion/abstention rule is selected after viewing coverage;
 - the method would require changing the frozen estimator based on calibration results.
 
@@ -136,10 +181,12 @@ Do not authorize M6 result-bearing registration if any of the following remain u
 
 Only the following work is authorized from this feasibility gate:
 
-1. audit the external dataset acquisition and segmentation identities;
-2. define anatomy-level eligibility and deterministic split rules;
-3. audit the exact hierarchical conformal method and its finite-sample assumptions;
-4. clean legacy calibration-module documentation so generic helper functions are not mistaken for an already validated M6 method;
-5. write and review a prospective M6 protocol.
+1. audit the complete 80-subject official challenge image/segmentation identity surface;
+2. verify source/acquisition composition and prior-substrate identity non-overlap;
+3. define anatomy-level geometry/ROI eligibility without running the estimator;
+4. audit the exact hierarchical conformal method and finite-sample assumptions;
+5. compare prospective cohort architectures using metadata and method constraints only;
+6. decide prospectively whether ICE calibration is feasible as the secondary comparator;
+7. write and review the frozen M6 protocol.
 
 **No M6 result-bearing registration or calibration fit is authorized by this document.**
