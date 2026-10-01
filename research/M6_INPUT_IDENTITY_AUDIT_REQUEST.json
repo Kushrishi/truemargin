@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "authorized_mode": "external-input-identity-audit",
+  "result_bearing_authorized": false,
+  "registration_authorized": false,
+  "calibration_fit_authorized": false,
+  "split_assignment_authorized": false,
+  "dicom_download_authorized": false,
+  "source_series_selection_authorized": false,
+  "challenge": {
+    "name": "NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures",
+    "doi": "10.7937/K9/TCIA.2015.zF0vlOPv",
+    "expected_training_subjects": 60,
+    "license": "CC BY 3.0"
+  },
+  "sources": {
+    "prostate_3t": {
+      "source_collection": "Prostate-3T",
+      "source_collection_doi": "10.7937/K9/TCIA.2015.QJTV5IL5",
+      "idc_collection_id": "prostate_3t",
+      "expected_training_subjects": 30,
+      "official_training_label_archive": "NCI_ISBI_Challenge-Prostate3T_Training_Segmentations.zip"
+    },
+    "prostate_diagnosis": {
+      "source_collection": "PROSTATE-DIAGNOSIS",
+      "source_collection_doi": "10.7937/K9/TCIA.2015.FOQEUJVT",
+      "idc_collection_id": "prostate_diagnosis",
+      "expected_training_subjects": 30,
+      "official_training_label_archive": "NCI_ISBI_Challenge-ProstateDx_Training_Segmentations.zip"
+    }
+  },
+  "audit_rules": {
+    "derive_patient_ids_from_official_training_label_archives": true,
+    "query_all_public_mr_series_for_each_derived_patient": true,
+    "select_source_series": false,
+    "assign_calibration_evaluation_reserve_roles": false,
+    "download_source_dicoms": false,
+    "run_registration": false,
+    "fit_calibration": false
+  },
+  "historical_conditions_to_preserve": [
+    "ProstateDx-01-0006 uses the corrected challenge label archive member when that filename is present.",
+    "ProstateDx-01-0055 has a documented image/label Z-dimension mismatch and must not be silently discarded by this identity audit.",
+    "PROSTATE-DIAGNOSIS version 2 corrected a PatientID/name/image database mismatch involving ProstateDx-01-0035 without changing UIDs or zip files."
+  ],
+  "expected_output": "outputs/m6_input_identity_audit.json"
+}
