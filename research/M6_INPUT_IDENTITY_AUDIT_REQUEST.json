@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "date": "2026-10-01",
   "milestone": "M6",
   "authorized_mode": "external-input-identity-audit",
@@ -12,32 +12,59 @@
   "challenge": {
     "name": "NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures",
     "doi": "10.7937/K9/TCIA.2015.zF0vlOPv",
-    "expected_training_subjects": 60,
-    "expected_training_series": 60,
+    "expected_total_subjects": 80,
+    "expected_total_series": 80,
     "license": "CC BY 3.0",
-    "official_training_image_manifest": "ISBI-Prostate-Challenge-Training.tcia",
-    "official_training_image_manifest_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/ISBI-Prostate-Challenge-Training.tcia?api=v2"
+    "partitions": {
+      "training": {
+        "expected_subjects": 60,
+        "expected_series": 60,
+        "official_image_manifest": "ISBI-Prostate-Challenge-Training.tcia",
+        "official_image_manifest_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/ISBI-Prostate-Challenge-Training.tcia?api=v2",
+        "official_label_archives": [
+          "NCI_ISBI_Challenge-Prostate3T_Training_Segmentations.zip",
+          "NCI_ISBI_Challenge-ProstateDx_Training_Segmentations.zip"
+        ]
+      },
+      "leaderboard": {
+        "expected_subjects": 10,
+        "expected_series": 10,
+        "official_image_manifest": "ISBI-Prostate-Challenge-LeaderBoard.tcia",
+        "official_image_manifest_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/ISBI-Prostate-Challenge-LeaderBoard.tcia?api=v2",
+        "official_label_archive": "NCI-ISBI 2013 Prostate Challenge - Leaderboard.zip",
+        "official_label_archive_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/NCI-ISBI%202013%20Prostate%20Challenge%20-%20Leaderboard.zip?api=v2"
+      },
+      "test": {
+        "expected_subjects": 10,
+        "expected_series": 10,
+        "official_image_manifest": "ISBI-Prostate-Challenge-Testing.tcia",
+        "official_image_manifest_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/ISBI-Prostate-Challenge-Testing.tcia?api=v2",
+        "official_label_archive": "NCI-ISBI 2013 Prostate Challenge - Test.zip",
+        "official_label_archive_url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/NCI-ISBI%202013%20Prostate%20Challenge%20-%20Test.zip?api=v2"
+      }
+    }
   },
   "sources": {
     "prostate_3t": {
+      "patient_prefix": "Prostate3T-01-",
       "source_collection": "Prostate-3T",
       "source_collection_doi": "10.7937/K9/TCIA.2015.QJTV5IL5",
-      "idc_collection_id": "prostate_3t",
-      "expected_training_subjects": 30,
-      "official_training_label_archive": "NCI_ISBI_Challenge-Prostate3T_Training_Segmentations.zip"
+      "idc_collection_id": "prostate_3t"
     },
     "prostate_diagnosis": {
+      "patient_prefix": "ProstateDx-01-",
       "source_collection": "PROSTATE-DIAGNOSIS",
       "source_collection_doi": "10.7937/K9/TCIA.2015.FOQEUJVT",
-      "idc_collection_id": "prostate_diagnosis",
-      "expected_training_subjects": 30,
-      "official_training_label_archive": "NCI_ISBI_Challenge-ProstateDx_Training_Segmentations.zip"
+      "idc_collection_id": "prostate_diagnosis"
     }
   },
   "audit_rules": {
-    "derive_patient_ids_from_official_training_label_archives": true,
-    "derive_series_uids_from_official_training_image_manifest": true,
-    "resolve_exact_official_training_series_in_idc": true,
+    "derive_patient_ids_from_official_challenge_label_archives": true,
+    "derive_series_uids_from_official_partition_manifests": true,
+    "resolve_exact_official_series_in_idc": true,
+    "preserve_official_partition_identity": true,
+    "preserve_source_collection_identity": true,
+    "record_scanner_acquisition_metadata": true,
     "heuristic_source_series_selection": false,
     "assign_calibration_evaluation_reserve_roles": false,
     "download_source_dicoms": false,
@@ -45,9 +72,14 @@
     "fit_calibration": false
   },
   "historical_conditions_to_preserve": [
-    "ProstateDx-01-0006 uses the corrected challenge label archive member when that filename is present.",
+    "ProstateDx-01-0006 uses the corrected challenge training label archive member.",
     "ProstateDx-01-0055 has a documented image/label Z-dimension mismatch and must not be silently discarded by this identity audit.",
     "PROSTATE-DIAGNOSIS version 2 corrected a PatientID/name/image database mismatch involving ProstateDx-01-0035 without changing UIDs or zip files."
+  ],
+  "interpretation_boundary": [
+    "This audit inventories all 80 official challenge subjects but assigns no M6 cohort roles.",
+    "Leaderboard/test membership is preserved as provenance and does not by itself establish external-dataset generalization.",
+    "No result-bearing M6 execution is authorized by this request."
   ],
   "expected_output": "outputs/m6_input_identity_audit.json"
 }
