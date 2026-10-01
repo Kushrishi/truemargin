@@ -32,7 +32,8 @@ Permanent evidence:
   non-positive quartile enrichment, or method-invalid comparator;
 - `m5_anatomy_comparator_table.csv` — target/comparator anatomy summaries.
 
-The analysis uses only frozen M4 outputs. Its CLI can regenerate the complete 1,500-row pointwise
-table plus the anatomy-comparator and case-heterogeneity SVG figures from the hash-pinned source
-artifacts. It does not rerun registration, retune the estimator, change the ROI, or add a new
+The analysis uses only frozen M4 outputs. Its CLI reconstructs the complete 1,500-location
+pointwise state in memory and generates anatomy-comparator and case-heterogeneity SVG figures in
+the requested output directory. Those larger derived outputs are intentionally not versioned. The
+analysis does not rerun registration, retune the estimator, change the ROI, or add a new
 confirmatory hypothesis test.
