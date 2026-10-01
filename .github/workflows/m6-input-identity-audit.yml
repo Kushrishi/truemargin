@@ -5,6 +5,9 @@ on:
     branches: ["main"]
     paths:
       - "research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json"
+      - "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
+      - "scripts/audit_m6_external_inputs.py"
+      - ".github/workflows/m6-input-identity-audit.yml"
 
 permissions:
   contents: read
@@ -16,7 +19,7 @@ concurrency:
 jobs:
   audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v7.0.1
@@ -35,7 +38,7 @@ jobs:
               Path("research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json").read_text()
           )
           expected = {
-              "schema_version": 2,
+              "schema_version": 3,
               "milestone": "M6",
               "authorized_mode": "external-input-identity-audit",
               "result_bearing_authorized": False,
@@ -54,7 +57,6 @@ jobs:
           assert challenge["expected_total_subjects"] == 80
           assert challenge["expected_total_series"] == 80
           assert challenge["license"] == "CC BY 3.0"
-
           partitions = challenge["partitions"]
           assert set(partitions) == {"training", "leaderboard", "test"}
           assert (
@@ -70,39 +72,38 @@ jobs:
               partitions["test"]["expected_series"],
           ) == (10, 10)
           assert (
-              partitions["training"]["official_image_manifest"]
-              == "ISBI-Prostate-Challenge-Training.tcia"
+              partitions["training"]["official_shared_list_name"]
+              == "ISBI Prostate Challenge - Training"
           )
           assert (
-              partitions["leaderboard"]["official_image_manifest"]
-              == "ISBI-Prostate-Challenge-LeaderBoard.tcia"
-          )
-          assert (
-              partitions["test"]["official_image_manifest"]
-              == "ISBI-Prostate-Challenge-Testing.tcia"
+              partitions["leaderboard"]["official_shared_list_name"]
+              == "ISBI Prostate Challenge - Leader Board"
           )
 
-          sources = request["sources"]
-          assert set(sources) == {"prostate_3t", "prostate_diagnosis"}
-          assert sources["prostate_3t"]["patient_prefix"] == "Prostate3T-01-"
-          assert sources["prostate_3t"]["idc_collection_id"] == "prostate_3t"
-          assert sources["prostate_diagnosis"]["patient_prefix"] == "ProstateDx-01-"
-          assert (
-              sources["prostate_diagnosis"]["idc_collection_id"]
-              == "prostate_diagnosis"
+          image_authority = request["image_identity_authority"]
+          assert image_authority["analysis_doi_series_api"].endswith(
+              "getCollectionOrSeriesForDOI"
           )
+          assert image_authority["legacy_manifests_required"] is False
+          assert request["annotation_identity_authority"][
+              "annotation_identity_required_before_result_bearing_m6"
+          ] is True
 
           rules = request["audit_rules"]
           for key in (
-              "derive_patient_ids_from_official_challenge_label_archives",
-              "derive_series_uids_from_official_partition_manifests",
+              "derive_image_series_universe_from_analysis_doi_api",
+              "derive_training_membership_from_official_shared_list",
+              "derive_leaderboard_membership_from_official_shared_list",
+              "derive_test_membership_as_disjoint_remainder",
               "resolve_exact_official_series_in_idc",
               "preserve_official_partition_identity",
               "preserve_source_collection_identity",
               "record_scanner_acquisition_metadata",
+              "audit_annotation_identity_separately",
           ):
               assert rules[key] is True, key
           for key in (
+              "legacy_manifest_transport_required",
               "heuristic_source_series_selection",
               "assign_calibration_evaluation_reserve_roles",
               "download_source_dicoms",
@@ -137,7 +138,7 @@ jobs:
               output.write_text(
                   json.dumps(
                       {
-                          "schema_version": 2,
+                          "schema_version": 3,
                           "milestone": "M6",
                           "audit": "external-input-identity",
                           "status": "workflow_failed_before_audit_record",
@@ -169,6 +170,9 @@ jobs:
               "request_blob_sha": blob(
                   "research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json"
               ),
+              "diagnostic_1_blob_sha": blob(
+                  "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
+              ),
               "script_blob_sha": blob("scripts/audit_m6_external_inputs.py"),
               "workflow_blob_sha": blob(
                   ".github/workflows/m6-input-identity-audit.yml"
@@ -192,6 +196,7 @@ jobs:
           path: |
             docs/m6_calibration_feasibility.md
             research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json
+            research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json
             scripts/audit_m6_external_inputs.py
             outputs/m6_input_identity_audit.json
             outputs/m6_input_identity_audit.sha256

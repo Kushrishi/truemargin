@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "record": "external-input-identity-audit-diagnostic-1",
+  "workflow_run_id": 36933944184,
+  "source_git_sha": "3fc6cc53c77b12241385c777386cec08e65530e5",
+  "audit_schema_version": 2,
+  "status": "failed_before_identity_resolution",
+  "observed_boundary": {
+    "authorization_check_passed": true,
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "split_assignment_authorized": false,
+    "dicom_download_performed": false,
+    "heuristic_source_series_selection_performed": false
+  },
+  "failure": {
+    "stage": "legacy training manifest transport",
+    "resource": "ISBI-Prostate-Challenge-Training.tcia",
+    "url": "https://wiki.cancerimagingarchive.net/download/attachments/21267207/ISBI-Prostate-Challenge-Training.tcia?api=v2",
+    "attempts": 4,
+    "error_type": "RuntimeError",
+    "identity_result_observed": false,
+    "annotation_result_observed": false
+  },
+  "artifact": {
+    "github_artifact_id": 11197780342,
+    "artifact_sha256": "2dd5797b7b191877e6f1038ea85edd3e7bb6a8dbd45908d7677002c5cd878f1c",
+    "audit_output_sha256": "8be2c7c27719040fdb11a4ebffbda143590d01bfee6b4ec227aa4d0e85e34787"
+  },
+  "interpretation": [
+    "The diagnostic did not test or invalidate the 80-subject challenge identity hypothesis.",
+    "The failure demonstrates that the legacy Confluence attachment URL is not a sufficient single transport dependency for a reproducible hosted identity audit.",
+    "No M6 result-bearing data existed when the transport design was revised."
+  ]
+}
