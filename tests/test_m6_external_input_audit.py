@@ -1,4 +1,4 @@
-"""Unit tests for the metadata-only M6 external-input audit."""
+"""Unit tests for the metadata-only M6 external-input identity audit."""
 
 from __future__ import annotations
 
@@ -29,137 +29,109 @@ def _zip_bytes(files: dict[str, bytes]) -> bytes:
 def _manifest_bytes(series_uids: list[str]) -> bytes:
     lines = [
         "downloadServerUrl=https://example.invalid",
-        "includeAnnotation=false",
-        "manifestVersion=3.0",
         "ListOfSeriesToDownload=",
         *series_uids,
     ]
     return ("\n".join(lines) + "\n").encode()
 
 
-def test_validate_uid_rows_accepts_current_api_field_names():
-    validate = _function("_validate_uid_rows")
-    uids, rows = validate(
+def test_exact_uids_accepts_list_and_wrapped_v4_payloads():
+    exact_uids = _function("exact_uids")
+    payloads = [
         [
-            {"seriesInstanceUID": "1.2.3.4", "collection": "Prostate-3T"},
-            {"SeriesInstanceUID": "1.2.3.5", "Collection": "PROSTATE-DIAGNOSIS"},
+            {"seriesInstanceUID": "1.2.3.4"},
+            {"SeriesInstanceUID": "1.2.3.5"},
         ],
-        expected=2,
-        source="synthetic",
-    )
-    assert uids == ["1.2.3.4", "1.2.3.5"]
-    assert len(rows) == 2
+        {
+            "Series": [
+                {"SeriesInstanceUID": "1.2.3.4"},
+                {"SeriesInstanceUID": "1.2.3.5"},
+            ]
+        },
+    ]
+    for payload in payloads:
+        uids, rows = exact_uids(payload, 2, "synthetic")
+        assert uids == ["1.2.3.4", "1.2.3.5"]
+        assert len(rows) == 2
 
 
-def test_validate_uid_rows_rejects_duplicate_uid():
-    validate = _function("_validate_uid_rows")
+def test_exact_uids_rejects_duplicate_series():
+    exact_uids = _function("exact_uids")
     with pytest.raises(RuntimeError, match="Duplicate SeriesInstanceUID"):
-        validate(
-            [{"SeriesInstanceUID": "1.2.3.4"}, {"SeriesInstanceUID": "1.2.3.4"}],
-            expected=2,
-            source="synthetic",
+        exact_uids(
+            [
+                {"SeriesInstanceUID": "1.2.3.4"},
+                {"SeriesInstanceUID": "1.2.3.4"},
+            ],
+            2,
+            "synthetic",
         )
 
 
-def test_derive_partition_uids_uses_exact_disjoint_remainder():
-    derive = _function("derive_partition_uids")
-    doi = [f"1.2.840.{i}" for i in range(80)]
-    training = doi[:60]
-    leaderboard = doi[60:70]
-    result = derive(doi, training, leaderboard)
-    assert result["training"] == sorted(training)
-    assert result["leaderboard"] == sorted(leaderboard)
-    assert result["test"] == sorted(doi[70:])
+def test_validate_partitions_requires_exact_disjoint_60_10_10():
+    validate_partitions = _function("validate_partitions")
+    all_uids = [f"1.2.840.{index}" for index in range(80)]
+    result = validate_partitions(all_uids[:60], all_uids[60:70], all_uids[70:])
+    assert set(result) == {"training", "leaderboard", "test"}
+    assert sum(len(values) for values in result.values()) == 80
 
 
-def test_derive_partition_uids_rejects_shared_list_overlap():
-    derive = _function("derive_partition_uids")
-    doi = [f"1.2.840.{i}" for i in range(80)]
-    training = doi[:60]
-    leaderboard = [doi[0], *doi[60:69]]
+def test_validate_partitions_rejects_cross_partition_overlap():
+    validate_partitions = _function("validate_partitions")
+    all_uids = [f"1.2.840.{index}" for index in range(80)]
     with pytest.raises(RuntimeError, match="overlap"):
-        derive(doi, training, leaderboard)
+        validate_partitions(
+            all_uids[:60],
+            all_uids[60:70],
+            [all_uids[0], *all_uids[71:80]],
+        )
 
 
-def test_parse_tcia_series_uids_remains_available_for_optional_crosscheck():
-    parse = _function("parse_tcia_series_uids")
+def test_manifest_uids_returns_exact_official_membership():
+    manifest_uids = _function("manifest_uids")
     uids = ["1.2.3.4", "1.2.3.5"]
-    assert parse(_manifest_bytes(uids), expected_series=2) == uids
+    assert manifest_uids(_manifest_bytes(uids), 2) == uids
 
 
-def test_parse_tcia_series_uids_rejects_duplicate_uid():
-    parse = _function("parse_tcia_series_uids")
+def test_manifest_uids_rejects_duplicate_series():
+    manifest_uids = _function("manifest_uids")
     with pytest.raises(RuntimeError, match="duplicate SeriesInstanceUID"):
-        parse(_manifest_bytes(["1.2.3.4", "1.2.3.4"]), expected_series=2)
+        manifest_uids(_manifest_bytes(["1.2.3.4", "1.2.3.4"]), 2)
 
 
-def test_source_key_for_patient_id_maps_both_official_prefixes():
-    source_key_for_patient_id = _function("source_key_for_patient_id")
-    assert source_key_for_patient_id("Prostate3T-01-0001") == "prostate_3t"
-    assert source_key_for_patient_id("ProstateDx-01-0001") == "prostate_diagnosis"
-    with pytest.raises(ValueError, match="exactly one source"):
-        source_key_for_patient_id("Unknown-01-0001")
+def test_source_mapping_accepts_all_observed_challenge_namespace_candidates():
+    source_key = _function("source_key")
+    namespace = _function("namespace")
+    assert source_key("Prostate3T-01-0001") == "prostate_3t"
+    assert source_key("ProstateDx-02-0001") == "prostate_diagnosis"
+    assert source_key("Prostate3T-03-0001") == "prostate_3t"
+    assert namespace("Prostate3T-01-0001") == "01"
+    assert namespace("ProstateDx-02-0001") == "02"
+    assert namespace("Prostate3T-03-0001") == "03"
+    with pytest.raises(ValueError, match="Unsupported challenge PatientID"):
+        source_key("Prostate3T-04-0001")
 
 
-def test_enumerate_labels_hashes_members_and_preserves_partition_and_source():
-    enumerate_labels = _function("enumerate_labels")
+def test_label_records_preserves_later_partition_namespace():
+    label_records = _function("label_records")
     archive = _zip_bytes(
         {
-            "Leaderboard/Prostate3T-01-0001.nrrd": b"three-t",
-            "Leaderboard/ProstateDx-01-0002.nrrd": b"diagnosis",
+            "Leaderboard/Prostate3T-02-0001.nrrd": b"three-t",
+            "Leaderboard/ProstateDx-02-0002.nrrd": b"diagnosis",
             "Leaderboard/README.txt": b"ignored",
         }
     )
-    labels = enumerate_labels(archive, partition="leaderboard", expected_subjects=2)
+    labels = label_records(archive, "leaderboard", 2)
     assert [record["patient_id"] for record in labels] == [
-        "Prostate3T-01-0001",
-        "ProstateDx-01-0002",
+        "Prostate3T-02-0001",
+        "ProstateDx-02-0002",
     ]
-    assert [record["source_key"] for record in labels] == [
-        "prostate_3t",
-        "prostate_diagnosis",
-    ]
-    assert all(record["partition"] == "leaderboard" for record in labels)
-    assert all(len(record["sha256"]) == 64 for record in labels)
+    assert {record["patient_namespace"] for record in labels} == {"02"}
 
 
-def test_enumerate_labels_rejects_wrong_source_specific_training_archive():
-    enumerate_labels = _function("enumerate_labels")
-    archive = _zip_bytes({"Training/Prostate3T-01-0001.nrrd": b"wrong-source"})
-    with pytest.raises(RuntimeError, match="expected source prostate_diagnosis"):
-        enumerate_labels(
-            archive,
-            partition="training",
-            expected_subjects=1,
-            expected_source_key="prostate_diagnosis",
-        )
-
-
-def test_build_label_index_rejects_cross_partition_duplicate_patient():
-    build_label_index = _function("build_label_index")
+def test_map_identities_records_namespace_without_presuming_partition_mapping():
+    map_identities = _function("map_identities")
     partitions = {
-        "training": [
-            {
-                "patient_id": "Prostate3T-01-0001",
-                "partition": "training",
-                "source_key": "prostate_3t",
-            }
-        ],
-        "test": [
-            {
-                "patient_id": "Prostate3T-01-0001",
-                "partition": "test",
-                "source_key": "prostate_3t",
-            }
-        ],
-    }
-    with pytest.raises(RuntimeError, match="multiple challenge partitions"):
-        build_label_index(partitions)
-
-
-def test_map_series_identity_preserves_partition_and_acquisition_fields():
-    map_identity = _function("map_series_identity")
-    partition_uids = {
         "training": ["1.2.3.4"],
         "leaderboard": ["1.2.3.5"],
         "test": ["1.2.3.6"],
@@ -169,42 +141,58 @@ def test_map_series_identity_preserves_partition_and_acquisition_fields():
             "PatientID": "Prostate3T-01-0001",
             "collection_id": "prostate_3t",
             "SeriesInstanceUID": "1.2.3.4",
-            "Manufacturer": "SIEMENS",
-            "MagneticFieldStrength": 3.0,
         },
         {
-            "PatientID": "ProstateDx-01-0001",
+            "PatientID": "ProstateDx-02-0001",
             "collection_id": "prostate_diagnosis",
             "SeriesInstanceUID": "1.2.3.5",
-            "Manufacturer": "Philips Medical Systems",
-            "MagneticFieldStrength": 1.5,
         },
         {
-            "PatientID": "Prostate3T-01-0002",
+            "PatientID": "Prostate3T-03-0001",
             "collection_id": "prostate_3t",
             "SeriesInstanceUID": "1.2.3.6",
-            "Manufacturer": "SIEMENS",
-            "MagneticFieldStrength": 3.0,
         },
     ]
-    result = map_identity(partition_uids, rows)
-    # Synthetic fixture intentionally has only 3 subjects, so global count checks flag it,
-    # but identity mapping itself must preserve the exact partition/source metadata.
-    records = {record["series_uid"]: record for record in result["series_records"]}
-    assert records["1.2.3.4"]["partition"] == "training"
-    assert records["1.2.3.5"]["source_key"] == "prostate_diagnosis"
-    assert records["1.2.3.6"]["series"]["MagneticFieldStrength"] == 3.0
+    result = map_identities(partitions, rows)
+    assert result["partition_namespaces"] == {
+        "training": ["01"],
+        "leaderboard": ["02"],
+        "test": ["03"],
+    }
 
 
-def test_validate_historical_training_conditions_requires_corrected_and_preserved_cases():
-    validate = _function("validate_historical_training_conditions")
+def test_official_binary_falls_back_to_curl_without_changing_authority(monkeypatch):
+    official_binary = _function("official_binary")
+    globals_ = official_binary.__globals__
+    transport_error = globals_["TransportUnavailable"]
+
+    def fail_urllib(*args, **kwargs):
+        raise transport_error("https://example.invalid/data", [{"client": "urllib"}])
+
+    def succeed_curl(url):
+        return b"abc", {
+            "client": "curl",
+            "http_status": 200,
+            "size_bytes": 3,
+            "sha256": "synthetic",
+        }
+
+    monkeypatch.setitem(globals_, "request_bytes", fail_urllib)
+    monkeypatch.setitem(globals_, "curl_bytes", succeed_curl)
+    payload, record = official_binary("https://example.invalid/data")
+    assert payload == b"abc"
+    assert record["client"] == "curl"
+    assert record["prior_failures"] == [{"client": "urllib"}]
+
+
+def test_historical_training_checks_preserves_known_correction_cases():
+    historical_training_checks = _function("historical_training_checks")
     label_index = {
         "ProstateDx-01-0006": {"corrected_label_filename": True},
-        "ProstateDx-01-0055": {"corrected_label_filename": False},
-        "ProstateDx-01-0035": {"corrected_label_filename": False},
+        "ProstateDx-01-0055": {},
+        "ProstateDx-01-0035": {},
     }
-    result = validate(label_index)
-    assert result["issues"] == []
+    assert historical_training_checks(label_index) == []
 
 
 def test_failure_record_keeps_result_bearing_boundary_closed():

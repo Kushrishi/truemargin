@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "date": "2026-10-01",
   "milestone": "M6",
   "authorized_mode": "external-input-identity-audit",
@@ -31,22 +31,28 @@
       "test": {
         "expected_subjects": 10,
         "expected_series": 10,
-        "partition_rule": "analysis DOI series universe minus training shared list minus leaderboard shared list",
-        "legacy_image_manifest": "ISBI-Prostate-Challenge-Testing.tcia"
+        "official_image_manifest": "ISBI-Prostate-Challenge-Testing.tcia",
+        "official_shared_list_name": null
       }
     }
   },
   "image_identity_authority": {
-    "analysis_doi_series_api": "TCIA NBIA Advanced REST getCollectionOrSeriesForDOI",
-    "analysis_doi_url": "https://doi.org/10.7937/K9/TCIA.2015.zF0vlOPv",
-    "training_membership_api": "TCIA NBIA Search REST getContentsByName",
-    "leaderboard_membership_api": "TCIA NBIA Search REST getContentsByName",
-    "test_membership_rule": "exact disjoint set remainder",
-    "legacy_manifests_required": false,
-    "legacy_manifests_role": "optional provenance cross-check only"
+    "training_membership_api": "TCIA v4 SharedList/query/ContentsByName",
+    "leaderboard_membership_api": "TCIA v4 SharedList/query/ContentsByName",
+    "test_membership_authority": "official TCIA Source Image Data - Test .tcia manifest",
+    "test_shared_list_name_invented": false,
+    "analysis_doi_series_api_required": false,
+    "training_leaderboard_legacy_manifests_required": false,
+    "training_leaderboard_legacy_manifests_role": "optional provenance cross-check only",
+    "test_manifest_required": true
   },
   "annotation_identity_authority": {
     "analysis_page": "https://www.cancerimagingarchive.net/analysis-result/isbi-mr-prostate-2013/",
+    "official_partition_archives": {
+      "training": "NCI-ISBI 2013 Prostate Challenge - Training.zip",
+      "leaderboard": "NCI-ISBI 2013 Prostate Challenge - Leaderboard.zip",
+      "test": "NCI-ISBI 2013 Prostate Challenge - Test.zip"
+    },
     "expected_training_subjects": 60,
     "expected_leaderboard_subjects": 10,
     "expected_test_subjects": 10,
@@ -55,42 +61,64 @@
   },
   "sources": {
     "prostate_3t": {
-      "patient_prefix": "Prostate3T-01-",
+      "patient_stem": "Prostate3T-",
       "source_collection": "Prostate-3T",
       "source_collection_doi": "10.7937/K9/TCIA.2015.QJTV5IL5",
       "idc_collection_id": "prostate_3t"
     },
     "prostate_diagnosis": {
-      "patient_prefix": "ProstateDx-01-",
+      "patient_stem": "ProstateDx-",
       "source_collection": "PROSTATE-DIAGNOSIS",
       "source_collection_doi": "10.7937/K9/TCIA.2015.FOQEUJVT",
       "idc_collection_id": "prostate_diagnosis"
     }
   },
+  "patient_identity_policy": {
+    "accepted_challenge_namespaces": ["01", "02", "03"],
+    "partition_namespace_mapping_frozen": false,
+    "record_observed_namespace_by_partition": true,
+    "require_image_annotation_patient_id_agreement": true,
+    "source_mapping_uses_prostate3t_vs_prostatedx_stem": true
+  },
+  "transport_policy": {
+    "json_api_client": "urllib with bounded retry",
+    "official_binary_primary_client": "urllib single attempt",
+    "official_binary_fallback_client": "bounded curl with redirect following and retry",
+    "fallback_changes_identity_authority": false
+  },
   "audit_rules": {
-    "derive_image_series_universe_from_analysis_doi_api": true,
-    "derive_training_membership_from_official_shared_list": true,
-    "derive_leaderboard_membership_from_official_shared_list": true,
-    "derive_test_membership_as_disjoint_remainder": true,
+    "derive_training_membership_from_official_v4_shared_list": true,
+    "derive_leaderboard_membership_from_official_v4_shared_list": true,
+    "derive_test_membership_from_official_test_manifest": true,
+    "require_exact_disjoint_60_10_10_partition_series": true,
     "resolve_exact_official_series_in_idc": true,
     "preserve_official_partition_identity": true,
     "preserve_source_collection_identity": true,
     "record_scanner_acquisition_metadata": true,
+    "record_patient_namespace_by_partition": true,
     "audit_annotation_identity_separately": true,
-    "legacy_manifest_transport_required": false,
     "heuristic_source_series_selection": false,
     "assign_calibration_evaluation_reserve_roles": false,
     "download_source_dicoms": false,
     "run_registration": false,
     "fit_calibration": false
   },
-  "prior_diagnostic": {
-    "workflow_run_id": 36933944184,
-    "source_git_sha": "3fc6cc53c77b12241385c777386cec08e65530e5",
-    "outcome": "legacy training manifest transport unavailable before any identity result",
-    "result_bearing_data_observed": false,
-    "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
-  },
+  "prior_diagnostics": [
+    {
+      "workflow_run_id": 36933944184,
+      "source_git_sha": "3fc6cc53c77b12241385c777386cec08e65530e5",
+      "outcome": "legacy training manifest transport unavailable before any identity result",
+      "result_bearing_data_observed": false,
+      "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
+    },
+    {
+      "workflow_run_id": 36940363311,
+      "source_git_sha": "db9a13bb1822bb064e90998cc063ef722ec701b0",
+      "outcome": "legacy analysis-DOI series lookup returned an empty JSON list before partition identity resolution",
+      "result_bearing_data_observed": false,
+      "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_2.json"
+    }
+  ],
   "historical_conditions_to_preserve": [
     "ProstateDx-01-0006 uses the corrected challenge training label archive member.",
     "ProstateDx-01-0055 has a documented image/label Z-dimension mismatch and must not be silently discarded by this identity audit.",
@@ -98,7 +126,9 @@
   ],
   "interpretation_boundary": [
     "This audit inventories all 80 official challenge subjects but assigns no M6 cohort roles.",
+    "No numeric namespace-to-partition mapping is frozen before official image and annotation artifacts are compared.",
     "Leaderboard/test membership is preserved as provenance and does not by itself establish external-dataset generalization.",
+    "Using curl as a transport fallback does not change the authoritative TCIA URL or artifact identity.",
     "Image identity may complete even when annotation transport is temporarily unavailable, but the overall audit remains incomplete until annotation identity is verified.",
     "No result-bearing M6 execution is authorized by this request."
   ],
