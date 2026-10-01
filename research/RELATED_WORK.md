@@ -1,7 +1,7 @@
 # Related work and contribution boundary
 
-**Updated:** 2026-10-01  
-**Status:** comparator boundary frozen; M4 primary result and M5 failure characterization complete
+**Updated:** 2026-09-25  
+**Status:** comparator boundary and implementation feasibility decisions frozen
 
 The broad problem of medical image-registration uncertainty is mature. TrueMargin
 must not claim novelty for uncertainty estimation, perturbation ensembles,
@@ -48,18 +48,15 @@ guarantee containment of the unknown true registration.
 
 ### Known-ground-truth evaluation
 
-The 30-case M4 study is complete and must remain frozen. Its primary result is
-positive at the anatomy level, but M5 shows meaningful deformation-specific
-heterogeneity: 6 / 30 case-level sigma/error rank associations are negative,
-and the frozen high-error/low-sigma rule identifies 39 / 1,500 sampled points
-as blind spots.
+The current 30-case study should remain frozen and be run as specified once its
+implementation/reproducibility checks are complete.
 
-No M4 primary statistic, anatomy, seed, sampled ROI location, or estimator
-member may be changed based on these outcomes.
+Do not modify its primary statistic, anatomy set, seeds, or nine-member
+estimator based on comparator literature.
 
 ### Comparators
 
-The paper-level comparator boundary was prospectively frozen before any
+The paper-level comparator boundary is now prospectively frozen before any
 result-bearing known-GT registration.
 
 Direct local methods:
@@ -82,34 +79,21 @@ returned HTTP 403, the current service files route returned HTTP 403, and
 headless Chrome received only Cloudflare security verification. The public
 paper metadata establishes CD's transformation-consistency/model-selection
 role but does not pin the exact transformation parameters and aggregation
-semantics needed for a faithful reproduction. CD was therefore prospectively
-excluded from the current confirmatory study; no bespoke analogue was
+semantics needed for a faithful reproduction. CD is therefore prospectively
+excluded from the current confirmatory study; no bespoke analogue is
 substituted.
 
 **Transformation-equivariance UQ** remains related-work-only in the
-confirmatory classical study: the authors' publication page lists it as an
-arXiv preprint and the demonstrated implementations use pretrained deep
-registration models. A classical-optimizer adaptation would be a new method
-rather than a clean baseline.
+confirmatory classical study: the authors' current publication page still
+lists it as an arXiv preprint and the demonstrated implementations use
+pretrained deep registration models. A classical-optimizer adaptation would be
+a new method rather than a clean baseline.
 
 **CONReg** remains related-work-only because it requires a learned
 quantile-registration model and conformal calibration pipeline.
 
 Historical curvature is excluded unless a separate pre-result audit recovers a
 complete stable definition.
-
-## Post-M5 interpretation of the ICE boundary
-
-M4 found median anatomy Spearman `0.7203` for ICE and `0.6841` for target sigma;
-the pre-specified target-minus-ICE bootstrap interval crossed zero. M5 therefore
-treats ICE as a contribution-boundary constraint, not as an inconvenient
-baseline to tune around.
-
-The pointwise failure sets are not identical: among 1,350 points from the 27
-cases with valid ICE, ICE had 34 frozen-rule blind spots, while only 12 of the
-39 target-sigma blind spots were also ICE blind spots. This is descriptive
-post-primary evidence only. It does not justify a combined method without a
-new prospective protocol.
 
 ## Paper-level evaluation axes
 
@@ -150,16 +134,12 @@ Do not add a stress axis merely because it produces a favorable result.
 
 ## Current contribution hypothesis
 
-After M5, a defensible contribution remains:
+A defensible contribution may be:
 
 > **A prospective, anatomy-aware stress-test framework for determining when
 > registration uncertainty and label-free quality surrogates are informative
 > about known local spatial error, separating rank informativeness, calibration,
 > and blind-spot behavior.**
-
-The current evidence supports a positive but heterogeneous target-sigma result
-and a strong ICE comparator. It does not support a universal method-superiority
-claim.
 
 The paper should be narrowed or stopped if contemporary work already evaluates
 the same comparator families under an equivalently controlled, multi-regime,
@@ -191,19 +171,19 @@ Primary/review sources currently driving this boundary:
 
 ## Comparator-freeze conclusions
 
-The literature audit and completed M4-M5 evidence imply:
+The literature audit resolved the pre-freeze questions as follows:
 
 1. known-GT validation of individual local surrogates exists, including recent
    ICE work, but the current contribution remains a prospective same-case,
    anatomy-aware comparison of distinct surrogate semantics and blind spots;
 2. transformation-equivariance UQ is not used as a direct classical comparator;
 3. Contrastive Discrepancy is not included in the current confirmatory study
-   because the linked released snapshot was not reproducibly retrievable from a
-   clean hosted environment and the available public description was
+   because the linked released snapshot is not reproducibly retrievable from a
+   clean hosted environment and the available public description is
    insufficient to reproduce exact scoring semantics without invention;
 4. ICE is defined prospectively through forward/reverse ensemble-mean cycle
    error in physical coordinates;
-5. the confirmatory local suite remains target sigma, ICE, residual, and
-   Jacobian deviation;
-6. the completed M5 failure analysis narrows the claim to positive but
-   heterogeneous informativeness and preserves ICE as a strong baseline.
+5. the confirmatory local suite is intentionally small: target sigma, ICE,
+   residual, and Jacobian deviation;
+6. the direct-comparator implementation and authorization invariants are frozen
+   and tested before any result-bearing registration.
