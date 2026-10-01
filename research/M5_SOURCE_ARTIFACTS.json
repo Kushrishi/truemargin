@@ -1,0 +1,24 @@
+{
+  "analysis_boundary": "M5 is post-primary descriptive characterization. It reuses frozen M4 outputs and does not rerun registration, retune the estimator, redefine the ROI, or introduce a new confirmatory winner metric.",
+  "canonical_artifact": {
+    "id": 10896650804,
+    "name": "truemargin-known-gt-result-bearing",
+    "sha256": "bd1f76e20c7e4591b5b3113c061c90534ec413bda0a242747625ed6d5f96b728"
+  },
+  "execution_git_sha": "9add89e5055ba45eb6c6b93c42da38615891a225",
+  "patient_shards": [
+    {"artifact_id": 10888669063, "artifact_name": "aaa0044", "patient": "aaa0044", "sha256": "c8268a9b1ab5e7e53c3dac7e731bc9fee490f8bb3c0bd4836ad8a63abb166fd7"},
+    {"artifact_id": 10888708567, "artifact_name": "aaa0051", "patient": "aaa0051", "sha256": "04ec0558a76f5be4d2edf0de72ec428bf33d6f38a17ca65cad39d751cf997db8"},
+    {"artifact_id": 10888607096, "artifact_name": "aaa0053", "patient": "aaa0053", "sha256": "24157610525f556e0b7afa97f880909832a2cc087ee802b8e9b69949b866fa2a"},
+    {"artifact_id": 10888331339, "artifact_name": "aaa0060", "patient": "aaa0060", "sha256": "652133d28abbca66c0d21a282d50728504ca2f44b7569924c4a68ac7090a1be7"},
+    {"artifact_id": 10888379480, "artifact_name": "aaa0064", "patient": "aaa0064", "sha256": "555c1589254f4c7a28a656ef7ddf085d61ab1050734b6261ee625c60df00d40e"},
+    {"artifact_id": 10888494346, "artifact_name": "aaa0069", "patient": "aaa0069", "sha256": "139a6f6e44031e3d1cf12207557128abc45b6c09b00ae6482567c1ec73146d1f"},
+    {"artifact_id": 10889000884, "artifact_name": "aaa0071", "patient": "aaa0071", "sha256": "899c75fa65a0fa4680c4ffbf22553cc2a7d6fe84642162947e570262c733012a"},
+    {"artifact_id": 10887691141, "artifact_name": "aaa0072", "patient": "aaa0072", "sha256": "0ea56ccea4bffc0f8fc319ab2c1f3dc533b3320f4bbfd03c2f1e87f8683980f9"},
+    {"artifact_id": 10887828727, "artifact_name": "aaa0086", "patient": "aaa0086", "sha256": "eeaa0caeadb48a24c77d0a1568a2753647c1b62e2f74876e9cf8262517a6ef4b"},
+    {"artifact_id": 10896047897, "artifact_name": "aaa0087", "patient": "aaa0087", "sha256": "9657cce36ea2fa548a168a6a8c4bcc94a131b55a7a24a826d42d877479103be1"}
+  ],
+  "schema_version": 1,
+  "study": "hyperparameter-known-gt-v1",
+  "workflow_run_id": 36188222836
+}
