@@ -1,0 +1,65 @@
+{
+  "result_date": "2026-09-26",
+  "status": "completed",
+  "workflow_run_id": 36188222836,
+  "workflow_run_attempt": 3,
+  "execution_git_sha": "9add89e5055ba45eb6c6b93c42da38615891a225",
+  "artifact_id": 10896650804,
+  "artifact_name": "truemargin-known-gt-result-bearing",
+  "artifact_digest": "sha256:bd1f76e20c7e4591b5b3113c061c90534ec413bda0a242747625ed6d5f96b728",
+  "summary_file_sha256": "251f3e5545488e3130344a6a59922b6ee6c38fb1f1fba4342802ddc2bce86f3",
+  "planned_cases": 30,
+  "complete_cases": 30,
+  "held_out_anatomies": 10,
+  "planned_forward_registrations": 270,
+  "planned_reverse_registrations": 270,
+  "total_planned_registrations": 540,
+  "primary": {
+    "assessable_anatomies": 10,
+    "positive_anatomies": 10,
+    "median_anatomy_spearman": 0.6840816326530612,
+    "bootstrap_95_ci": [
+      0.3047779111644658,
+      0.8283793517406962
+    ],
+    "exact_one_sided_sign_p": 0.0009765625,
+    "median_anatomy_blind_spot_rate": 0.0,
+    "median_anatomy_quartile_known_error_delta_mm": 1.71202542173639
+  },
+  "direct_comparators": {
+    "inverse_consistency_error": {
+      "assessable_anatomies": 10,
+      "median_anatomy_spearman": 0.7203361344537815,
+      "paired_target_minus_comparator_median": -0.033901560624249705,
+      "paired_target_minus_comparator_bootstrap_95_ci": [
+        -0.0902761104441776,
+        0.07356542617046813
+      ]
+    },
+    "same_modality_residual": {
+      "assessable_anatomies": 10,
+      "median_anatomy_spearman": 0.28513805522208885,
+      "paired_target_minus_comparator_median": 0.23889555822328928,
+      "paired_target_minus_comparator_bootstrap_95_ci": [
+        0.018823529411764683,
+        0.47572629051620646
+      ]
+    },
+    "jacobian_deviation": {
+      "assessable_anatomies": 10,
+      "median_anatomy_spearman": 0.16893157262905162,
+      "paired_target_minus_comparator_median": 0.27025210084033613,
+      "paired_target_minus_comparator_bootstrap_95_ci": [
+        0.16945978391356548,
+        0.7144297719087634
+      ]
+    }
+  },
+  "interpretation_boundary": {
+    "supports_pointwise_rank_informativeness_in_frozen_known_gt_study": true,
+    "establishes_superiority_over_inverse_consistency_error": false,
+    "establishes_numerical_calibration": false,
+    "establishes_external_generalization": false,
+    "establishes_clinical_validity": false
+  }
+}
