@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "record": "external-input-identity-audit-diagnostic-2",
+  "workflow_run_id": 36940363311,
+  "source_git_sha": "db9a13bb1822bb064e90998cc063ef722ec701b0",
+  "audit_schema_version": 3,
+  "status": "failed_before_partition_identity_resolution",
+  "observed_boundary": {
+    "authorization_check_passed": true,
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "split_assignment_authorized": false,
+    "dicom_download_performed": false,
+    "heuristic_source_series_selection_performed": false
+  },
+  "failure": {
+    "stage": "TCIA analysis DOI series lookup",
+    "authority_attempted": "TCIA NBIA Advanced REST getCollectionOrSeriesForDOI",
+    "doi": "https://doi.org/10.7937/K9/TCIA.2015.zF0vlOPv",
+    "collection_or_series": "series",
+    "expected_series": 80,
+    "observed_series": 0,
+    "error": "Expected 80 series from TCIA DOI API; found 0",
+    "identity_result_observed": false,
+    "annotation_result_observed": false
+  },
+  "artifact": {
+    "github_artifact_id": 11199497694,
+    "artifact_sha256": "50cc052f9120fd9762a507d53053df3b30c9e14004c68acbaea73e6e71d65cf8",
+    "audit_output_sha256": "621745b2695d9ecdbfbbdf6791f6522e2a415c73b147a319caecf4e42844832e"
+  },
+  "interpretation": [
+    "The empty DOI-series response does not invalidate the official 60/10/10 challenge partition identity documented by TCIA.",
+    "The analysis-result DOI endpoint is not retained as an image-series authority after this diagnostic.",
+    "No M6 estimator, calibration, or outcome data existed when the authority model was revised."
+  ]
+}

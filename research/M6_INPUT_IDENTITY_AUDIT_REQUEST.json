@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "date": "2026-10-01",
   "milestone": "M6",
   "authorized_mode": "external-input-identity-audit",
@@ -19,34 +19,40 @@
       "training": {
         "expected_subjects": 60,
         "expected_series": 60,
-        "official_shared_list_name": "ISBI Prostate Challenge - Training",
-        "legacy_image_manifest": "ISBI-Prostate-Challenge-Training.tcia"
+        "primary_authority": "TCIA shared list: ISBI Prostate Challenge - Training",
+        "official_image_manifest": "ISBI-Prostate-Challenge-Training.tcia",
+        "manifest_role": "optional exact-UID cross-check"
       },
       "leaderboard": {
         "expected_subjects": 10,
         "expected_series": 10,
-        "official_shared_list_name": "ISBI Prostate Challenge - Leader Board",
-        "legacy_image_manifest": "ISBI-Prostate-Challenge-LeaderBoard.tcia"
+        "primary_authority": "TCIA shared list: ISBI Prostate Challenge - Leader Board",
+        "official_image_manifest": "ISBI-Prostate-Challenge-LeaderBoard.tcia",
+        "manifest_role": "optional exact-UID cross-check"
       },
       "test": {
         "expected_subjects": 10,
         "expected_series": 10,
-        "partition_rule": "analysis DOI series universe minus training shared list minus leaderboard shared list",
-        "legacy_image_manifest": "ISBI-Prostate-Challenge-Testing.tcia"
+        "primary_authority": "official TCIA test manifest",
+        "official_image_manifest": "ISBI-Prostate-Challenge-Testing.tcia",
+        "manifest_role": "required exact-UID authority"
       }
     }
   },
   "image_identity_authority": {
-    "analysis_doi_series_api": "TCIA NBIA Advanced REST getCollectionOrSeriesForDOI",
-    "analysis_doi_url": "https://doi.org/10.7937/K9/TCIA.2015.zF0vlOPv",
+    "analysis_page": "https://www.cancerimagingarchive.net/analysis-result/isbi-mr-prostate-2013/",
     "training_membership_api": "TCIA NBIA Search REST getContentsByName",
     "leaderboard_membership_api": "TCIA NBIA Search REST getContentsByName",
-    "test_membership_rule": "exact disjoint set remainder",
-    "legacy_manifests_required": false,
-    "legacy_manifests_role": "optional provenance cross-check only"
+    "test_membership": "official TCIA test manifest",
+    "required_partition_invariant": "60 training + 10 leaderboard + 10 test, pairwise disjoint, 80 total",
+    "analysis_doi_series_api_used_as_authority": false,
+    "analysis_doi_series_api_exclusion_reason": "Hosted diagnostic 2 returned zero series for this analysis-result DOI; TCIA documentation describes the endpoint, but the live result is not usable as the challenge series authority."
   },
   "annotation_identity_authority": {
     "analysis_page": "https://www.cancerimagingarchive.net/analysis-result/isbi-mr-prostate-2013/",
+    "training_archive": "NCI-ISBI 2013 Prostate Challenge - Training.zip",
+    "leaderboard_archive": "NCI-ISBI 2013 Prostate Challenge - Leaderboard.zip",
+    "test_archive": "NCI-ISBI 2013 Prostate Challenge - Test.zip",
     "expected_training_subjects": 60,
     "expected_leaderboard_subjects": 10,
     "expected_test_subjects": 10,
@@ -68,37 +74,48 @@
     }
   },
   "audit_rules": {
-    "derive_image_series_universe_from_analysis_doi_api": true,
     "derive_training_membership_from_official_shared_list": true,
     "derive_leaderboard_membership_from_official_shared_list": true,
-    "derive_test_membership_as_disjoint_remainder": true,
+    "derive_test_membership_from_official_manifest": true,
+    "require_pairwise_disjoint_partition_uids": true,
+    "require_exact_80_series_union": true,
+    "crosscheck_training_manifest_when_available": true,
+    "crosscheck_leaderboard_manifest_when_available": true,
     "resolve_exact_official_series_in_idc": true,
     "preserve_official_partition_identity": true,
     "preserve_source_collection_identity": true,
     "record_scanner_acquisition_metadata": true,
     "audit_annotation_identity_separately": true,
-    "legacy_manifest_transport_required": false,
-    "heuristic_source_series_selection": false,
     "assign_calibration_evaluation_reserve_roles": false,
     "download_source_dicoms": false,
     "run_registration": false,
     "fit_calibration": false
   },
-  "prior_diagnostic": {
-    "workflow_run_id": 36933944184,
-    "source_git_sha": "3fc6cc53c77b12241385c777386cec08e65530e5",
-    "outcome": "legacy training manifest transport unavailable before any identity result",
-    "result_bearing_data_observed": false,
-    "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
-  },
+  "prior_diagnostics": [
+    {
+      "workflow_run_id": 36933944184,
+      "source_git_sha": "3fc6cc53c77b12241385c777386cec08e65530e5",
+      "outcome": "legacy training manifest transport unavailable before identity resolution",
+      "result_bearing_data_observed": false,
+      "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
+    },
+    {
+      "workflow_run_id": 36940363311,
+      "source_git_sha": "db9a13bb1822bb064e90998cc063ef722ec701b0",
+      "outcome": "TCIA analysis DOI series API returned zero series before partition identity resolution",
+      "result_bearing_data_observed": false,
+      "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_2.json"
+    }
+  ],
   "historical_conditions_to_preserve": [
-    "ProstateDx-01-0006 uses the corrected challenge training label archive member.",
+    "ProstateDx-01-0006 must remain present in the current official training annotation archive after the historical label correction.",
     "ProstateDx-01-0055 has a documented image/label Z-dimension mismatch and must not be silently discarded by this identity audit.",
     "PROSTATE-DIAGNOSIS version 2 corrected a PatientID/name/image database mismatch involving ProstateDx-01-0035 without changing UIDs or zip files."
   ],
   "interpretation_boundary": [
     "This audit inventories all 80 official challenge subjects but assigns no M6 cohort roles.",
-    "Leaderboard/test membership is preserved as provenance and does not by itself establish external-dataset generalization.",
+    "Historical challenge partition membership is provenance and does not itself define TrueMargin calibration/evaluation/reserve roles.",
+    "Leaderboard/test membership does not by itself establish external-dataset generalization because all 80 cases belong to the same challenge/source-collection family.",
     "Image identity may complete even when annotation transport is temporarily unavailable, but the overall audit remains incomplete until annotation identity is verified.",
     "No result-bearing M6 execution is authorized by this request."
   ],

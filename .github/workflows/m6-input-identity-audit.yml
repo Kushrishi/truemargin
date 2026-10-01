@@ -6,6 +6,7 @@ on:
     paths:
       - "research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json"
       - "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
+      - "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_2.json"
       - "scripts/audit_m6_external_inputs.py"
       - ".github/workflows/m6-input-identity-audit.yml"
 
@@ -38,7 +39,7 @@ jobs:
               Path("research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json").read_text()
           )
           expected = {
-              "schema_version": 3,
+              "schema_version": 4,
               "milestone": "M6",
               "authorized_mode": "external-input-identity-audit",
               "result_bearing_authorized": False,
@@ -71,30 +72,22 @@ jobs:
               partitions["test"]["expected_subjects"],
               partitions["test"]["expected_series"],
           ) == (10, 10)
-          assert (
-              partitions["training"]["official_shared_list_name"]
-              == "ISBI Prostate Challenge - Training"
-          )
-          assert (
-              partitions["leaderboard"]["official_shared_list_name"]
-              == "ISBI Prostate Challenge - Leader Board"
-          )
 
-          image_authority = request["image_identity_authority"]
-          assert image_authority["analysis_doi_series_api"].endswith(
-              "getCollectionOrSeriesForDOI"
-          )
-          assert image_authority["legacy_manifests_required"] is False
+          authority = request["image_identity_authority"]
+          assert authority["analysis_doi_series_api_used_as_authority"] is False
           assert request["annotation_identity_authority"][
               "annotation_identity_required_before_result_bearing_m6"
           ] is True
 
           rules = request["audit_rules"]
           for key in (
-              "derive_image_series_universe_from_analysis_doi_api",
               "derive_training_membership_from_official_shared_list",
               "derive_leaderboard_membership_from_official_shared_list",
-              "derive_test_membership_as_disjoint_remainder",
+              "derive_test_membership_from_official_manifest",
+              "require_pairwise_disjoint_partition_uids",
+              "require_exact_80_series_union",
+              "crosscheck_training_manifest_when_available",
+              "crosscheck_leaderboard_manifest_when_available",
               "resolve_exact_official_series_in_idc",
               "preserve_official_partition_identity",
               "preserve_source_collection_identity",
@@ -103,8 +96,6 @@ jobs:
           ):
               assert rules[key] is True, key
           for key in (
-              "legacy_manifest_transport_required",
-              "heuristic_source_series_selection",
               "assign_calibration_evaluation_reserve_roles",
               "download_source_dicoms",
               "run_registration",
@@ -112,8 +103,15 @@ jobs:
           ):
               assert rules[key] is False, key
 
+          diagnostics = request["prior_diagnostics"]
+          assert [item["workflow_run_id"] for item in diagnostics] == [
+              36933944184,
+              36940363311,
+          ]
+
           print("M6_INPUT_IDENTITY_AUTHORIZATION=PASS")
           print("M6_CHALLENGE_IDENTITY_SURFACE=80")
+          print("M6_PARTITION_AUTHORITY=TRAINING_SHARED_LIST+LEADERBOARD_SHARED_LIST+TEST_MANIFEST")
           print("RESULT_BEARING_AUTHORIZED=False")
           PY
 
@@ -138,7 +136,7 @@ jobs:
               output.write_text(
                   json.dumps(
                       {
-                          "schema_version": 3,
+                          "schema_version": 4,
                           "milestone": "M6",
                           "audit": "external-input-identity",
                           "status": "workflow_failed_before_audit_record",
@@ -173,6 +171,9 @@ jobs:
               "diagnostic_1_blob_sha": blob(
                   "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json"
               ),
+              "diagnostic_2_blob_sha": blob(
+                  "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_2.json"
+              ),
               "script_blob_sha": blob("scripts/audit_m6_external_inputs.py"),
               "workflow_blob_sha": blob(
                   ".github/workflows/m6-input-identity-audit.yml"
@@ -197,6 +198,7 @@ jobs:
             docs/m6_calibration_feasibility.md
             research/M6_INPUT_IDENTITY_AUDIT_REQUEST.json
             research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_1.json
+            research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_2.json
             scripts/audit_m6_external_inputs.py
             outputs/m6_input_identity_audit.json
             outputs/m6_input_identity_audit.sha256

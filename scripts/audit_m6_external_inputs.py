@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Audit the official NCI-ISBI prostate challenge identity surface for TrueMargin M6.
 
-This diagnostic is metadata-only. Image-series identity is established from current
-TCIA APIs rather than depending on legacy Confluence attachment transport:
+This diagnostic is metadata-only. It establishes exact challenge-partition image
+identity from official TCIA partition authorities before any M6 cohort roles are
+assigned:
 
-1. the analysis DOI provides the complete source-series universe;
-2. the historical official training and leaderboard shared lists provide partition
-   membership; and
-3. the test partition is the exact disjoint remainder.
+* Training: official TCIA shared list (60 series)
+* Leaderboard: official TCIA shared list (10 series)
+* Test: official TCIA test manifest (10 series)
 
-Official segmentation archives are audited separately because annotation transport is
-required for ROI/geometry work but is not required to establish image-series identity.
-No DICOM image payloads are downloaded, no M6 cohort roles are assigned, no
+The three sets must be pairwise disjoint and total 80 series. Exact UIDs are then
+resolved in IDC metadata without downloading DICOM payloads. Official NRRD archives
+are audited separately because annotation identity is required before ROI/geometry
+work, but annotation transport must not erase otherwise valid image-identity evidence.
+
+No M6 cohort roles are assigned, no DICOM image payloads are downloaded, no
 registration is run, and no calibration is fit.
 """
 
@@ -22,6 +25,8 @@ import hashlib
 import io
 import json
 import re
+import shutil
+import subprocess
 import time
 import urllib.error
 import urllib.parse
@@ -32,21 +37,16 @@ from typing import Any
 
 CHALLENGE_NAME = "NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures"
 CHALLENGE_DOI = "10.7937/K9/TCIA.2015.zF0vlOPv"
-CHALLENGE_DOI_URL = f"https://doi.org/{CHALLENGE_DOI}"
 CURRENT_ANALYSIS_PAGE = (
     "https://www.cancerimagingarchive.net/analysis-result/isbi-mr-prostate-2013/"
 )
 TCIA_PUBLIC_BASE = "https://services.cancerimagingarchive.net/nbia-api/services/v1"
-TCIA_ADVANCED_BASE = "https://services.cancerimagingarchive.net/nbia-api"
-TCIA_TOKEN_URL = f"{TCIA_ADVANCED_BASE}/oauth/token"
-TCIA_DOI_SERIES_URL = f"{TCIA_ADVANCED_BASE}/services/getCollectionOrSeriesForDOI"
 IDC_REST_BASE = "https://api.imaging.datacommons.cancer.gov/v3"
 EXPECTED_TOTAL_SUBJECTS = 80
 EXPECTED_TOTAL_SERIES = 80
 API_ATTEMPTS = 3
 API_TIMEOUT_SECONDS = 45
-LEGACY_ATTEMPTS = 1
-LEGACY_TIMEOUT_SECONDS = 12
+ATTACHMENT_TIMEOUT_SECONDS = 60
 NETWORK_BACKOFF_SECONDS = (2, 5)
 
 SOURCES: dict[str, dict[str, str]] = {
@@ -69,88 +69,60 @@ PARTITIONS: dict[str, dict[str, Any]] = {
         "expected_subjects": 60,
         "expected_series": 60,
         "shared_list_name": "ISBI Prostate Challenge - Training",
-        "legacy_manifest_name": "ISBI-Prostate-Challenge-Training.tcia",
-        "legacy_manifest_urls": [
+        "manifest_name": "ISBI-Prostate-Challenge-Training.tcia",
+        "manifest_required": False,
+        "manifest_urls": [
             (
                 "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
                 "ISBI-Prostate-Challenge-Training.tcia?api=v2"
             )
         ],
-        "label_archives": [
-            {
-                "name": "NCI_ISBI_Challenge-Prostate3T_Training_Segmentations.zip",
-                "source_key": "prostate_3t",
-                "expected_subjects": 30,
-                "urls": [
-                    (
-                        "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
-                        "NCI_ISBI_Challenge-Prostate3T_Training_Segmentations.zip?api=v2&"
-                        "modificationDate=1689368483744&version=1"
-                    )
-                ],
-            },
-            {
-                "name": "NCI_ISBI_Challenge-ProstateDx_Training_Segmentations.zip",
-                "source_key": "prostate_diagnosis",
-                "expected_subjects": 30,
-                "urls": [
-                    (
-                        "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
-                        "NCI_ISBI_Challenge-ProstateDx_Training_Segmentations.zip?api=v2&"
-                        "modificationDate=1689368511369&version=2"
-                    )
-                ],
-            },
+        "label_archive_name": "NCI-ISBI 2013 Prostate Challenge - Training.zip",
+        "label_archive_urls": [
+            (
+                "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
+                "NCI-ISBI%202013%20Prostate%20Challenge%20-%20Training.zip?api=v2"
+            )
         ],
     },
     "leaderboard": {
         "expected_subjects": 10,
         "expected_series": 10,
         "shared_list_name": "ISBI Prostate Challenge - Leader Board",
-        "legacy_manifest_name": "ISBI-Prostate-Challenge-LeaderBoard.tcia",
-        "legacy_manifest_urls": [
+        "manifest_name": "ISBI-Prostate-Challenge-LeaderBoard.tcia",
+        "manifest_required": False,
+        "manifest_urls": [
             (
                 "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
                 "ISBI-Prostate-Challenge-LeaderBoard.tcia?api=v2"
             )
         ],
-        "label_archives": [
-            {
-                "name": "NCI-ISBI 2013 Prostate Challenge - Leaderboard.zip",
-                "source_key": None,
-                "expected_subjects": 10,
-                "urls": [
-                    (
-                        "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
-                        "NCI-ISBI%202013%20Prostate%20Challenge%20-%20Leaderboard.zip?api=v2"
-                    )
-                ],
-            }
+        "label_archive_name": "NCI-ISBI 2013 Prostate Challenge - Leaderboard.zip",
+        "label_archive_urls": [
+            (
+                "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
+                "NCI-ISBI%202013%20Prostate%20Challenge%20-%20Leaderboard.zip?api=v2"
+            )
         ],
     },
     "test": {
         "expected_subjects": 10,
         "expected_series": 10,
         "shared_list_name": None,
-        "legacy_manifest_name": "ISBI-Prostate-Challenge-Testing.tcia",
-        "legacy_manifest_urls": [
+        "manifest_name": "ISBI-Prostate-Challenge-Testing.tcia",
+        "manifest_required": True,
+        "manifest_urls": [
             (
                 "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
                 "ISBI-Prostate-Challenge-Testing.tcia?api=v2"
             )
         ],
-        "label_archives": [
-            {
-                "name": "NCI-ISBI 2013 Prostate Challenge - Test.zip",
-                "source_key": None,
-                "expected_subjects": 10,
-                "urls": [
-                    (
-                        "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
-                        "NCI-ISBI%202013%20Prostate%20Challenge%20-%20Test.zip?api=v2"
-                    )
-                ],
-            }
+        "label_archive_name": "NCI-ISBI 2013 Prostate Challenge - Test.zip",
+        "label_archive_urls": [
+            (
+                "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
+                "NCI-ISBI%202013%20Prostate%20Challenge%20-%20Test.zip?api=v2"
+            )
         ],
     },
 }
@@ -177,7 +149,7 @@ CANDIDATE_FIELDS = (
 
 
 class TransportUnavailable(RuntimeError):
-    """Raised after a network resource exhausts its declared retry policy."""
+    """Raised after a network resource exhausts its declared transport policy."""
 
     def __init__(self, url: str, failures: list[dict[str, Any]]):
         self.url = url
@@ -209,7 +181,7 @@ def _request(
     timeout: int = API_TIMEOUT_SECONDS,
     attempts: int = API_ATTEMPTS,
 ) -> tuple[bytes, list[dict[str, Any]]]:
-    request_headers = {"User-Agent": "truemargin-research/0.1"}
+    request_headers = {"User-Agent": "TrueMargin-M6-Audit/1.0"}
     if headers:
         request_headers.update(headers)
 
@@ -246,25 +218,7 @@ def _get_json(url: str) -> tuple[Any, dict[str, Any]]:
         "url": url,
         "sha256": hashlib.sha256(raw).hexdigest(),
         "size_bytes": len(raw),
-        "transport_failures_before_success": failures,
-    }
-
-
-def _post_form_json(
-    url: str,
-    fields: dict[str, str],
-    *,
-    bearer_token: str | None = None,
-) -> tuple[Any, dict[str, Any]]:
-    data = urllib.parse.urlencode(fields).encode("utf-8")
-    headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    if bearer_token is not None:
-        headers["Authorization"] = f"Bearer {bearer_token}"
-    raw, failures = _request(url, data=data, headers=headers)
-    return _decode_json(raw, source=url), {
-        "url": url,
-        "sha256": hashlib.sha256(raw).hexdigest(),
-        "size_bytes": len(raw),
+        "transport": "urllib",
         "transport_failures_before_success": failures,
     }
 
@@ -282,27 +236,54 @@ def _post_json(url: str, payload: dict[str, Any]) -> dict[str, Any]:
     return decoded
 
 
-def get_nbia_guest_token() -> tuple[str, dict[str, Any]]:
-    """Request TCIA's documented public-data guest token without persisting it."""
-    decoded, provenance = _post_form_json(
-        TCIA_TOKEN_URL,
-        {
-            "username": "nbia_guest",
-            "password": "",
-            "client_id": "NBIA",
-            "grant_type": "password",
-        },
-    )
-    if not isinstance(decoded, dict) or not isinstance(decoded.get("access_token"), str):
-        raise RuntimeError("TCIA guest-token response did not contain access_token")
-    token = str(decoded["access_token"])
-    safe = {
-        **provenance,
-        "token_persisted": False,
-        "expires_in": decoded.get("expires_in"),
-        "scope": decoded.get("scope"),
-    }
-    return token, safe
+def _curl_download(url: str) -> tuple[bytes, dict[str, Any]]:
+    curl = shutil.which("curl")
+    if curl is None:
+        raise RuntimeError("curl is not available on this runner")
+    command = [
+        curl,
+        "--location",
+        "--fail-with-body",
+        "--silent",
+        "--show-error",
+        "--retry",
+        "2",
+        "--retry-all-errors",
+        "--connect-timeout",
+        "10",
+        "--max-time",
+        str(ATTACHMENT_TIMEOUT_SECONDS),
+        "--user-agent",
+        "TrueMargin-M6-Audit/1.0",
+        url,
+    ]
+    completed = subprocess.run(command, check=False, capture_output=True)
+    if completed.returncode != 0:
+        stderr = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise RuntimeError(f"curl exit {completed.returncode}: {stderr[:1000]}")
+    return completed.stdout, {"transport": "curl", "curl_exit_code": completed.returncode}
+
+
+def _download_attachment(urls: list[str]) -> tuple[bytes, str, dict[str, Any]]:
+    """Download an official TCIA attachment with an auditable curl/urllib fallback."""
+    failures: list[dict[str, Any]] = []
+    for url in urls:
+        try:
+            payload, metadata = _curl_download(url)
+            return payload, url, {**metadata, "failures_before_success": failures}
+        except RuntimeError as exc:
+            failures.append({"url": url, "transport": "curl", "error": str(exc)})
+
+        try:
+            payload, urllib_failures = _request(url, attempts=1, timeout=ATTACHMENT_TIMEOUT_SECONDS)
+            return payload, url, {
+                "transport": "urllib",
+                "failures_before_success": failures + urllib_failures,
+            }
+        except TransportUnavailable as exc:
+            failures.append({"url": url, "transport": "urllib", "attempts": exc.failures})
+
+    raise TransportUnavailable(";".join(urls), failures)
 
 
 def _series_uid_from_row(row: dict[str, Any]) -> str:
@@ -327,35 +308,8 @@ def _validate_uid_rows(
     return uids, typed_rows
 
 
-def query_doi_series() -> dict[str, Any]:
-    """Return the exact 80-series universe associated with the official analysis DOI."""
-    token, token_provenance = get_nbia_guest_token()
-    decoded, provenance = _post_form_json(
-        TCIA_DOI_SERIES_URL,
-        {"DOI": CHALLENGE_DOI_URL, "CollectionOrSeries": "series"},
-        bearer_token=token,
-    )
-    uids, rows = _validate_uid_rows(decoded, expected=EXPECTED_TOTAL_SERIES, source="TCIA DOI API")
-    collections = sorted(
-        {
-            str(row.get("collection"))
-            for row in rows
-            if row.get("collection") not in (None, "", "null")
-        }
-    )
-    return {
-        "authority": "TCIA NBIA Advanced REST getCollectionOrSeriesForDOI",
-        "doi": CHALLENGE_DOI_URL,
-        "expected_series": EXPECTED_TOTAL_SERIES,
-        "series_uids": sorted(uids),
-        "reported_collections": collections,
-        "response": provenance,
-        "authentication": token_provenance,
-    }
-
-
 def query_shared_list(name: str, *, expected: int) -> dict[str, Any]:
-    """Return one official historical challenge shared-list membership from current TCIA API."""
+    """Return an official challenge shared-list membership from current TCIA Search API."""
     url = f"{TCIA_PUBLIC_BASE}/getContentsByName?{urllib.parse.urlencode({'name': name})}"
     decoded, provenance = _get_json(url)
     uids, rows = _validate_uid_rows(decoded, expected=expected, source=f"shared list {name!r}")
@@ -373,6 +327,7 @@ def query_shared_list(name: str, *, expected: int) -> dict[str, Any]:
     )
     compact_rows = [{key: row.get(key) for key in keep_fields if key in row} for row in rows]
     return {
+        "status": "complete",
         "authority": "TCIA NBIA Search REST getContentsByName",
         "shared_list_name": name,
         "expected_series": expected,
@@ -382,38 +337,8 @@ def query_shared_list(name: str, *, expected: int) -> dict[str, Any]:
     }
 
 
-def derive_partition_uids(
-    doi_uids: list[str], training_uids: list[str], leaderboard_uids: list[str]
-) -> dict[str, list[str]]:
-    """Freeze partition identity from authoritative pre-outcome series sets."""
-    universe = set(doi_uids)
-    training = set(training_uids)
-    leaderboard = set(leaderboard_uids)
-    if len(universe) != EXPECTED_TOTAL_SERIES:
-        raise RuntimeError(f"DOI universe must contain {EXPECTED_TOTAL_SERIES} unique series")
-    if len(training) != int(PARTITIONS["training"]["expected_series"]):
-        raise RuntimeError("Training shared-list series count is not 60")
-    if len(leaderboard) != int(PARTITIONS["leaderboard"]["expected_series"]):
-        raise RuntimeError("Leaderboard shared-list series count is not 10")
-    if not training <= universe:
-        raise RuntimeError("Training shared-list contains series outside DOI universe")
-    if not leaderboard <= universe:
-        raise RuntimeError("Leaderboard shared-list contains series outside DOI universe")
-    overlap = sorted(training & leaderboard)
-    if overlap:
-        raise RuntimeError(f"Training and leaderboard shared lists overlap: {overlap[:3]}")
-    test = universe - training - leaderboard
-    if len(test) != int(PARTITIONS["test"]["expected_series"]):
-        raise RuntimeError(f"Expected 10 test remainder series; found {len(test)}")
-    return {
-        "training": sorted(training),
-        "leaderboard": sorted(leaderboard),
-        "test": sorted(test),
-    }
-
-
 def parse_tcia_series_uids(manifest_bytes: bytes, *, expected_series: int) -> list[str]:
-    """Parse a legacy NBIA ``.tcia`` manifest for optional provenance cross-checking."""
+    """Parse an official NBIA ``.tcia`` manifest into exact series UIDs."""
     text = manifest_bytes.decode("utf-8-sig")
     lines = [line.strip() for line in text.splitlines()]
     marker = "ListOfSeriesToDownload="
@@ -432,56 +357,62 @@ def parse_tcia_series_uids(manifest_bytes: bytes, *, expected_series: int) -> li
     return series_uids
 
 
-def _download_legacy(urls: list[str]) -> tuple[bytes, str, list[dict[str, Any]]]:
-    all_failures: list[dict[str, Any]] = []
-    for url in urls:
-        try:
-            payload, failures = _request(
-                url,
-                timeout=LEGACY_TIMEOUT_SECONDS,
-                attempts=LEGACY_ATTEMPTS,
-            )
-            return payload, url, all_failures + failures
-        except TransportUnavailable as exc:
-            all_failures.append({"url": url, "attempts": exc.failures})
-    raise TransportUnavailable(";".join(urls), all_failures)
-
-
-def audit_legacy_manifest_crosscheck(
-    partition: str, authoritative_uids: list[str]
-) -> dict[str, Any]:
-    """Cross-check legacy manifest if transport happens to be available; absence is non-fatal."""
+def audit_manifest(partition: str) -> dict[str, Any]:
     config = PARTITIONS[partition]
     try:
-        payload, selected_url, failures = _download_legacy(list(config["legacy_manifest_urls"]))
-        parsed = parse_tcia_series_uids(payload, expected_series=int(config["expected_series"]))
-        matches = set(parsed) == set(authoritative_uids)
-        return {
-            "status": "complete" if matches else "mismatch",
-            "required_for_image_identity": False,
-            "name": config["legacy_manifest_name"],
-            "selected_url": selected_url,
-            "transport_failures_before_success": failures,
-            "sha256": hashlib.sha256(payload).hexdigest(),
-            "size_bytes": len(payload),
-            "matches_api_identity": matches,
-            "series_uids": sorted(parsed),
-        }
+        payload, selected_url, transport = _download_attachment(list(config["manifest_urls"]))
     except TransportUnavailable as exc:
         return {
             "status": "transport_unavailable",
-            "required_for_image_identity": False,
-            "name": config["legacy_manifest_name"],
+            "required": bool(config["manifest_required"]),
+            "name": config["manifest_name"],
             "transport_failures": exc.failures,
         }
+    try:
+        parsed = parse_tcia_series_uids(payload, expected_series=int(config["expected_series"]))
     except Exception as exc:
         return {
             "status": "invalid",
-            "required_for_image_identity": False,
-            "name": config["legacy_manifest_name"],
+            "required": bool(config["manifest_required"]),
+            "name": config["manifest_name"],
+            "selected_url": selected_url,
+            "transport": transport,
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "size_bytes": len(payload),
             "error_type": type(exc).__name__,
             "error": str(exc),
         }
+    return {
+        "status": "complete",
+        "required": bool(config["manifest_required"]),
+        "name": config["manifest_name"],
+        "selected_url": selected_url,
+        "transport": transport,
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "size_bytes": len(payload),
+        "series_uids": sorted(parsed),
+    }
+
+
+def validate_partition_uids(partition_uids: dict[str, list[str]]) -> None:
+    if set(partition_uids) != set(PARTITIONS):
+        raise RuntimeError(f"Unexpected partition keys: {sorted(partition_uids)}")
+    for partition, uids in partition_uids.items():
+        expected = int(PARTITIONS[partition]["expected_series"])
+        if len(uids) != expected or len(set(uids)) != expected:
+            raise RuntimeError(
+                f"Partition {partition} must contain {expected} unique series; found {len(set(uids))}"
+            )
+    pairs = (("training", "leaderboard"), ("training", "test"), ("leaderboard", "test"))
+    for left, right in pairs:
+        overlap = sorted(set(partition_uids[left]) & set(partition_uids[right]))
+        if overlap:
+            raise RuntimeError(f"Challenge partitions {left}/{right} overlap: {overlap[:3]}")
+    union = {uid for uids in partition_uids.values() for uid in uids}
+    if len(union) != EXPECTED_TOTAL_SERIES:
+        raise RuntimeError(
+            f"Challenge partition union must contain {EXPECTED_TOTAL_SERIES} series; found {len(union)}"
+        )
 
 
 def source_key_for_patient_id(patient_id: str) -> str:
@@ -496,7 +427,7 @@ def source_key_for_patient_id(patient_id: str) -> str:
 
 
 def query_idc_official_series(series_uids: list[str]) -> dict[str, Any]:
-    """Resolve the authoritative 80 UID set in current IDC metadata without downloading DICOM."""
+    """Resolve exact challenge UIDs in current IDC metadata without downloading DICOM."""
     response = _post_json(
         f"{IDC_REST_BASE}/cohort/manifest",
         {
@@ -635,11 +566,7 @@ def extract_patient_id(member_name: str) -> str:
 
 
 def enumerate_labels(
-    archive_bytes: bytes,
-    *,
-    partition: str,
-    expected_subjects: int,
-    expected_source_key: str | None = None,
+    archive_bytes: bytes, *, partition: str, expected_subjects: int
 ) -> list[dict[str, Any]]:
     labels: list[dict[str, Any]] = []
     with zipfile.ZipFile(io.BytesIO(archive_bytes)) as archive:
@@ -654,21 +581,14 @@ def enumerate_labels(
         for info in members:
             payload = archive.read(info)
             patient_id = extract_patient_id(info.filename)
-            source_key = source_key_for_patient_id(patient_id)
-            if expected_source_key is not None and source_key != expected_source_key:
-                raise RuntimeError(
-                    f"Archive expected source {expected_source_key} but {patient_id} "
-                    f"maps to {source_key}"
-                )
             labels.append(
                 {
                     "patient_id": patient_id,
                     "partition": partition,
-                    "source_key": source_key,
+                    "source_key": source_key_for_patient_id(patient_id),
                     "archive_member": info.filename,
                     "size_bytes": len(payload),
                     "sha256": hashlib.sha256(payload).hexdigest(),
-                    "corrected_label_filename": "correctedLabels" in Path(info.filename).name,
                 }
             )
     patient_ids = [str(record["patient_id"]) for record in labels]
@@ -682,15 +602,15 @@ def enumerate_labels(
     return labels
 
 
-def audit_label_archive(partition: str, config: dict[str, Any]) -> dict[str, Any]:
+def audit_label_archive(partition: str) -> dict[str, Any]:
+    config = PARTITIONS[partition]
     try:
-        payload, selected_url, failures = _download_legacy(list(config["urls"]))
+        payload, selected_url, transport = _download_attachment(list(config["label_archive_urls"]))
     except TransportUnavailable as exc:
         return {
             "status": "transport_unavailable",
-            "name": config["name"],
+            "name": config["label_archive_name"],
             "expected_subjects": config["expected_subjects"],
-            "expected_source_key": config.get("source_key"),
             "transport_failures": exc.failures,
         }
     try:
@@ -698,15 +618,14 @@ def audit_label_archive(partition: str, config: dict[str, Any]) -> dict[str, Any
             payload,
             partition=partition,
             expected_subjects=int(config["expected_subjects"]),
-            expected_source_key=config.get("source_key"),
         )
     except Exception as exc:
         return {
             "status": "invalid",
-            "name": config["name"],
+            "name": config["label_archive_name"],
             "expected_subjects": config["expected_subjects"],
             "selected_url": selected_url,
-            "transport_failures_before_success": failures,
+            "transport": transport,
             "sha256": hashlib.sha256(payload).hexdigest(),
             "size_bytes": len(payload),
             "error_type": type(exc).__name__,
@@ -714,190 +633,189 @@ def audit_label_archive(partition: str, config: dict[str, Any]) -> dict[str, Any
         }
     return {
         "status": "complete",
-        "name": config["name"],
+        "name": config["label_archive_name"],
         "expected_subjects": config["expected_subjects"],
-        "expected_source_key": config.get("source_key"),
         "selected_url": selected_url,
-        "transport_failures_before_success": failures,
+        "transport": transport,
         "sha256": hashlib.sha256(payload).hexdigest(),
         "size_bytes": len(payload),
         "labels": labels,
     }
 
 
-def build_label_index(partitions: dict[str, list[dict[str, Any]]]) -> dict[str, dict[str, Any]]:
-    label_index: dict[str, dict[str, Any]] = {}
-    for partition, labels in partitions.items():
-        for label in labels:
-            patient_id = str(label["patient_id"])
-            if patient_id in label_index:
-                prior = label_index[patient_id]["partition"]
-                raise RuntimeError(
-                    f"PatientID {patient_id} appears in multiple challenge partitions: "
-                    f"{prior}, {partition}"
-                )
-            label_index[patient_id] = label
-    return label_index
-
-
-def validate_historical_training_conditions(
-    label_index: dict[str, dict[str, Any]]
-) -> dict[str, Any]:
-    issues: list[str] = []
-    corrected = label_index.get("ProstateDx-01-0006")
-    mismatch_case = label_index.get("ProstateDx-01-0055")
-    patient_id_fix = label_index.get("ProstateDx-01-0035")
-    if corrected is None or corrected.get("corrected_label_filename") is not True:
-        issues.append("corrected ProstateDx-01-0006 label filename was not preserved")
-    if mismatch_case is None:
-        issues.append("documented ProstateDx-01-0055 image/label mismatch case is missing")
-    if patient_id_fix is None:
-        issues.append("documented ProstateDx-01-0035 identity-correction case is missing")
+def validate_historical_conditions(label_index: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    required = (
+        "ProstateDx-01-0006",
+        "ProstateDx-01-0035",
+        "ProstateDx-01-0055",
+    )
+    missing = [patient_id for patient_id in required if patient_id not in label_index]
     return {
-        "prostate_dx_0006_corrected_label_preserved": not any("0006" in item for item in issues),
-        "prostate_dx_0055_preserved": not any("0055" in item for item in issues),
-        "prostate_dx_0035_preserved": not any("0035" in item for item in issues),
-        "issues": issues,
+        "prostate_dx_0006_present_in_current_official_training_archive": (
+            "ProstateDx-01-0006" not in missing
+        ),
+        "prostate_dx_0035_preserved": "ProstateDx-01-0035" not in missing,
+        "prostate_dx_0055_preserved": "ProstateDx-01-0055" not in missing,
+        "missing": missing,
     }
 
 
 def audit_annotations(partition_patient_ids: dict[str, list[str]]) -> dict[str, Any]:
-    """Audit annotation identity without letting attachment transport erase image evidence."""
-    partition_records: dict[str, dict[str, Any]] = {}
-    labels_by_partition: dict[str, list[dict[str, Any]]] = {}
-    transport_unavailable = False
-    invalid = False
+    partition_records = {partition: audit_label_archive(partition) for partition in PARTITIONS}
+    statuses = {partition: record["status"] for partition, record in partition_records.items()}
+    if any(status == "invalid" for status in statuses.values()):
+        return {
+            "status": "incomplete",
+            "required_before_result_bearing_m6": True,
+            "analysis_page": CURRENT_ANALYSIS_PAGE,
+            "partitions": partition_records,
+            "issues": {"invalid_archive": statuses},
+        }
+    if any(status != "complete" for status in statuses.values()):
+        return {
+            "status": "transport_unavailable",
+            "required_before_result_bearing_m6": True,
+            "analysis_page": CURRENT_ANALYSIS_PAGE,
+            "partitions": partition_records,
+            "issues": {},
+        }
 
-    for partition, config in PARTITIONS.items():
-        archives = [audit_label_archive(partition, archive) for archive in config["label_archives"]]
-        complete_labels = [
-            label
-            for archive in archives
-            if archive["status"] == "complete"
-            for label in archive["labels"]
-        ]
-        labels_by_partition[partition] = complete_labels
-        statuses = [archive["status"] for archive in archives]
-        if any(status == "transport_unavailable" for status in statuses):
-            transport_unavailable = True
-        if any(status == "invalid" for status in statuses):
-            invalid = True
-        partition_records[partition] = {"archives": archives}
-
-    all_complete = all(
-        archive["status"] == "complete"
-        for partition in partition_records.values()
-        for archive in partition["archives"]
-    )
-    issues: dict[str, Any] = {}
     label_index: dict[str, dict[str, Any]] = {}
-    historical: dict[str, Any] | None = None
+    issues: dict[str, Any] = {}
+    for partition, record in partition_records.items():
+        labels = record["labels"]
+        observed = sorted(str(label["patient_id"]) for label in labels)
+        expected = sorted(partition_patient_ids[partition])
+        if observed != expected:
+            issues.setdefault("image_annotation_patient_mismatch", {})[partition] = {
+                "missing_annotations": sorted(set(expected) - set(observed)),
+                "unexpected_annotations": sorted(set(observed) - set(expected)),
+            }
+        for label in labels:
+            patient_id = str(label["patient_id"])
+            if patient_id in label_index:
+                issues.setdefault("cross_partition_duplicate_patient_ids", []).append(patient_id)
+            label_index[patient_id] = label
 
-    if all_complete:
-        try:
-            label_index = build_label_index(labels_by_partition)
-        except RuntimeError as exc:
-            issues["label_index"] = str(exc)
-        if label_index:
-            if len(label_index) != EXPECTED_TOTAL_SUBJECTS:
-                issues["unique_label_patient_count"] = len(label_index)
-            for partition, labels in labels_by_partition.items():
-                observed = sorted(str(label["patient_id"]) for label in labels)
-                expected = sorted(partition_patient_ids[partition])
-                if observed != expected:
-                    issues.setdefault("image_annotation_patient_mismatch", {})[partition] = {
-                        "missing_annotations": sorted(set(expected) - set(observed)),
-                        "unexpected_annotations": sorted(set(observed) - set(expected)),
-                    }
-            historical = validate_historical_training_conditions(label_index)
-            if historical["issues"]:
-                issues["historical_training_conditions"] = historical["issues"]
-
-    if invalid or issues:
-        status = "incomplete"
-    elif all_complete:
-        status = "complete"
-    elif transport_unavailable:
-        status = "transport_unavailable"
-    else:
-        status = "incomplete"
+    if len(label_index) != EXPECTED_TOTAL_SUBJECTS:
+        issues["unique_label_patient_count"] = len(label_index)
+    historical = validate_historical_conditions(label_index)
+    if historical["missing"]:
+        issues["historical_conditions"] = historical["missing"]
 
     return {
-        "status": status,
+        "status": "complete" if not issues else "incomplete",
         "required_before_result_bearing_m6": True,
         "analysis_page": CURRENT_ANALYSIS_PAGE,
         "partitions": partition_records,
-        "historical_training_conditions": historical,
+        "historical_conditions": historical,
         "issues": issues,
     }
 
 
 def audit_image_identity() -> dict[str, Any]:
-    doi_record = query_doi_series()
-    training_record = query_shared_list(
-        str(PARTITIONS["training"]["shared_list_name"]),
-        expected=int(PARTITIONS["training"]["expected_series"]),
-    )
-    leaderboard_record = query_shared_list(
-        str(PARTITIONS["leaderboard"]["shared_list_name"]),
-        expected=int(PARTITIONS["leaderboard"]["expected_series"]),
-    )
-    partition_uids = derive_partition_uids(
-        doi_record["series_uids"],
-        training_record["series_uids"],
-        leaderboard_record["series_uids"],
-    )
+    issues: dict[str, Any] = {}
+    authority: dict[str, Any] = {}
+    partition_uids: dict[str, list[str]] = {}
 
-    legacy_crosschecks = {
-        partition: audit_legacy_manifest_crosscheck(partition, uids)
-        for partition, uids in partition_uids.items()
-    }
-    legacy_mismatches = {
-        partition: record
-        for partition, record in legacy_crosschecks.items()
-        if record["status"] in {"mismatch", "invalid"}
-    }
+    for partition in ("training", "leaderboard"):
+        config = PARTITIONS[partition]
+        try:
+            record = query_shared_list(
+                str(config["shared_list_name"]), expected=int(config["expected_series"])
+            )
+            authority[f"{partition}_shared_list"] = record
+            partition_uids[partition] = list(record["series_uids"])
+        except Exception as exc:
+            authority[f"{partition}_shared_list"] = {
+                "status": "failed",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            }
+            issues[f"{partition}_shared_list"] = str(exc)
+
+    manifest_records = {partition: audit_manifest(partition) for partition in PARTITIONS}
+    authority["manifests"] = manifest_records
+    test_manifest = manifest_records["test"]
+    if test_manifest["status"] == "complete":
+        partition_uids["test"] = list(test_manifest["series_uids"])
+    else:
+        issues["test_manifest"] = test_manifest
+
+    if set(partition_uids) == set(PARTITIONS):
+        try:
+            validate_partition_uids(partition_uids)
+        except RuntimeError as exc:
+            issues["partition_invariants"] = str(exc)
+
+        for partition in ("training", "leaderboard"):
+            manifest = manifest_records[partition]
+            if manifest["status"] == "complete":
+                if set(manifest["series_uids"]) != set(partition_uids[partition]):
+                    issues[f"{partition}_manifest_crosscheck"] = "manifest/shared-list UID mismatch"
+            elif manifest["status"] == "invalid":
+                issues[f"{partition}_manifest_crosscheck"] = manifest
+
+    if issues or set(partition_uids) != set(PARTITIONS):
+        return {
+            "status": "incomplete",
+            "authority": authority,
+            "partition_series_uids": partition_uids,
+            "idc_resolution": None,
+            "issues": issues,
+        }
 
     all_uids = sorted(uid for uids in partition_uids.values() for uid in uids)
-    idc_response = query_idc_official_series(all_uids)
-    mapping = map_series_identity(partition_uids, idc_response["series"])
-    issues = dict(mapping["issues"])
-    if legacy_mismatches:
-        issues["legacy_manifest_crosscheck"] = legacy_mismatches
+    try:
+        idc_response = query_idc_official_series(all_uids)
+        mapping = map_series_identity(partition_uids, idc_response["series"])
+    except Exception as exc:
+        return {
+            "status": "incomplete",
+            "authority": authority,
+            "partition_series_uids": partition_uids,
+            "idc_resolution": {
+                "status": "failed",
+                "error_type": type(exc).__name__,
+                "error": str(exc),
+            },
+            "issues": {"idc_resolution": str(exc)},
+        }
 
     return {
-        "status": "complete" if not issues else "incomplete",
-        "authority": {
-            "doi_series_universe": doi_record,
-            "training_shared_list": training_record,
-            "leaderboard_shared_list": leaderboard_record,
-            "test_partition_rule": (
-                "DOI universe minus training shared list minus leaderboard shared list"
-            ),
-        },
+        "status": mapping["status"],
+        "authority": authority,
         "partition_series_uids": partition_uids,
-        "legacy_manifest_crosschecks": legacy_crosschecks,
         "idc_resolution": {
             "warnings": idc_response.get("warnings", []),
             "truncated": idc_response.get("truncated", False),
             "series_rows": len(idc_response["series"]),
             **mapping,
         },
-        "issues": issues,
+        "issues": mapping["issues"],
     }
 
 
 def build_audit() -> dict[str, Any]:
     """Build the M6 pre-result identity audit while preserving partial gate evidence."""
     image_identity = audit_image_identity()
-    partition_patient_ids = image_identity["idc_resolution"]["partition_patient_ids"]
-    annotations = audit_annotations(partition_patient_ids)
+    if image_identity["status"] == "complete":
+        partition_patient_ids = image_identity["idc_resolution"]["partition_patient_ids"]
+        annotations = audit_annotations(partition_patient_ids)
+    else:
+        annotations = {
+            "status": "blocked_on_image_identity",
+            "required_before_result_bearing_m6": True,
+            "analysis_page": CURRENT_ANALYSIS_PAGE,
+            "partitions": {},
+            "issues": {},
+        }
     overall_complete = (
         image_identity["status"] == "complete" and annotations["status"] == "complete"
     )
 
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "milestone": "M6",
         "audit": "external-input-identity",
         "status": "complete" if overall_complete else "incomplete",
@@ -935,7 +853,7 @@ def build_audit() -> dict[str, Any]:
 
 def failure_record(exc: BaseException) -> dict[str, Any]:
     record: dict[str, Any] = {
-        "schema_version": 3,
+        "schema_version": 4,
         "milestone": "M6",
         "audit": "external-input-identity",
         "status": "failed",
