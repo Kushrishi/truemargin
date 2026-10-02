@@ -79,12 +79,8 @@ def array_sha256(values: np.ndarray) -> str:
     array = np.asarray(values, dtype="<f8")
     if array.ndim != 1:
         raise ValueError("result vector must be one-dimensional")
-    header = json.dumps(
-        {"dtype": "<f8", "shape": list(array.shape)}, sort_keys=True
-    ).encode()
-    return hashlib.sha256(
-        header + b"\0" + np.ascontiguousarray(array).tobytes()
-    ).hexdigest()
+    header = json.dumps({"dtype": "<f8", "shape": list(array.shape)}, sort_keys=True).encode()
+    return hashlib.sha256(header + b"\0" + np.ascontiguousarray(array).tobytes()).hexdigest()
 
 
 def load_split(path: Path) -> tuple[dict[str, str], set[str]]:
@@ -138,9 +134,7 @@ def verify_source_files(
         raise RuntimeError(f"invalid pinned source Git SHA: {source_git_sha!r}")
 
     def git(*args: str) -> bytes:
-        return subprocess.check_output(
-            ["git", *args], cwd=repo_root, stderr=subprocess.STDOUT
-        )
+        return subprocess.check_output(["git", *args], cwd=repo_root, stderr=subprocess.STDOUT)
 
     try:
         git("cat-file", "-e", f"{source_git_sha}^{{commit}}")
@@ -194,9 +188,7 @@ def verify_request(
     }
     for key, value in expected.items():
         if request.get(key) != value:
-            raise RuntimeError(
-                f"M6 Phase A authorization mismatch for {key}: {request.get(key)!r}"
-            )
+            raise RuntimeError(f"M6 Phase A authorization mismatch for {key}: {request.get(key)!r}")
 
     calibration, evaluation = load_split(split_path)
     freeze = load_geometry_freeze(geometry_freeze_path)
@@ -297,12 +289,9 @@ def aggregate_records(
                 "assessable": True,
                 "thresholds": thresholds,
                 "zero_signal_count": int(sum(np.sum(signal == 0.0) for signal in signals)),
-                "infinite_score_count": int(
-                    sum(np.sum(np.isposinf(group)) for group in groups)
-                ),
+                "infinite_score_count": int(sum(np.sum(np.isposinf(group)) for group in groups)),
                 "score_hashes": {
-                    record["patient_id"]: record["hashes"][score_key]
-                    for record in source_records
+                    record["patient_id"]: record["hashes"][score_key] for record in source_records
                 },
             }
 
