@@ -14,14 +14,27 @@
   "secondary_signal": "ice_mm",
   "points_per_anatomy": 50,
   "nominal_coverages": [0.8, 0.9, 0.95],
-  "source_git_sha": "14bc46a0aeb6eb0afbc2b303f48f3c41a3b27f20",
-  "source_ci_run_id": 37065058888,
+  "source_git_sha": "7f0c8bd63912bf95769062183656c8a68c78ec58",
+  "source_ci_run_id": 37074740929,
   "source_ci_conclusion": "success",
   "pinned_blobs": {
     "protocol": "507c6fe8bdb92e06373545ef112a5be142e1b3ce",
     "amendment": "735eef1c04da35ab9d8ccab7398877d11e7ab170",
     "split": "ea96f506d1790af092733c29067fb54d6d44920d",
-    "geometry_freeze": "878a94ae2bea3a91502bf69416b30966cf1208d1"
+    "geometry_freeze": "878a94ae2bea3a91502bf69416b30966cf1208d1",
+    "input_freeze": "72ded1c7d0711e560eb73f2b413f0659c11843d3"
+  },
+  "previous_incomplete_run": {
+    "workflow_run_id": 37065698410,
+    "accepted_for_aggregation": false,
+    "partial_shard_outputs_accepted": false,
+    "partial_numerical_results_inspected_before_repair_decision": false,
+    "failure_class": "input-transport-before-failed-shard-result-generation"
+  },
+  "rerun_semantics": {
+    "scope": "all-30-calibration-anatomies-from-scratch",
+    "selective_failed-shard_retry": false,
+    "transport_only_amendment": true
   },
   "scientific_boundary": {
     "evaluation_cohort_sealed": true,
@@ -33,5 +46,5 @@
     "split_change_authorized": false,
     "geometry_change_authorized": false
   },
-  "purpose": "Authorize source-pinned M6 Phase A calibration compute on only the 30 frozen calibration anatomies after successful main-branch CI."
+  "purpose": "Authorize a source-pinned uniform rerun of all 30 frozen M6 Phase A calibration anatomies after a transport-only input-acquisition amendment. Evaluation remains sealed."
 }
