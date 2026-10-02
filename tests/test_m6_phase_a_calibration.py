@@ -61,9 +61,7 @@ def test_split_exposes_only_thirty_calibration_anatomies() -> None:
 
 def test_geometry_freeze_matches_calibration_and_not_evaluation() -> None:
     calibration, evaluation = load_split(REPO_ROOT / "research" / "M6_SPLIT.json")
-    freeze = load_geometry_freeze(
-        REPO_ROOT / "research" / "M6_PHASE_A_GEOMETRY_FREEZE.json"
-    )
+    freeze = load_geometry_freeze(REPO_ROOT / "research" / "M6_PHASE_A_GEOMETRY_FREEZE.json")
     assert set(freeze) == set(calibration)
     assert set(freeze).isdisjoint(evaluation)
 
@@ -75,9 +73,7 @@ def test_array_hash_includes_shape_and_values() -> None:
 
 
 def test_radius_efficiency_preserves_infinite_threshold() -> None:
-    summary = radius_efficiency(
-        [np.array([0.0, 1.0]), np.array([2.0, 3.0])], float("inf")
-    )
+    summary = radius_efficiency([np.array([0.0, 1.0]), np.array([2.0, 3.0])], float("inf"))
     assert summary["infinite_radius_count"] == 4
     assert summary["total_radius_count"] == 4
     assert np.isposinf(summary["median_of_anatomy_medians_mm"])
