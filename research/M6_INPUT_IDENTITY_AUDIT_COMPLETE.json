@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "record": "external-input-identity-audit-complete",
+  "workflow_run_id": 36944145013,
+  "source_git_sha": "0542b1c724692c642a93e7369849b1942d37db53",
+  "status": "complete",
+  "image_identity_status": "complete",
+  "annotation_identity_status": "complete",
+  "subjects": 80,
+  "series": 80,
+  "partition_source_counts": {
+    "training": {"prostate_3t": 30, "prostate_diagnosis": 30},
+    "leaderboard": {"prostate_3t": 5, "prostate_diagnosis": 5},
+    "test": {"prostate_3t": 5, "prostate_diagnosis": 5}
+  },
+  "observed_partition_namespaces": {
+    "training": ["01"],
+    "leaderboard": ["02"],
+    "test": ["03"]
+  },
+  "issues": [],
+  "historical_conditions": {
+    "prostate_dx_0006_corrected_label_preserved": true,
+    "prostate_dx_0055_preserved": true,
+    "prostate_dx_0035_preserved": true
+  },
+  "audit_output_sha256": "44c63ad874b3e6656f0bb57d56e39f04c20ecc1624bd77b62438c909e31f13d8",
+  "artifact": {
+    "id": 11200644738,
+    "sha256": "7110a693e3d0030b8e836b1fc0e4bf6c06af9ac49d8abe3485aba8f8b8f393a2"
+  },
+  "authorization_boundary": {
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "split_assignment_authorized": false
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "authorized_mode": "training-geometry-eligibility-audit",
+  "result_bearing_authorized": false,
+  "registration_authorized": false,
+  "calibration_fit_authorized": false,
+  "split_assignment_authorized": false,
+  "synthetic_deformation_authorized": false,
+  "dicom_download_authorized": true,
+  "partition": "training",
+  "expected_anatomies": 60,
+  "expected_source_counts": {
+    "Prostate3T": 30,
+    "ProstateDx": 30
+  },
+  "identity_prerequisite": {
+    "workflow_run_id": 36944145013,
+    "source_git_sha": "0542b1c724692c642a93e7369849b1942d37db53",
+    "audit_status": "complete",
+    "image_identity_status": "complete",
+    "annotation_identity_status": "complete",
+    "audit_output_sha256": "44c63ad874b3e6656f0bb57d56e39f04c20ecc1624bd77b62438c909e31f13d8",
+    "artifact_id": 11200644738,
+    "artifact_sha256": "7110a693e3d0030b8e836b1fc0e4bf6c06af9ac49d8abe3485aba8f8b8f393a2"
+  },
+  "eligibility_policy": {
+    "three_dimensional_required": true,
+    "allowed_label_values": [0, 1, 2],
+    "foreground_required": true,
+    "array_size_equality_required": false,
+    "physical_foreground_containment_required": true,
+    "physical_domain_boundary_convention": "image continuous index in [-0.5, size-0.5] with 1e-5 numerical tolerance",
+    "nearest_neighbor_resampling_to_image_grid_required": true,
+    "resampled_foreground_required": true,
+    "prostate_dx_01_0055_automatic_exclusion": false,
+    "outcome_based_exclusion_allowed": false
+  },
+  "audit_rules": {
+    "use_only_official_training_partition": true,
+    "download_only_preidentified_training_dicoms": true,
+    "use_official_training_nrrd_labels": true,
+    "record_geometry_and_hashes": true,
+    "assign_calibration_or_evaluation_roles": false,
+    "generate_synthetic_deformations": false,
+    "run_registration": false,
+    "compute_sigma": false,
+    "compute_ice": false,
+    "fit_calibration": false
+  },
+  "expected_output": "outputs/m6_training_geometry_eligibility.json"
+}
