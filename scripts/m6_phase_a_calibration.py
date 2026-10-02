@@ -25,7 +25,6 @@ from truemargin.hierarchical_conformal import ratio_nonconformity
 from truemargin.m6_phase_a import (
     EXPECTED_CALIBRATION_ANATOMIES,
     EXPECTED_POINTS,
-    SOURCES,
     aggregate_records,
     array_sha256,
     geometry_sha256,
