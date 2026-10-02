@@ -39,6 +39,28 @@ def test_amendment_authorization_is_geometry_only_and_pins_base_preflight():
         assert request[key] is False, key
 
 
+def test_amendment_authorization_accepts_pinned_actions_metadata_separately():
+    request = AMENDED["load_amendment_authorization"]()
+    prior = json.loads(
+        (ROOT / "research" / "M6_DEFORMATION_PREFLIGHT_RESULT_1.json").read_text(encoding="utf-8")
+    )
+    prerequisite = request["prior_preflight"]
+
+    assert prerequisite["artifact_id"] is not None
+    assert prerequisite["artifact_sha256"]
+    assert "artifact_id" not in prior
+    assert "artifact_sha256" not in prior
+    for key in (
+        "workflow_run_id",
+        "source_git_sha",
+        "audit_output_sha256",
+        "complete_anatomies",
+        "failed_anatomies",
+        "result_bearing_outcomes_observed",
+    ):
+        assert prior[key] == prerequisite[key]
+
+
 def test_first_preflight_failure_is_preserved_before_amendment():
     result = json.loads(
         (ROOT / "research" / "M6_DEFORMATION_PREFLIGHT_RESULT_1.json").read_text(encoding="utf-8")
