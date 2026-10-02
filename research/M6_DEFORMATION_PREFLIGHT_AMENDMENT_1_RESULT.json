@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "milestone": "M6",
+  "record": "deformation-only-preflight-amendment-1-result",
+  "status": "complete",
+  "workflow_run_id": 37050507332,
+  "source_git_sha": "a502466d4845be86780eb7a2306a96603ec4ab18",
+  "artifact": {
+    "id": 11246900578,
+    "sha256": "cebada652ad648afba98e79e88b06d9315d1e59f228a080a7656ad707486db68"
+  },
+  "audit_output_sha256": "0b07544f3990ca47034641934238af56613d05ef6afeb71afca0de6f9df6c993",
+  "planned_anatomies": 60,
+  "complete_anatomies": 60,
+  "failed_anatomies": 0,
+  "complete_source_counts": {
+    "prostate_3t": 30,
+    "prostate_diagnosis": 30
+  },
+  "complete_role_counts": {
+    "calibration": 30,
+    "evaluation": 30
+  },
+  "boundary_margin_voxels_zyx": {
+    "2,8,8": 60
+  },
+  "boundary_margin_reference_mm_range": [
+    3.14814805984496,
+    6.0
+  ],
+  "minimum_eligible_fixed_roi_voxels": 11341,
+  "minimum_selected_jacobian": 0.2974894632460058,
+  "topology_attenuated_anatomies": 0,
+  "first_preflight_preserved": "research/M6_DEFORMATION_PREFLIGHT_RESULT_1.json",
+  "protocol_amendment": "docs/m6_calibration_protocol_amendment_1.md",
+  "result_bearing_outcomes_observed": false,
+  "authorization_boundary": {
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "sigma_computation_authorized": false,
+    "ice_computation_authorized": false,
+    "calibration_fit_authorized": false,
+    "evaluation_authorized": false
+  },
+  "interpretation": [
+    "The physical-distance boundary amendment completed geometry for all 60 frozen M6 training anatomies.",
+    "The same amended rule was applied to all 60 anatomies rather than only the four first-preflight failures.",
+    "No forward registration, reverse registration, sigma, ICE, conformal score, calibration threshold, or evaluation outcome was observed in this preflight."
+  ],
+  "next_allowed_action": "Create a separate source-pinned Phase A request that authorizes result-bearing registration and calibration fitting for only the 30 frozen calibration anatomies. Evaluation remains unauthorized."
+}
