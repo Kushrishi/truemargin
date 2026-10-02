@@ -75,6 +75,7 @@
     "failed_anatomies": 4,
     "failure_class": "spatial-sampling-eligibility",
     "record_path": "research/M6_DEFORMATION_PREFLIGHT_RESULT_1.json",
+    "record_blob_sha": "c9ce4fcd54e0e6de3e1e68f7250c4a5ed678adc3",
     "preflight_output_sha256": "7e7dcdf77093625e7aecabec62df224608237d34d239c23d70a5ba84d0ea9040"
   },
   "expected_output": "outputs/m6_deformation_preflight.json"
