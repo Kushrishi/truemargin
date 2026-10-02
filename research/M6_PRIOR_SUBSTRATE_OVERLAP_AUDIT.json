@@ -1,0 +1,37 @@
+{
+  "authorization_boundary": {
+    "result_bearing_authorized": false
+  },
+  "date": "2026-10-02",
+  "exact_overlap": {
+    "series_instance_uid_count": 0,
+    "series_instance_uids": [],
+    "study_instance_uid_count": 0,
+    "study_instance_uids": []
+  },
+  "interpretation": [
+    "No exact DICOM SeriesInstanceUID or StudyInstanceUID used by the frozen ten-anatomy M4 confirmatory cohort appears in the audited 80-subject M6 challenge surface.",
+    "This establishes identity non-overlap for the frozen M4 cohort; it does not by itself establish independence of institutions, acquisition mechanisms, or populations.",
+    "The NCI-ISBI challenge remains a different TCIA analysis substrate from M4, while leaderboard/test subjects remain same-challenge robustness reserve rather than a separate external dataset."
+  ],
+  "m6_substrate": {
+    "identity_audit_output_sha256": "44c63ad874b3e6656f0bb57d56e39f04c20ecc1624bd77b62438c909e31f13d8",
+    "identity_audit_source_git_sha": "0542b1c724692c642a93e7369849b1942d37db53",
+    "identity_audit_workflow_run_id": 36944145013,
+    "series_count": 80,
+    "study": "NCI-ISBI 2013 Challenge: Automated Segmentation of Prostate Structures",
+    "study_count": 80
+  },
+  "milestone": "M6",
+  "prior_substrate": {
+    "collection_id": "prostate_fused_mri_pathology",
+    "identity_record": "research/KNOWN_GT_SERIES_IDENTITY.json",
+    "identity_record_blob_sha": "4bb28ed69680179b02c78b75cb28f83a1966018c",
+    "series_count": 10,
+    "study": "M4 hyperparameter-known-gt-v1",
+    "study_count": 10
+  },
+  "record": "prior-substrate-identity-overlap-audit",
+  "schema_version": 1,
+  "status": "complete"
+}
