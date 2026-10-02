@@ -1,0 +1,32 @@
+name: M6 TCIA access discovery
+
+on:
+  push:
+    branches: ["m6-tcia-access-discovery"]
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Discover current TCIA access links
+        run: python scripts/discover_m6_tcia_access.py
+
+      - name: Upload discovery evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-tcia-access-discovery
+          path: outputs/m6_tcia_access_discovery.json
+          if-no-files-found: error
+          retention-days: 30
