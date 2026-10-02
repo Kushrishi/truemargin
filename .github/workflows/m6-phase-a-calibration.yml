@@ -1,0 +1,225 @@
+name: TrueMargin M6 Phase A calibration
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_PHASE_A_CALIBRATION_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-phase-a-calibration
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      patients: ${{ steps.matrix.outputs.patients }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - id: matrix
+        name: Verify calibration-only authorization
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from collections import Counter
+          from pathlib import Path
+
+          request = json.loads(
+              Path("research/M6_PHASE_A_CALIBRATION_REQUEST.json").read_text()
+          )
+          freeze = json.loads(
+              Path("research/M6_PHASE_A_INPUT_FREEZE.json").read_text()
+          )
+          split = json.loads(Path("research/M6_SPLIT.json").read_text())
+
+          expected = {
+              "schema_version": 1,
+              "milestone": "M6",
+              "authorized_mode": "phase-a-calibration-only",
+              "result_bearing_authorized": True,
+              "forward_registration_authorized": True,
+              "reverse_registration_authorized": True,
+              "sigma_computation_authorized": True,
+              "ice_computation_authorized": True,
+              "calibration_fit_authorized": True,
+              "evaluation_authorized": False,
+              "expected_calibration_anatomies": 30,
+              "expected_anatomies_per_source": 15,
+              "points_per_anatomy": 50,
+          }
+          for key, value in expected.items():
+              assert request.get(key) == value, (key, request.get(key), value)
+
+          calibration = set(freeze["calibration"])
+          expected_calibration = {
+              patient
+              for roles in split["roles"].values()
+              for patient in roles["calibration"]
+          }
+          evaluation = {
+              patient
+              for roles in split["roles"].values()
+              for patient in roles["evaluation"]
+          }
+          assert calibration == expected_calibration
+          assert len(calibration) == 30
+          assert calibration.isdisjoint(evaluation)
+
+          counts = Counter(
+              "prostate_3t" if patient.startswith("Prostate3T-")
+              else "prostate_diagnosis"
+              for patient in calibration
+          )
+          assert counts == {"prostate_3t": 15, "prostate_diagnosis": 15}
+
+          patients = json.dumps(sorted(calibration), separators=(",", ":"))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"patients={patients}\n")
+
+          print("M6_PHASE_A_AUTHORIZATION=PASS")
+          print("M6_CALIBRATION_ANATOMIES=30")
+          print("M6_EVALUATION_AUTHORIZED=False")
+          PY
+
+  case:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        patient: ${{ fromJson(needs.prepare.outputs.patients) }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libopenslide0
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - id: phase_a_case
+        name: Run one frozen calibration anatomy
+        continue-on-error: true
+        run: |
+          python scripts/m6_phase_a_calibration.py \
+            --patient-id "${{ matrix.patient }}" \
+            --output "outputs/m6_phase_a_case_${{ matrix.patient }}.json"
+
+      - name: Hash case evidence
+        if: always()
+        run: |
+          mkdir -p outputs
+          if test -f "outputs/m6_phase_a_case_${{ matrix.patient }}.json"; then
+            sha256sum "outputs/m6_phase_a_case_${{ matrix.patient }}.json" \
+              > "outputs/m6_phase_a_case_${{ matrix.patient }}.sha256"
+          fi
+
+      - name: Upload case evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-phase-a-case-${{ matrix.patient }}
+          path: |
+            outputs/m6_phase_a_case_${{ matrix.patient }}.json
+            outputs/m6_phase_a_case_${{ matrix.patient }}.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce case outcome
+        if: always()
+        run: test "${{ steps.phase_a_case.outcome }}" = "success"
+
+  aggregate:
+    needs: [prepare, case]
+    if: always() && needs.prepare.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libopenslide0
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Download all case evidence
+        uses: actions/download-artifact@v7.0.0
+        with:
+          pattern: truemargin-m6-phase-a-case-*
+          path: phase-a-cases
+          merge-multiple: true
+
+      - id: aggregate_phase_a
+        name: Fit frozen source-specific HCP thresholds
+        continue-on-error: true
+        run: |
+          python scripts/m6_phase_a_calibration.py \
+            --aggregate-dir phase-a-cases \
+            --output outputs/m6_phase_a_calibration.json
+
+      - name: Build evidence digest manifest
+        if: always()
+        run: |
+          mkdir -p outputs
+          find phase-a-cases -type f -name '*.json' -print0 \
+            | sort -z \
+            | xargs -0 sha256sum > outputs/m6_phase_a_case_files.sha256
+          if test -f outputs/m6_phase_a_calibration.json; then
+            sha256sum outputs/m6_phase_a_calibration.json \
+              > outputs/m6_phase_a_calibration.sha256
+          fi
+
+      - name: Upload Phase A evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-phase-a-calibration
+          path: |
+            research/M6_PHASE_A_CALIBRATION_REQUEST.json
+            research/M6_PHASE_A_INPUT_FREEZE.json
+            research/M6_PHASE_A_GEOMETRY_FREEZE.json
+            research/M6_SPLIT.json
+            docs/m6_calibration_protocol.md
+            docs/m6_calibration_protocol_amendment_1.md
+            docs/m6_phase_a_execution.md
+            scripts/m6_phase_a_calibration.py
+            phase-a-cases/*.json
+            phase-a-cases/*.sha256
+            outputs/m6_phase_a_calibration.json
+            outputs/m6_phase_a_calibration.sha256
+            outputs/m6_phase_a_case_files.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce aggregate outcome
+        if: always()
+        run: test "${{ steps.aggregate_phase_a.outcome }}" = "success"
