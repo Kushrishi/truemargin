@@ -1,0 +1,191 @@
+name: TrueMargin M6 training geometry eligibility audit
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_GEOMETRY_ELIGIBILITY_AUDIT_REQUEST.json"
+      - "research/M6_INPUT_IDENTITY_AUDIT_COMPLETE.json"
+      - "docs/m6_geometry_eligibility_protocol.md"
+      - "scripts/audit_m6_training_geometry.py"
+      - ".github/workflows/m6-training-geometry-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-training-geometry-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify geometry-only authorization
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          request = json.loads(
+              Path("research/M6_GEOMETRY_ELIGIBILITY_AUDIT_REQUEST.json").read_text()
+          )
+          expected = {
+              "schema_version": 1,
+              "milestone": "M6",
+              "authorized_mode": "training-geometry-eligibility-audit",
+              "result_bearing_authorized": False,
+              "registration_authorized": False,
+              "calibration_fit_authorized": False,
+              "split_assignment_authorized": False,
+              "synthetic_deformation_authorized": False,
+              "dicom_download_authorized": True,
+              "partition": "training",
+              "expected_anatomies": 60,
+              "expected_output": "outputs/m6_training_geometry_eligibility.json",
+          }
+          for key, value in expected.items():
+              assert request.get(key) == value, (key, request.get(key), value)
+
+          assert request["expected_source_counts"] == {
+              "Prostate3T": 30,
+              "ProstateDx": 30,
+          }
+          prerequisite = request["identity_prerequisite"]
+          assert prerequisite["workflow_run_id"] == 36944145013
+          assert prerequisite["source_git_sha"] == (
+              "0542b1c724692c642a93e7369849b1942d37db53"
+          )
+          assert prerequisite["audit_status"] == "complete"
+          assert prerequisite["image_identity_status"] == "complete"
+          assert prerequisite["annotation_identity_status"] == "complete"
+
+          policy = request["eligibility_policy"]
+          assert policy["array_size_equality_required"] is False
+          assert policy["physical_foreground_containment_required"] is True
+          assert policy["nearest_neighbor_resampling_to_image_grid_required"] is True
+          assert policy["prostate_dx_01_0055_automatic_exclusion"] is False
+          assert policy["outcome_based_exclusion_allowed"] is False
+
+          rules = request["audit_rules"]
+          for key in (
+              "use_only_official_training_partition",
+              "download_only_preidentified_training_dicoms",
+              "use_official_training_nrrd_labels",
+              "record_geometry_and_hashes",
+          ):
+              assert rules[key] is True, key
+          for key in (
+              "assign_calibration_or_evaluation_roles",
+              "generate_synthetic_deformations",
+              "run_registration",
+              "compute_sigma",
+              "compute_ice",
+              "fit_calibration",
+          ):
+              assert rules[key] is False, key
+
+          print("M6_GEOMETRY_AUTHORIZATION=PASS")
+          print("M6_GEOMETRY_PARTITION=TRAINING_60")
+          print("RESULT_BEARING_AUTHORIZED=False")
+          PY
+
+      - name: Run training geometry eligibility audit
+        id: audit
+        continue-on-error: true
+        run: python scripts/audit_m6_training_geometry.py
+
+      - name: Stamp and package geometry evidence
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          output = Path("outputs/m6_training_geometry_eligibility.json")
+          if not output.exists():
+              output.parent.mkdir(parents=True, exist_ok=True)
+              output.write_text(
+                  json.dumps(
+                      {
+                          "schema_version": 1,
+                          "milestone": "M6",
+                          "audit": "training-geometry-eligibility",
+                          "status": "workflow_failed_before_audit_record",
+                          "authorization_boundary": {
+                              "result_bearing_authorized": False,
+                              "registration_authorized": False,
+                              "calibration_fit_authorized": False,
+                              "split_assignment_authorized": False,
+                              "synthetic_deformation_authorized": False,
+                          },
+                      },
+                      indent=2,
+                      sort_keys=True,
+                  )
+                  + "\n"
+              )
+
+          payload = json.loads(output.read_text())
+
+          def blob(path: str) -> str:
+              return subprocess.check_output(["git", "hash-object", path], text=True).strip()
+
+          payload["provenance"] = {
+              "source_git_sha": os.environ["GITHUB_SHA"],
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "request_blob_sha": blob(
+                  "research/M6_GEOMETRY_ELIGIBILITY_AUDIT_REQUEST.json"
+              ),
+              "identity_complete_blob_sha": blob(
+                  "research/M6_INPUT_IDENTITY_AUDIT_COMPLETE.json"
+              ),
+              "protocol_blob_sha": blob("docs/m6_geometry_eligibility_protocol.md"),
+              "script_blob_sha": blob("scripts/audit_m6_training_geometry.py"),
+              "workflow_blob_sha": blob(
+                  ".github/workflows/m6-training-geometry-audit.yml"
+              ),
+          }
+          output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+          digest = hashlib.sha256(output.read_bytes()).hexdigest()
+          Path("outputs/m6_training_geometry_eligibility.sha256").write_text(
+              f"{digest}  {output.name}\n"
+          )
+          print(output.read_text())
+          print(Path("outputs/m6_training_geometry_eligibility.sha256").read_text())
+          PY
+
+      - name: Upload geometry evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-training-geometry-eligibility
+          path: |
+            research/M6_GEOMETRY_ELIGIBILITY_AUDIT_REQUEST.json
+            research/M6_INPUT_IDENTITY_AUDIT_COMPLETE.json
+            docs/m6_geometry_eligibility_protocol.md
+            scripts/audit_m6_training_geometry.py
+            outputs/m6_training_geometry_eligibility.json
+            outputs/m6_training_geometry_eligibility.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce geometry audit outcome
+        if: always()
+        run: test "${{ steps.audit.outcome }}" = "success"
