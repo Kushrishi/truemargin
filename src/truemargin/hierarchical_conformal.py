@@ -86,9 +86,7 @@ def _validated_group_scores(group_scores: Sequence[np.ndarray]) -> tuple[np.ndar
         if scores.ndim != 1 or len(scores) == 0:
             raise ValueError(f"calibration group {index} must be a non-empty one-dimensional array")
         if np.isnan(scores).any() or np.isneginf(scores).any() or np.any(scores < 0.0):
-            raise ValueError(
-                f"calibration group {index} contains an invalid nonconformity score"
-            )
+            raise ValueError(f"calibration group {index} contains an invalid nonconformity score")
     return groups
 
 
