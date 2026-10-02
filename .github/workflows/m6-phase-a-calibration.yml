@@ -1,0 +1,203 @@
+name: TrueMargin M6 Phase A calibration
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_PHASE_A_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-phase-a-calibration
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      patients: ${{ steps.matrix.outputs.patients }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: sudo apt-get update && sudo apt-get install -y libopenslide0
+
+      - name: Install package and research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,acquisition,dev]"
+
+      - name: Verify source-pinned Phase A authorization
+        run: python scripts/m6_phase_a.py --verify-only
+
+      - name: Re-run focused pre-result contract
+        run: |
+          pytest -q \
+            tests/test_m6_phase_a.py \
+            tests/test_hierarchical_conformal.py \
+            tests/test_comparators.py \
+            tests/test_hyperparameter_known_gt.py
+
+      - name: Build frozen calibration matrix
+        id: matrix
+        run: echo "patients=$(python scripts/m6_phase_a.py --emit-matrix)" >> "$GITHUB_OUTPUT"
+
+      - name: Acquire official calibration labels once
+        run: python scripts/m6_phase_a.py --prepare-labels
+
+      - name: Upload calibration-only labels
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-a-labels
+          path: outputs/m6_phase_a_labels
+          if-no-files-found: error
+          retention-days: 30
+
+  anatomy:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        patient: ${{ fromJSON(needs.preflight.outputs.patients) }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: sudo apt-get update && sudo apt-get install -y libopenslide0
+
+      - name: Install package and acquisition dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,acquisition]"
+
+      - name: Verify source-pinned Phase A authorization
+        run: python scripts/m6_phase_a.py --verify-only
+
+      - name: Download calibration-only labels
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: m6-phase-a-labels
+          path: outputs/m6_phase_a_labels
+
+      - name: Run frozen calibration anatomy
+        run: |
+          python scripts/m6_phase_a.py \
+            --patient "${{ matrix.patient }}" \
+            --output "outputs/m6_phase_a_shards/${{ matrix.patient }}.json"
+
+      - name: Validate shard boundary
+        env:
+          PATIENT: ${{ matrix.patient }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          patient = os.environ["PATIENT"]
+          path = Path("outputs/m6_phase_a_shards") / f"{patient}.json"
+          record = json.loads(path.read_text())
+          assert record["patient_id"] == patient
+          assert record["phase"] == "A"
+          assert record["role"] == "calibration"
+          assert record["points"] == 50
+          assert record["evaluation_accessed"] is False
+          assert len(record["geometry_sha256"]) == 64
+          print(
+              "M6_PHASE_A_SHARD=PASS "
+              f"patient={patient} status={record['status']} "
+              f"sigma_valid={record['sigma_valid']} ice_valid={record['ice_valid']}"
+          )
+          PY
+
+      - name: Upload immutable calibration shard
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-a-shard-${{ matrix.patient }}
+          path: outputs/m6_phase_a_shards/${{ matrix.patient }}.json
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: anatomy
+    if: ${{ always() && needs.anatomy.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependency
+        run: sudo apt-get update && sudo apt-get install -y libopenslide0
+
+      - name: Install package dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,acquisition]"
+
+      - name: Verify source-pinned Phase A authorization
+        run: python scripts/m6_phase_a.py --verify-only
+
+      - name: Download all calibration shards
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: m6-phase-a-shard-*
+          path: shard-artifacts
+          merge-multiple: false
+
+      - name: Aggregate source-specific HCP thresholds
+        run: |
+          python scripts/m6_phase_a.py \
+            --aggregate \
+            --shard-dir shard-artifacts \
+            --output outputs/m6_phase_a_calibration.json
+
+      - name: Hash final calibration evidence
+        run: |
+          sha256sum outputs/m6_phase_a_calibration.json \
+            > outputs/m6_phase_a_calibration.sha256
+          cat outputs/m6_phase_a_calibration.sha256
+
+      - name: Upload sealed Phase A evidence
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-phase-a-calibration
+          path: |
+            research/M6_PHASE_A_REQUEST.json
+            research/M6_PHASE_A_GEOMETRY_FREEZE.json
+            research/M6_SPLIT.json
+            research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_RESULT.json
+            docs/m6_calibration_protocol.md
+            docs/m6_calibration_protocol_amendment_1.md
+            outputs/m6_phase_a_calibration.json
+            outputs/m6_phase_a_calibration.sha256
+            shard-artifacts
+          if-no-files-found: error
+          retention-days: 90
