@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "milestone": "M6",
+  "authorized_mode": "deformation-only-preflight",
+  "result_bearing_authorized": false,
+  "registration_authorized": false,
+  "forward_registration_authorized": false,
+  "reverse_registration_authorized": false,
+  "sigma_computation_authorized": false,
+  "ice_computation_authorized": false,
+  "calibration_fit_authorized": false,
+  "evaluation_authorized": false,
+  "synthetic_deformation_authorized": true,
+  "roi_warp_authorized": true,
+  "point_sampling_authorized": true,
+  "dicom_download_authorized": true,
+  "partition": "training",
+  "expected_anatomies": 60,
+  "deformation_replicates_per_anatomy": 1,
+  "points_per_anatomy": 50,
+  "protocol_prerequisite": {
+    "merge_commit_sha": "0851b2a4d419f514b8913ae55ba366193f7b57cb",
+    "calibration_protocol_blob_sha": "507c6fe8bdb92e06373545ef112a5be142e1b3ce",
+    "protocol_freeze_blob_sha": "f8e5e7a4e9f7a517b9f845c70b7ddc6343d463f6",
+    "split_blob_sha": "ea96f506d1790af092733c29067fb54d6d44920d",
+    "geometry_complete_blob_sha": "042db83dee92c88156846d7cc9740a172f20a4f0",
+    "prior_substrate_overlap_blob_sha": "2d9631b6df68dc24049d6db3477a65a51e30b4b6"
+  },
+  "identity_prerequisite": {
+    "workflow_run_id": 36944145013,
+    "source_git_sha": "0542b1c724692c642a93e7369849b1942d37db53",
+    "audit_output_sha256": "44c63ad874b3e6656f0bb57d56e39f04c20ecc1624bd77b62438c909e31f13d8"
+  },
+  "geometry_prerequisite": {
+    "workflow_run_id": 36946204494,
+    "source_git_sha": "d4c0c294ea3082f31e58b58a421bb8ac3996e90f",
+    "audit_output_sha256": "85a40b0ca573db512be348d94805f2fa002291431697e43a8854ce01f9b8f61a",
+    "eligible_anatomies": 60
+  },
+  "frozen_geometry": {
+    "crop_padding_voxels": 15,
+    "deformation_mesh_size": 4,
+    "raw_coefficient_mean": 0.0,
+    "raw_coefficient_std": 4.0,
+    "topology_scales": [1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5],
+    "minimum_evaluated_jacobian": "strictly > 0.0",
+    "roi_label_union": [1, 2],
+    "roi_boundary_margin_voxels": 8,
+    "points_per_anatomy": 50,
+    "point_sampling": "uniform without replacement",
+    "seed_salt_prefix": "truemargin-m6-v1",
+    "seed_streams": ["deformation", "noise", "points"]
+  },
+  "failure_discipline": {
+    "redraw_deformation_after_failure": false,
+    "extend_topology_scale_grid_after_failure": false,
+    "replace_failed_anatomy": false,
+    "change_split_after_failure": false,
+    "inspect_estimator_outcomes": false,
+    "infrastructure_retry_requires_same_committed_request": true
+  },
+  "expected_output": "outputs/m6_deformation_preflight.json"
+}
