@@ -94,11 +94,12 @@ def load_amendment_authorization() -> dict[str, Any]:
 
     prior = json.loads(PREFLIGHT_RESULT_1_PATH.read_text(encoding="utf-8"))
     prerequisite = request["prior_preflight"]
+    # The durable prior-result record stores scientific outcome provenance.
+    # GitHub artifact identity is pinned separately in the amendment request because
+    # artifact ID and archive digest are Actions metadata, not fields in that record.
     for key in (
         "workflow_run_id",
         "source_git_sha",
-        "artifact_id",
-        "artifact_sha256",
         "audit_output_sha256",
         "complete_anatomies",
         "failed_anatomies",
