@@ -18,10 +18,10 @@ method validity requirements, and prospective execution boundary.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from fractions import Fraction
 from math import isinf
-from typing import Sequence
 
 import numpy as np
 
@@ -191,7 +191,9 @@ def equal_group_coverage(
         if not np.isfinite(errors).all() or np.any(errors < 0.0):
             raise ValueError(f"group {index} errors must be finite and nonnegative")
         if np.isnan(radii).any() or np.isneginf(radii).any() or np.any(radii < 0.0):
-            raise ValueError(f"group {index} radii must be nonnegative and may be positive infinity")
+            raise ValueError(
+                f"group {index} radii must be nonnegative and may be positive infinity"
+            )
         per_group[index] = float(np.mean(errors <= radii))
 
     return per_group, float(np.mean(per_group))
