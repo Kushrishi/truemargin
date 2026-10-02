@@ -37,6 +37,27 @@ jobs:
       - name: Verify source-pinned Phase A authorization
         run: python scripts/m6_phase_a_calibration.py --verify-only
 
+      - name: Verify frozen input registry source identity
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("research/M6_PHASE_A_INPUT_FREEZE.json")
+          request = json.loads(Path("research/M6_PHASE_A_REQUEST.json").read_text(encoding="utf-8"))
+          source_sha = str(request["source_git_sha"])
+          frozen = subprocess.check_output(
+              ["git", "show", f"{source_sha}:{path.as_posix()}"]
+          )
+          current = path.read_bytes()
+          if current != frozen:
+              raise RuntimeError(
+                  "M6 Phase A input freeze differs from the authorized source commit"
+              )
+          print(f"M6_PHASE_A_INPUT_FREEZE=PINNED source_git_sha={source_sha}")
+          PY
+
       - name: Re-run focused pre-result contract
         run: |
           pytest -q \
