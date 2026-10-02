@@ -1,0 +1,203 @@
+name: TrueMargin M6 deformation-only preflight
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_DEFORMATION_PREFLIGHT_REQUEST.json"
+      - "research/M6_SPLIT.json"
+      - "research/M6_PROTOCOL_FREEZE.json"
+      - "docs/m6_calibration_protocol.md"
+      - "scripts/m6_deformation_preflight.py"
+      - ".github/workflows/m6-deformation-preflight.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-deformation-preflight
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify deformation-only authorization and frozen blobs
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          request = json.loads(
+              Path("research/M6_DEFORMATION_PREFLIGHT_REQUEST.json").read_text()
+          )
+          expected = {
+              "schema_version": 1,
+              "milestone": "M6",
+              "authorized_mode": "deformation-only-preflight",
+              "result_bearing_authorized": False,
+              "registration_authorized": False,
+              "forward_registration_authorized": False,
+              "reverse_registration_authorized": False,
+              "sigma_computation_authorized": False,
+              "ice_computation_authorized": False,
+              "calibration_fit_authorized": False,
+              "evaluation_authorized": False,
+              "synthetic_deformation_authorized": True,
+              "roi_warp_authorized": True,
+              "point_sampling_authorized": True,
+              "expected_anatomies": 60,
+              "deformation_replicates_per_anatomy": 1,
+              "points_per_anatomy": 50,
+              "expected_output": "outputs/m6_deformation_preflight.json",
+          }
+          for key, value in expected.items():
+              assert request.get(key) == value, (key, request.get(key), value)
+
+          prerequisite = request["protocol_prerequisite"]
+          assert prerequisite["merge_commit_sha"] == (
+              "0851b2a4d419f514b8913ae55ba366193f7b57cb"
+          )
+
+          def blob(path: str) -> str:
+              return subprocess.check_output(["git", "hash-object", path], text=True).strip()
+
+          pinned = {
+              "docs/m6_calibration_protocol.md": prerequisite["calibration_protocol_blob_sha"],
+              "research/M6_PROTOCOL_FREEZE.json": prerequisite["protocol_freeze_blob_sha"],
+              "research/M6_SPLIT.json": prerequisite["split_blob_sha"],
+              "research/M6_GEOMETRY_ELIGIBILITY_COMPLETE.json": prerequisite[
+                  "geometry_complete_blob_sha"
+              ],
+              "research/M6_PRIOR_SUBSTRATE_OVERLAP_AUDIT.json": prerequisite[
+                  "prior_substrate_overlap_blob_sha"
+              ],
+          }
+          for path, expected_blob in pinned.items():
+              actual = blob(path)
+              assert actual == expected_blob, (path, actual, expected_blob)
+
+          geometry = request["frozen_geometry"]
+          assert geometry["crop_padding_voxels"] == 15
+          assert geometry["deformation_mesh_size"] == 4
+          assert geometry["raw_coefficient_std"] == 4.0
+          assert geometry["roi_boundary_margin_voxels"] == 8
+          assert geometry["points_per_anatomy"] == 50
+          assert geometry["topology_scales"] == [
+              1.0, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7, 0.65, 0.6, 0.55, 0.5
+          ]
+
+          failure = request["failure_discipline"]
+          assert failure["redraw_deformation_after_failure"] is False
+          assert failure["extend_topology_scale_grid_after_failure"] is False
+          assert failure["replace_failed_anatomy"] is False
+          assert failure["change_split_after_failure"] is False
+          assert failure["inspect_estimator_outcomes"] is False
+
+          print("M6_DEFORMATION_AUTHORIZATION=PASS")
+          print("M6_DEFORMATION_CASES=60")
+          print("RESULT_BEARING_AUTHORIZED=False")
+          PY
+
+      - name: Run deformation-only preflight
+        id: preflight
+        continue-on-error: true
+        run: python scripts/m6_deformation_preflight.py
+
+      - name: Stamp and package preflight evidence
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          output = Path("outputs/m6_deformation_preflight.json")
+          if not output.exists():
+              output.parent.mkdir(parents=True, exist_ok=True)
+              output.write_text(
+                  json.dumps(
+                      {
+                          "schema_version": 1,
+                          "milestone": "M6",
+                          "audit": "deformation-only-preflight",
+                          "status": "workflow_failed_before_preflight_record",
+                          "authorization_boundary": {
+                              "result_bearing_authorized": False,
+                              "registration_authorized": False,
+                              "forward_registration_performed": False,
+                              "reverse_registration_performed": False,
+                              "sigma_computed": False,
+                              "ice_computed": False,
+                              "calibration_fit_performed": False,
+                              "evaluation_performed": False,
+                          },
+                      },
+                      indent=2,
+                      sort_keys=True,
+                  )
+                  + "\n"
+              )
+
+          payload = json.loads(output.read_text())
+
+          def blob(path: str) -> str:
+              return subprocess.check_output(["git", "hash-object", path], text=True).strip()
+
+          payload["provenance"] = {
+              "source_git_sha": os.environ["GITHUB_SHA"],
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "request_blob_sha": blob("research/M6_DEFORMATION_PREFLIGHT_REQUEST.json"),
+              "protocol_blob_sha": blob("docs/m6_calibration_protocol.md"),
+              "protocol_freeze_blob_sha": blob("research/M6_PROTOCOL_FREEZE.json"),
+              "split_blob_sha": blob("research/M6_SPLIT.json"),
+              "geometry_complete_blob_sha": blob(
+                  "research/M6_GEOMETRY_ELIGIBILITY_COMPLETE.json"
+              ),
+              "script_blob_sha": blob("scripts/m6_deformation_preflight.py"),
+              "workflow_blob_sha": blob(".github/workflows/m6-deformation-preflight.yml"),
+          }
+          output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+          digest = hashlib.sha256(output.read_bytes()).hexdigest()
+          Path("outputs/m6_deformation_preflight.sha256").write_text(
+              f"{digest}  {output.name}\n"
+          )
+          print(output.read_text())
+          print(Path("outputs/m6_deformation_preflight.sha256").read_text())
+          PY
+
+      - name: Upload preflight evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-deformation-preflight
+          path: |
+            docs/m6_calibration_protocol.md
+            research/M6_DEFORMATION_PREFLIGHT_REQUEST.json
+            research/M6_PROTOCOL_FREEZE.json
+            research/M6_SPLIT.json
+            scripts/m6_deformation_preflight.py
+            outputs/m6_deformation_preflight.json
+            outputs/m6_deformation_preflight.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce preflight outcome
+        if: always()
+        run: test "${{ steps.preflight.outcome }}" = "success"
