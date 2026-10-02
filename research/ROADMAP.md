@@ -71,7 +71,7 @@ M5 narrows the interpretation to positive but heterogeneous rank informativeness
 
 ## M6: Numerical calibration
 
-**State:** active. Protocol frozen and pre-result gates complete. Phase A calibration execution is next.
+**State:** active. Phase A execution has begun; incomplete attempts are preserved and input transport is being repaired.
 
 The calibration design is prospectively frozen in `docs/m6_calibration_protocol.md`, `research/M6_PROTOCOL_FREEZE.json`, and `research/M6_SPLIT.json`.
 
@@ -102,11 +102,11 @@ Completed pre-result gates:
 7. a prospective physical-distance boundary amendment was applied uniformly to all 60 anatomies;
 8. amended deformation-only preflight completed **60 of 60** anatomies with zero failures.
 
-No M6 forward registration, reverse registration, sigma, ICE, conformal score, calibration threshold, or evaluation outcome has been observed.
+Phase A run `37065698410` is incomplete and ineligible for aggregation. Uniform rerun `37075119713` failed label staging before any anatomy job started. No complete Phase A thresholds have been established, and evaluation remains sealed. See the two Phase A diagnostic records.
 
 ### Next authorized operation
 
-Create a separate source-pinned Phase A request for only the 30 frozen calibration anatomies.
+Validate the current-host official label transport amendment and main CI, then create a separate source-pinned Phase A request for a uniform execution of all 30 frozen calibration anatomies.
 
 Phase A may run the frozen estimator and comparator, compute calibration scores, and fit the predeclared source-specific HCP thresholds. The 30 evaluation anatomies remain sealed until the Phase A artifact and exact thresholds are reviewed and committed under a separate evaluation authorization.
 

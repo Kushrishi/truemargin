@@ -49,6 +49,7 @@ BASE = runpy.run_path(str(BASE_PREFLIGHT_PATH), run_name="m6_phase_a_base_prefli
 AMENDED = runpy.run_path(str(AMENDED_PREFLIGHT_PATH), run_name="m6_phase_a_amended_preflight")
 
 RESULT_DEFINING_PATHS = (
+    "scripts/stage_m6_phase_a_labels.py",
     "scripts/m6_phase_a_calibration.py",
     "scripts/m6_deformation_preflight.py",
     "scripts/m6_deformation_preflight_amendment_1.py",

@@ -95,7 +95,7 @@ These findings do not alter the M4 inference. They show that the positive anatom
 
 ## M6 calibration state
 
-M6 is active. Its design and pre-result gates are now substantially complete.
+M6 is active and has entered source-pinned Phase A calibration execution.
 
 Completed before any M6 estimator outcome:
 
@@ -111,7 +111,9 @@ Completed before any M6 estimator outcome:
 
 The amended preflight is recorded in `research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_RESULT.json` from workflow run `37050507332` and source SHA `a502466d4845be86780eb7a2306a96603ec4ab18`.
 
-No M6 forward registration, reverse registration, sigma, ICE, conformal score, HCP threshold, calibration result, or evaluation outcome has been observed.
+The first Phase A attempt, run `37065698410`, completed 26 anatomy jobs but remained incomplete after four pre-result label-transport failures. Its partial outputs are preserved and are not accepted for aggregation. Partial numerical outputs were not inspected to select the transport repair.
+
+The uniform rerun, `37075119713`, passed preflight but failed centralized legacy-host label staging. All anatomy and aggregate jobs were skipped. No complete Phase A calibration artifact or thresholds have been established. Evaluation remains sealed. These failures are recorded in `M6_PHASE_A_DIAGNOSTIC_1.json` and `M6_PHASE_A_DIAGNOSTIC_2.json`.
 
 ### Frozen M6 design
 
@@ -131,7 +133,7 @@ No M6 forward registration, reverse registration, sigma, ICE, conformal score, H
 
 ### Current bottleneck
 
-The next allowed scientific operation is a separate, source-pinned **Phase A calibration request for only the 30 frozen calibration anatomies**.
+The transport amendment in `docs/m6_phase_a_transport_amendment_2.md` uses the current official TCIA archive after confirming all 30 calibration labels match their frozen hashes. Hosted acquisition preflight and main CI must pass before a separate source-pinned request authorizes another uniform execution of all 30 calibration anatomies.
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 

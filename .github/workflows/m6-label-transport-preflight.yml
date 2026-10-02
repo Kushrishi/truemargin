@@ -1,0 +1,36 @@
+name: M6 calibration label transport preflight
+
+on:
+  pull_request:
+    paths:
+      - "scripts/stage_m6_phase_a_labels.py"
+      - "tests/test_m6_label_transport.py"
+      - ".github/workflows/m6-label-transport-preflight.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "scripts/stage_m6_phase_a_labels.py"
+      - ".github/workflows/m6-label-transport-preflight.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-calibration-labels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Acquire exact frozen calibration labels without registration
+        run: python scripts/stage_m6_phase_a_labels.py
+      - name: Upload transport provenance
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-calibration-label-transport-provenance
+          path: inputs/m6_phase_a/label-transport.json
+          if-no-files-found: warn
+          retention-days: 90
