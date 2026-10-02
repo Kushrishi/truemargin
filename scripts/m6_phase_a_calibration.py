@@ -122,9 +122,7 @@ def build_synthetic_case(
     image: sitk.Image,
     label: sitk.Image,
 ) -> tuple[dict[str, Any], str]:
-    record = AMENDED["preflight_geometry"](
-        patient_id, "calibration", series_uid, image, label
-    )
+    record = AMENDED["preflight_geometry"](patient_id, "calibration", series_uid, image, label)
     frozen = load_geometry_freeze(GEOMETRY_FREEZE_PATH)[patient_id]
     observed_hash = geometry_sha256(record)
     if observed_hash != frozen["geometry_sha256"]:
@@ -202,12 +200,8 @@ def run_patient(patient_id: str, output_root: Path) -> Path:
     output_path = shard_dir / f"{patient_id}.json"
 
     with tempfile.TemporaryDirectory(prefix=f"truemargin-m6-phase-a-{patient_id}-") as tmp:
-        image, label, dicom_sha, label_sha = load_exact_input(
-            patient_id, series_uid, Path(tmp)
-        )
-        synthetic, geometry_hash = build_synthetic_case(
-            patient_id, series_uid, image, label
-        )
+        image, label, dicom_sha, label_sha = load_exact_input(patient_id, series_uid, Path(tmp))
+        synthetic, geometry_hash = build_synthetic_case(patient_id, series_uid, image, label)
 
     fixed = np.asarray(synthetic["fixed"], dtype=np.float32)
     moving = np.asarray(synthetic["moving"], dtype=np.float32)
@@ -233,9 +227,7 @@ def run_patient(patient_id: str, output_root: Path) -> Path:
         return output_path
 
     u_est = ioutil.sample_field_at_points(forward.u_mean, idx_zyx)
-    sigma_mm = np.asarray(
-        ioutil.sample_field_at_points(forward.sigma, idx_zyx), dtype=np.float64
-    )
+    sigma_mm = np.asarray(ioutil.sample_field_at_points(forward.sigma, idx_zyx), dtype=np.float64)
     known_error_mm = np.linalg.norm(u_est - u_true, axis=0)
     if sigma_mm.shape != (EXPECTED_POINTS,) or known_error_mm.shape != (EXPECTED_POINTS,):
         raise RuntimeError("forward pointwise result shape mismatch")
@@ -323,9 +315,7 @@ def run_patient(patient_id: str, output_root: Path) -> Path:
         "request_blob_sha": git_blob_sha(REQUEST_PATH),
         "evaluation_accessed": False,
     }
-    output_path.write_text(
-        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return output_path
 
 
@@ -380,9 +370,7 @@ def aggregate_shards(shard_root: Path, output_path: Path) -> int:
         },
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    output_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return 0 if status == "complete" else 1
 
 
