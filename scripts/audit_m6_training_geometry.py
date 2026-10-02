@@ -165,9 +165,7 @@ def _read_series(payload: bytes, expected_uid: str, target: Path) -> tuple[str, 
     header.SetFileName(files[0])
     header.ReadImageInformation()
     patient_id = (
-        header.GetMetaData("0010|0020").strip()
-        if header.HasMetaDataKey("0010|0020")
-        else ""
+        header.GetMetaData("0010|0020").strip() if header.HasMetaDataKey("0010|0020") else ""
     )
     observed_uid = (
         header.GetMetaData("0020|000e").strip() if header.HasMetaDataKey("0020|000e") else ""
@@ -218,8 +216,7 @@ def foreground_containment(label: sitk.Image, image: sitk.Image) -> dict[str, An
     continuous_index = scaled_index / image_spacing
     size = np.asarray(image.GetSize(), dtype=np.float64)
     inside = np.all(
-        (continuous_index >= (-0.5 - BOUND_TOL))
-        & (continuous_index <= (size - 0.5 + BOUND_TOL)),
+        (continuous_index >= (-0.5 - BOUND_TOL)) & (continuous_index <= (size - 0.5 + BOUND_TOL)),
         axis=1,
     )
     return {
