@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "milestone": "M6",
+  "record": "external-input-identity-audit-diagnostic-3",
+  "workflow_run_id": 36942271816,
+  "source_git_sha": "b7a9de83ab79a628d01699f0d95033de1b8dc0bd",
+  "audit_schema_version": 4,
+  "status": "failed_before_partition_identity_resolution",
+  "observed_boundary": {
+    "authorization_check_passed": true,
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "split_assignment_authorized": false,
+    "dicom_download_performed": false,
+    "heuristic_source_series_selection_performed": false
+  },
+  "failure": {
+    "stage": "TCIA v4 Training shared-list transport",
+    "url": "https://services.cancerimagingarchive.net/services/v4/SharedList/query/ContentsByName?name=ISBI+Prostate+Challenge+-+Training",
+    "attempts": 3,
+    "client": "urllib",
+    "outcome": "timeout on every attempt",
+    "identity_result_observed": false,
+    "annotation_result_observed": false
+  },
+  "artifact": {
+    "github_artifact_id": 11201330581,
+    "artifact_sha256": "66a3f464e172fe9315a1bbdbe05cfe067adc73753b224865a451ae986277e8c1",
+    "audit_output_sha256": "26dc511ae0edfd0f4955dde7e00d87b61fe79b6002aa6ebe5a00d5209a4a225f"
+  },
+  "interpretation": [
+    "The failure is a live-service transport failure, not a contradictory partition-identity observation.",
+    "TCIA's current analysis page independently publishes Source Image Data downloads for Training (60 series), Leaderboard (10 series), and Test (10 series) as .tcia manifests.",
+    "No M6 estimator, calibration, split, or outcome data existed when the partition authority was changed from the live shared-list service to the official manifests."
+  ]
+}

@@ -185,6 +185,47 @@ def test_official_binary_falls_back_to_curl_without_changing_authority(monkeypat
     assert record["prior_failures"] == [{"client": "urllib"}]
 
 
+def test_shared_list_crosscheck_transport_failure_is_nonfatal(monkeypatch):
+    crosscheck = _function("shared_list_crosscheck")
+    globals_ = crosscheck.__globals__
+    transport_error = globals_["TransportUnavailable"]
+
+    def unavailable(*args, **kwargs):
+        raise transport_error("https://example.invalid/shared", [{"client": "urllib"}])
+
+    monkeypatch.setitem(globals_, "shared_list", unavailable)
+    result = crosscheck("synthetic", 2, ["1.2.3.4", "1.2.3.5"])
+    assert result["status"] == "transport_unavailable"
+    assert result["required_for_partition_identity"] is False
+
+
+def test_shared_list_crosscheck_mismatch_is_gate_issue(monkeypatch):
+    crosscheck = _function("shared_list_crosscheck")
+    globals_ = crosscheck.__globals__
+
+    def conflicting(*args, **kwargs):
+        return {"series_uids": ["1.2.3.4", "1.2.3.9"], "name": "synthetic"}
+
+    monkeypatch.setitem(globals_, "shared_list", conflicting)
+    result = crosscheck("synthetic", 2, ["1.2.3.4", "1.2.3.5"])
+    assert result["status"] == "mismatch"
+    assert result["matches_manifest_authority"] is False
+
+
+def test_partition_manifest_uses_exact_official_binary_membership(monkeypatch):
+    partition_manifest = _function("partition_manifest")
+    globals_ = partition_manifest.__globals__
+    uids = [f"1.2.840.{index}" for index in range(10)]
+
+    def synthetic_binary(url):
+        return _manifest_bytes(uids), {"client": "synthetic", "url": url}
+
+    monkeypatch.setitem(globals_, "official_binary", synthetic_binary)
+    record = partition_manifest("test")
+    assert record["series_uids"] == sorted(uids)
+    assert record["transport"]["client"] == "synthetic"
+
+
 def test_historical_training_checks_preserves_known_correction_cases():
     historical_training_checks = _function("historical_training_checks")
     label_index = {
@@ -199,5 +240,6 @@ def test_failure_record_keeps_result_bearing_boundary_closed():
     failure_record = _function("failure_record")
     result = failure_record(RuntimeError("synthetic failure"))
     assert result["status"] == "failed"
+    assert result["schema_version"] == 5
     assert result["authorization_boundary"]["result_bearing_authorized"] is False
     assert result["authorization_boundary"]["split_assignment_authorized"] is False
