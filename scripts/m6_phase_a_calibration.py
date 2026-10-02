@@ -571,9 +571,7 @@ def aggregate(directory: Path) -> dict[str, Any]:
         if source_ice_complete:
             ice_groups = [_parse_vector(record["ice_score"]) for record in source_cases]
             for nominal in NOMINAL_LEVELS:
-                fitted = hcp.hierarchical_conformal_threshold(
-                    ice_groups, nominal_coverage=nominal
-                )
+                fitted = hcp.hierarchical_conformal_threshold(ice_groups, nominal_coverage=nominal)
                 key = f"{int(round(nominal * 100))}"
                 source_record["ice_thresholds"][key] = _threshold_record(ice_groups, nominal)
                 source_record["ice_efficiency"][key] = _efficiency_summary(

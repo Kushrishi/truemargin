@@ -46,12 +46,10 @@ def test_input_freeze_matches_only_frozen_calibration_anatomies() -> None:
     assert observed == expected == set(geometry["calibration"])
     assert len(observed) == 30
     assert observed.isdisjoint(evaluation)
-    assert freeze["source_preflight_artifact_sha256"] == geometry[
-        "source_preflight_artifact_sha256"
-    ]
-    assert freeze["source_preflight_audit_sha256"] == geometry[
-        "source_preflight_audit_sha256"
-    ]
+    assert (
+        freeze["source_preflight_artifact_sha256"] == geometry["source_preflight_artifact_sha256"]
+    )
+    assert freeze["source_preflight_audit_sha256"] == geometry["source_preflight_audit_sha256"]
 
 
 def test_input_freeze_pins_payload_and_geometry_identity() -> None:
@@ -135,9 +133,9 @@ def test_aggregate_fits_sources_separately_and_keeps_evaluation_sealed(
     assert result["authorization_boundary"]["phase_b_authorized"] is False
     assert result["sources"]["prostate_3t"]["sigma_thresholds"]["90"]["threshold"] == 1.0
     assert result["sources"]["prostate_diagnosis"]["sigma_thresholds"]["90"]["threshold"] == 3.0
-    assert result["sources"]["prostate_3t"]["sigma_thresholds"]["95"][
-        "threshold_is_infinite"
-    ] is True
+    assert (
+        result["sources"]["prostate_3t"]["sigma_thresholds"]["95"]["threshold_is_infinite"] is True
+    )
     assert result["sources"]["prostate_diagnosis"]["ice_thresholds"]["90"]["threshold"] == 4.0
 
 
