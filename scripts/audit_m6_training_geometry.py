@@ -164,7 +164,11 @@ def _read_series(payload: bytes, expected_uid: str, target: Path) -> tuple[str, 
     header = sitk.ImageFileReader()
     header.SetFileName(files[0])
     header.ReadImageInformation()
-    patient_id = header.GetMetaData("0010|0020").strip() if header.HasMetaDataKey("0010|0020") else ""
+    patient_id = (
+        header.GetMetaData("0010|0020").strip()
+        if header.HasMetaDataKey("0010|0020")
+        else ""
+    )
     observed_uid = (
         header.GetMetaData("0020|000e").strip() if header.HasMetaDataKey("0020|000e") else ""
     )
@@ -307,7 +311,8 @@ def build_audit() -> dict[str, Any]:
     if len(records) != EXPECTED_CASES or len(set(patient_ids)) != EXPECTED_CASES:
         raise RuntimeError("Geometry audit did not resolve exactly 60 unique training anatomies")
     source_counts = {
-        source: sum(item["source"] == source for item in records) for source in EXPECTED_SOURCE_COUNTS
+        source: sum(item["source"] == source for item in records)
+        for source in EXPECTED_SOURCE_COUNTS
     }
     if source_counts != EXPECTED_SOURCE_COUNTS:
         raise RuntimeError(f"Unexpected training source composition: {source_counts}")
