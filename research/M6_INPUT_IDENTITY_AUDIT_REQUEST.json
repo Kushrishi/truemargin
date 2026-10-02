@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "date": "2026-10-01",
   "milestone": "M6",
   "authorized_mode": "external-input-identity-audit",
@@ -20,13 +20,15 @@
         "expected_subjects": 60,
         "expected_series": 60,
         "official_shared_list_name": "ISBI Prostate Challenge - Training",
-        "legacy_image_manifest": "ISBI-Prostate-Challenge-Training.tcia"
+        "legacy_image_manifest": "ISBI-Prostate-Challenge-Training.tcia",
+        "official_image_manifest": "ISBI-Prostate-Challenge-Training.tcia"
       },
       "leaderboard": {
         "expected_subjects": 10,
         "expected_series": 10,
         "official_shared_list_name": "ISBI Prostate Challenge - Leader Board",
-        "legacy_image_manifest": "ISBI-Prostate-Challenge-LeaderBoard.tcia"
+        "legacy_image_manifest": "ISBI-Prostate-Challenge-LeaderBoard.tcia",
+        "official_image_manifest": "ISBI-Prostate-Challenge-LeaderBoard.tcia"
       },
       "test": {
         "expected_subjects": 10,
@@ -37,14 +39,15 @@
     }
   },
   "image_identity_authority": {
-    "training_membership_api": "TCIA v4 SharedList/query/ContentsByName",
-    "leaderboard_membership_api": "TCIA v4 SharedList/query/ContentsByName",
-    "test_membership_authority": "official TCIA Source Image Data - Test .tcia manifest",
-    "test_shared_list_name_invented": false,
-    "analysis_doi_series_api_required": false,
-    "training_leaderboard_legacy_manifests_required": false,
-    "training_leaderboard_legacy_manifests_role": "optional provenance cross-check only",
-    "test_manifest_required": true
+    "partition_uid_authority": "official TCIA Source Image Data .tcia manifest for each challenge partition",
+    "training_manifest_required": true,
+    "leaderboard_manifest_required": true,
+    "test_manifest_required": true,
+    "training_shared_list_crosscheck": "TCIA v4 SharedList/query/ContentsByName when reachable",
+    "leaderboard_shared_list_crosscheck": "TCIA v4 SharedList/query/ContentsByName when reachable",
+    "shared_list_transport_failure_is_fatal": false,
+    "shared_list_uid_mismatch_is_fatal": true,
+    "analysis_doi_series_api_required": false
   },
   "annotation_identity_authority": {
     "analysis_page": "https://www.cancerimagingarchive.net/analysis-result/isbi-mr-prostate-2013/",
@@ -74,7 +77,11 @@
     }
   },
   "patient_identity_policy": {
-    "accepted_challenge_namespaces": ["01", "02", "03"],
+    "accepted_challenge_namespaces": [
+      "01",
+      "02",
+      "03"
+    ],
     "partition_namespace_mapping_frozen": false,
     "record_observed_namespace_by_partition": true,
     "require_image_annotation_patient_id_agreement": true,
@@ -84,12 +91,10 @@
     "json_api_client": "urllib with bounded retry",
     "official_binary_primary_client": "urllib single attempt",
     "official_binary_fallback_client": "bounded curl with redirect following and retry",
-    "fallback_changes_identity_authority": false
+    "fallback_changes_identity_authority": false,
+    "live_shared_list_crosscheck": "one bounded urllib attempt; outage non-fatal because exact official manifests are primary"
   },
   "audit_rules": {
-    "derive_training_membership_from_official_v4_shared_list": true,
-    "derive_leaderboard_membership_from_official_v4_shared_list": true,
-    "derive_test_membership_from_official_test_manifest": true,
     "require_exact_disjoint_60_10_10_partition_series": true,
     "resolve_exact_official_series_in_idc": true,
     "preserve_official_partition_identity": true,
@@ -101,7 +106,14 @@
     "assign_calibration_evaluation_reserve_roles": false,
     "download_source_dicoms": false,
     "run_registration": false,
-    "fit_calibration": false
+    "fit_calibration": false,
+    "derive_training_membership_from_official_training_manifest": true,
+    "derive_leaderboard_membership_from_official_leaderboard_manifest": true,
+    "derive_test_membership_from_official_test_manifest": true,
+    "crosscheck_training_shared_list_when_reachable": true,
+    "crosscheck_leaderboard_shared_list_when_reachable": true,
+    "shared_list_transport_failure_blocks_identity": false,
+    "shared_list_uid_mismatch_blocks_identity": true
   },
   "prior_diagnostics": [
     {
@@ -117,6 +129,13 @@
       "outcome": "legacy analysis-DOI series lookup returned an empty JSON list before partition identity resolution",
       "result_bearing_data_observed": false,
       "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_2.json"
+    },
+    {
+      "workflow_run_id": 36942271816,
+      "source_git_sha": "b7a9de83ab79a628d01699f0d95033de1b8dc0bd",
+      "outcome": "TCIA v4 Training shared-list endpoint timed out on all three bounded urllib attempts before partition identity resolution",
+      "result_bearing_data_observed": false,
+      "durable_record": "research/M6_INPUT_IDENTITY_AUDIT_DIAGNOSTIC_3.json"
     }
   ],
   "historical_conditions_to_preserve": [
@@ -126,6 +145,8 @@
   ],
   "interpretation_boundary": [
     "This audit inventories all 80 official challenge subjects but assigns no M6 cohort roles.",
+    "Exact official TCIA .tcia manifests, not the live shared-list REST service, define the immutable 60/10/10 partition UID sets.",
+    "A shared-list transport outage is non-fatal, but a returned shared-list UID disagreement with its official manifest blocks the identity freeze.",
     "No numeric namespace-to-partition mapping is frozen before official image and annotation artifacts are compared.",
     "Leaderboard/test membership is preserved as provenance and does not by itself establish external-dataset generalization.",
     "Using curl as a transport fallback does not change the authoritative TCIA URL or artifact identity.",

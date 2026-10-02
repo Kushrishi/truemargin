@@ -39,6 +39,11 @@ PARTITIONS: dict[str, dict[str, Any]] = {
         "subjects": 60,
         "series": 60,
         "shared_list": "ISBI Prostate Challenge - Training",
+        "manifest_name": "ISBI-Prostate-Challenge-Training.tcia",
+        "manifest_url": (
+            "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
+            "ISBI-Prostate-Challenge-Training.tcia?api=v2"
+        ),
         "label_name": "NCI-ISBI 2013 Prostate Challenge - Training.zip",
         "label_url": (
             "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
@@ -49,6 +54,11 @@ PARTITIONS: dict[str, dict[str, Any]] = {
         "subjects": 10,
         "series": 10,
         "shared_list": "ISBI Prostate Challenge - Leader Board",
+        "manifest_name": "ISBI-Prostate-Challenge-LeaderBoard.tcia",
+        "manifest_url": (
+            "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
+            "ISBI-Prostate-Challenge-LeaderBoard.tcia?api=v2"
+        ),
         "label_name": "NCI-ISBI 2013 Prostate Challenge - Leaderboard.zip",
         "label_url": (
             "https://wiki.cancerimagingarchive.net/download/attachments/21267207/"
@@ -277,13 +287,53 @@ def exact_uids(payload: Any, expected: int, source: str) -> tuple[list[str], lis
 
 def shared_list(name: str, expected: int) -> dict[str, Any]:
     url = f"{TCIA_V4_SHARED_LIST}?{urllib.parse.urlencode({'name': name})}"
-    payload, provenance = json_get(url)
+    raw, failures = request_bytes(url, attempts=1, timeout=BINARY_URLLIB_TIMEOUT)
+    try:
+        payload = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Expected JSON from {url}") from exc
+    provenance = {
+        "url": url,
+        "size_bytes": len(raw),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "transport_failures_before_success": failures,
+    }
     uids, _ = exact_uids(payload, expected, f"shared list {name!r}")
     return {
         "authority": "TCIA v4 SharedList/query/ContentsByName",
         "name": name,
         "series_uids": sorted(uids),
         "response": provenance,
+    }
+
+
+def shared_list_crosscheck(
+    name: str, expected: int, authoritative_uids: list[str]
+) -> dict[str, Any]:
+    """Corroborate a manifest when TCIA's live shared-list service is reachable."""
+    try:
+        record = shared_list(name, expected)
+    except TransportUnavailable as exc:
+        return {
+            "status": "transport_unavailable",
+            "required_for_partition_identity": False,
+            "name": name,
+            "transport_failures": exc.failures,
+        }
+    except Exception as exc:
+        return {
+            "status": "invalid",
+            "required_for_partition_identity": False,
+            "name": name,
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+        }
+    matches = set(record["series_uids"]) == set(authoritative_uids)
+    return {
+        **record,
+        "status": "complete" if matches else "mismatch",
+        "required_for_partition_identity": False,
+        "matches_manifest_authority": matches,
     }
 
 
@@ -302,11 +352,11 @@ def manifest_uids(raw: bytes, expected: int) -> list[str]:
     return uids
 
 
-def test_manifest() -> dict[str, Any]:
-    config = PARTITIONS["test"]
+def partition_manifest(partition: str) -> dict[str, Any]:
+    config = PARTITIONS[partition]
     raw, transport = official_binary(str(config["manifest_url"]))
     return {
-        "authority": "official TCIA Source Image Data - Test manifest",
+        "authority": f"official TCIA Source Image Data - {partition.title()} manifest",
         "name": config["manifest_name"],
         "series_uids": sorted(manifest_uids(raw, int(config["series"]))),
         "transport": transport,
@@ -610,21 +660,36 @@ def audit_annotations(image_patient_ids: dict[str, list[str]]) -> dict[str, Any]
 
 
 def audit_image_identity() -> dict[str, Any]:
-    training = shared_list(str(PARTITIONS["training"]["shared_list"]), 60)
-    leaderboard = shared_list(str(PARTITIONS["leaderboard"]["shared_list"]), 10)
-    test = test_manifest()
+    manifests = {part: partition_manifest(part) for part in PARTITIONS}
     partitions = validate_partitions(
-        training["series_uids"], leaderboard["series_uids"], test["series_uids"]
+        manifests["training"]["series_uids"],
+        manifests["leaderboard"]["series_uids"],
+        manifests["test"]["series_uids"],
     )
+    shared_list_crosschecks = {
+        part: shared_list_crosscheck(
+            str(PARTITIONS[part]["shared_list"]),
+            int(PARTITIONS[part]["series"]),
+            partitions[part],
+        )
+        for part in ("training", "leaderboard")
+    }
+    crosscheck_issues = {
+        part: record
+        for part, record in shared_list_crosschecks.items()
+        if record["status"] in {"invalid", "mismatch"}
+    }
     all_uids = sorted(uid for values in partitions.values() for uid in values)
     response = idc_series(all_uids)
     mapping = map_identities(partitions, response["series"])
+    issues = dict(mapping["issues"])
+    if crosscheck_issues:
+        issues["shared_list_crosschecks"] = crosscheck_issues
     return {
-        "status": mapping["status"],
+        "status": "complete" if not issues else "incomplete",
         "authority": {
-            "training_shared_list": training,
-            "leaderboard_shared_list": leaderboard,
-            "test_manifest": test,
+            "partition_manifests": manifests,
+            "shared_list_crosschecks": shared_list_crosschecks,
         },
         "partition_series_uids": partitions,
         "idc_resolution": {
@@ -633,7 +698,7 @@ def audit_image_identity() -> dict[str, Any]:
             "series_rows": len(response["series"]),
             **mapping,
         },
-        "issues": mapping["issues"],
+        "issues": issues,
     }
 
 
@@ -653,7 +718,7 @@ def build_audit() -> dict[str, Any]:
     annotations = audit_annotations(image["idc_resolution"]["partition_patient_ids"])
     ready = image["status"] == "complete" and annotations["status"] == "complete"
     return {
-        "schema_version": 4,
+        "schema_version": 5,
         "milestone": "M6",
         "audit": "external-input-identity",
         "status": "complete" if ready else "incomplete",
@@ -672,7 +737,7 @@ def build_audit() -> dict[str, Any]:
 
 def failure_record(exc: BaseException) -> dict[str, Any]:
     record: dict[str, Any] = {
-        "schema_version": 4,
+        "schema_version": 5,
         "milestone": "M6",
         "audit": "external-input-identity",
         "status": "failed",
