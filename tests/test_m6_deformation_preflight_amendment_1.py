@@ -41,9 +41,7 @@ def test_amendment_authorization_is_geometry_only_and_pins_base_preflight():
 
 def test_first_preflight_failure_is_preserved_before_amendment():
     result = json.loads(
-        (ROOT / "research" / "M6_DEFORMATION_PREFLIGHT_RESULT_1.json").read_text(
-            encoding="utf-8"
-        )
+        (ROOT / "research" / "M6_DEFORMATION_PREFLIGHT_RESULT_1.json").read_text(encoding="utf-8")
     )
     assert result["status"] == "incomplete"
     assert result["complete_anatomies"] == 56
