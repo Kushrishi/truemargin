@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-02",
+  "failure_discipline": {
+    "deformation_redraw_after_failure": false,
+    "failed_anatomies_replaced": false,
+    "post_hoc_source_pooling": false,
+    "post_hoc_zero_signal_exclusion": false,
+    "roles_reassigned_after_outcomes": false
+  },
+  "frozen_design": {
+    "boundary_margin_voxels": 8,
+    "calibration_per_source": 15,
+    "calibration_subjects": 30,
+    "crop_padding_voxels": 15,
+    "deformation_replicates_per_anatomy": 1,
+    "evaluation_before_threshold_freeze": false,
+    "evaluation_per_source": 15,
+    "evaluation_subjects": 30,
+    "finite_sample_sentinel_coverage": 0.95,
+    "hcp_stratification": "source_key",
+    "m6_subjects": 60,
+    "m7_untouched_reserve_subjects": 20,
+    "points_per_anatomy": 50,
+    "primary_abstention_rule": "none",
+    "primary_nominal_coverage": 0.9,
+    "primary_signal": "nine-member hyperparameter-ensemble sigma",
+    "secondary_calibrated_comparator": "ensemble-mean ICE",
+    "secondary_nominal_coverage": 0.8,
+    "zero_signal_rule": "0/0 -> score 0; positive_error/0 -> +infinity"
+  },
+  "milestone": "M6",
+  "next_authorized_work": {
+    "calibration_fit_authorized": false,
+    "evaluation_authorized": false,
+    "forward_registration_authorized": false,
+    "ice_computation_authorized": false,
+    "mode": "60-anatomy synthetic-deformation geometry preflight",
+    "reverse_registration_authorized": false,
+    "roi_warp_and_point_sampling_authorized": true,
+    "sigma_computation_authorized": false,
+    "synthetic_deformation_generation_authorized": true
+  },
+  "prerequisites": {
+    "geometry_complete_record": "research/M6_GEOMETRY_ELIGIBILITY_COMPLETE.json",
+    "identity_complete_record": "research/M6_INPUT_IDENTITY_AUDIT_COMPLETE.json",
+    "prior_substrate_overlap_record": "research/M6_PRIOR_SUBSTRATE_OVERLAP_AUDIT.json",
+    "protocol": "docs/m6_calibration_protocol.md",
+    "split_record": "research/M6_SPLIT.json"
+  },
+  "record": "calibration-protocol-freeze",
+  "schema_version": 1,
+  "source_git_sha_at_design_start": "d4c0c294ea3082f31e58b58a421bb8ac3996e90f",
+  "status": "frozen_pre_result"
+}

@@ -1,0 +1,44 @@
+{
+  "artifact": {
+    "id": 11202735080,
+    "sha256": "d7ec149ca1cc9c663d82115d565008c9576081832cef2ad070eeeb310a9c53f8"
+  },
+  "audit_output_sha256": "85a40b0ca573db512be348d94805f2fa002291431697e43a8854ce01f9b8f61a",
+  "authorization_boundary": {
+    "calibration_fit_authorized": false,
+    "evaluation_authorized": false,
+    "registration_authorized": false,
+    "result_bearing_authorized": false
+  },
+  "criteria_failures": {
+    "foreground_physically_contained": 0,
+    "label_foreground_nonempty": 0,
+    "label_values_allowed": 0,
+    "resampled_foreground_nonempty": 0,
+    "resampled_values_allowed": 0,
+    "three_dimensional": 0
+  },
+  "date": "2026-10-02",
+  "eligible_count": 60,
+  "ineligible_patient_ids": [],
+  "known_0055": {
+    "array_size_equal": false,
+    "eligible": true,
+    "image_size": [400, 400, 34],
+    "label_size": [400, 400, 23],
+    "note": "The documented raw z-dimension mismatch is preserved; eligibility is based on physical-space containment and valid nearest-neighbour resampling, not raw array-size equality.",
+    "out_of_domain_foreground_voxels": 0,
+    "patient_id": "ProstateDx-01-0055"
+  },
+  "milestone": "M6",
+  "record": "training-geometry-eligibility-complete",
+  "schema_version": 1,
+  "source_counts": {
+    "prostate_3t": 30,
+    "prostate_diagnosis": 30
+  },
+  "source_git_sha": "d4c0c294ea3082f31e58b58a421bb8ac3996e90f",
+  "status": "complete",
+  "training_anatomies": 60,
+  "workflow_run_id": 36946204494
+}
