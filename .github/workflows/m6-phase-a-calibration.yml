@@ -1,0 +1,214 @@
+name: TrueMargin M6 Phase A calibration
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_PHASE_A_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-phase-a-calibration
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      patients: ${{ steps.matrix.outputs.patients }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package and research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,dev]"
+
+      - name: Verify source-pinned Phase A authorization
+        run: python scripts/m6_phase_a_calibration.py --verify-only
+
+      - name: Re-run focused pre-result contract
+        run: |
+          pytest -q \
+            tests/test_hierarchical_conformal.py \
+            tests/test_m6_phase_a_geometry_freeze.py \
+            tests/test_m6_phase_a_calibration.py \
+            tests/test_hyperparameter_known_gt.py \
+            tests/test_comparators.py
+
+      - name: Build calibration-only matrix
+        id: matrix
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          split = json.loads(Path("research/M6_SPLIT.json").read_text())
+          patients = sorted(
+              patient
+              for source in ("prostate_3t", "prostate_diagnosis")
+              for patient in split["roles"][source]["calibration"]
+          )
+          evaluation = {
+              patient
+              for source in ("prostate_3t", "prostate_diagnosis")
+              for patient in split["roles"][source]["evaluation"]
+          }
+          assert len(patients) == 30
+          assert set(patients).isdisjoint(evaluation)
+          print("patients=" + json.dumps(patients, separators=(",", ":")))
+          PY
+
+  anatomy:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        patient: ${{ fromJSON(needs.preflight.outputs.patients) }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package and execution dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify source-pinned Phase A authorization
+        run: python scripts/m6_phase_a_calibration.py --verify-only
+
+      - name: Run frozen calibration anatomy
+        id: shard
+        continue-on-error: true
+        run: |
+          python scripts/m6_phase_a_calibration.py \
+            --patient "${{ matrix.patient }}" \
+            --output-root outputs/m6_phase_a
+
+      - name: Validate calibration-only shard boundary
+        if: always()
+        run: |
+          PATIENT="${{ matrix.patient }}" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          patient = os.environ["PATIENT"]
+          path = Path("outputs/m6_phase_a/shards") / f"{patient}.json"
+          record = json.loads(path.read_text())
+          assert record["patient_id"] == patient
+          assert record["evaluation_accessed"] is False
+          if record["primary_complete"]:
+              assert len(record["known_error_mm"]) == 50
+              assert len(record["sigma_mm"]) == 50
+              assert len(record["sigma_scores"]) == 50
+              checkpoint = Path("outputs/m6_phase_a/checkpoints") / f"{patient}.npz"
+              assert checkpoint.is_file()
+          print(
+              f"M6_PHASE_A_SHARD=RECORDED patient={patient} "
+              f"primary_complete={record['primary_complete']}"
+          )
+          PY
+
+      - name: Upload immutable anatomy evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-a-${{ matrix.patient }}
+          path: |
+            outputs/m6_phase_a/shards/${{ matrix.patient }}.json
+            outputs/m6_phase_a/checkpoints/${{ matrix.patient }}.npz
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: anatomy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify source-pinned Phase A authorization
+        run: python scripts/m6_phase_a_calibration.py --verify-only
+
+      - name: Download all calibration anatomy evidence
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: "m6-phase-a-*"
+          path: phase-a-shards
+          merge-multiple: true
+
+      - name: Fit frozen source-specific HCP thresholds
+        id: aggregate
+        continue-on-error: true
+        run: |
+          python scripts/m6_phase_a_calibration.py \
+            --aggregate-root phase-a-shards \
+            --aggregate-output outputs/m6_phase_a/m6_phase_a_calibration.json
+
+      - name: Hash Phase A evidence
+        if: always()
+        run: |
+          mkdir -p outputs/m6_phase_a
+          find phase-a-shards -type f -name '*.json' -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > outputs/m6_phase_a/m6_phase_a_shards.sha256
+          if test -f outputs/m6_phase_a/m6_phase_a_calibration.json; then
+            sha256sum outputs/m6_phase_a/m6_phase_a_calibration.json \
+              > outputs/m6_phase_a/m6_phase_a_calibration.sha256
+          fi
+
+      - name: Upload final Phase A evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-phase-a-calibration
+          path: |
+            research/M6_PHASE_A_REQUEST.json
+            research/M6_SPLIT.json
+            research/M6_PHASE_A_GEOMETRY_FREEZE.json
+            docs/m6_calibration_protocol.md
+            docs/m6_calibration_protocol_amendment_1.md
+            outputs/m6_phase_a/m6_phase_a_calibration.json
+            outputs/m6_phase_a/m6_phase_a_calibration.sha256
+            outputs/m6_phase_a/m6_phase_a_shards.sha256
+            phase-a-shards
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Enforce primary Phase A outcome
+        if: always()
+        run: test "${{ steps.aggregate.outcome }}" = "success"
