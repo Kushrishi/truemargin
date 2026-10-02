@@ -219,7 +219,9 @@ def download_series(uid: str) -> bytes:
     return _download(f"{NBIA_IMAGE_URL}?{query}", timeout=180)
 
 
-def prepare_anatomy(image: sitk.Image, label: sitk.Image) -> tuple[np.ndarray, np.ndarray, tuple[float, ...]]:
+def prepare_anatomy(
+    image: sitk.Image, label: sitk.Image
+) -> tuple[np.ndarray, np.ndarray, tuple[float, ...]]:
     if image.GetDimension() != 3 or label.GetDimension() != 3:
         raise ValueError("M6 deformation preflight requires 3-D image and label")
     resampled = sitk.Resample(
