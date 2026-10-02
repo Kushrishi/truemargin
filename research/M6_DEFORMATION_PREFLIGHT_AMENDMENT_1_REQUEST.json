@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "milestone": "M6",
+  "authorized_mode": "deformation-only-preflight-amendment-1",
+  "result_bearing_authorized": false,
+  "registration_authorized": false,
+  "forward_registration_authorized": false,
+  "reverse_registration_authorized": false,
+  "sigma_computation_authorized": false,
+  "ice_computation_authorized": false,
+  "calibration_fit_authorized": false,
+  "evaluation_authorized": false,
+  "synthetic_deformation_authorized": true,
+  "roi_warp_authorized": true,
+  "point_sampling_authorized": true,
+  "dicom_download_authorized": true,
+  "partition": "training",
+  "expected_anatomies": 60,
+  "deformation_replicates_per_anatomy": 1,
+  "points_per_anatomy": 50,
+  "prior_preflight": {
+    "workflow_run_id": 37016774222,
+    "source_git_sha": "12c5a6ca42342339f10b185de42edb6e9c1f14ae",
+    "artifact_id": 11230183938,
+    "artifact_sha256": "051ae4f7df489551a8cf8968ab7b8c5d1069ca52bb3bf2646497898bf81372cd",
+    "audit_output_sha256": "7e7dcdf77093625e7aecabec62df224608237d34d239c23d70a5ba84d0ea9040",
+    "complete_anatomies": 56,
+    "failed_anatomies": 4,
+    "result_bearing_outcomes_observed": false
+  },
+  "amended_boundary_rule": {
+    "reference_margin_voxels": 8,
+    "reference_spacing": "minimum voxel spacing of the prepared anatomy",
+    "reference_margin_mm": "8 * min(spacing_xyz_mm)",
+    "axis_margin_rule": "ceil(reference_margin_mm / axis_spacing_mm)",
+    "minimum_axis_margin_voxels": 1,
+    "apply_to_all_60_anatomies": true
+  },
+  "unchanged_design": {
+    "split": "research/M6_SPLIT.json",
+    "crop_padding_voxels": 15,
+    "deformation_mesh_size": 4,
+    "raw_coefficient_mean": 0.0,
+    "raw_coefficient_std": 4.0,
+    "topology_scales": [
+      1.0,
+      0.95,
+      0.9,
+      0.85,
+      0.8,
+      0.75,
+      0.7,
+      0.65,
+      0.6,
+      0.55,
+      0.5
+    ],
+    "roi_label_union": [
+      1,
+      2
+    ],
+    "points_per_anatomy": 50,
+    "point_sampling": "uniform without replacement",
+    "seed_salt_prefix": "truemargin-m6-v1",
+    "seed_streams": [
+      "deformation",
+      "noise",
+      "points"
+    ]
+  },
+  "failure_discipline": {
+    "redraw_deformation_after_failure": false,
+    "extend_topology_scale_grid_after_failure": false,
+    "replace_failed_anatomy": false,
+    "change_split_after_failure": false,
+    "inspect_estimator_outcomes": false,
+    "change_boundary_rule_after_estimator_outcomes": false,
+    "infrastructure_retry_requires_same_committed_request": true
+  },
+  "expected_output": "outputs/m6_deformation_preflight_amendment_1.json",
+  "base_preflight": {
+    "source_git_sha": "12c5a6ca42342339f10b185de42edb6e9c1f14ae",
+    "script_path": "scripts/m6_deformation_preflight.py",
+    "script_blob_sha": "db46c5642a634b72dc708e1c115eec7b20a11335",
+    "request_path": "research/M6_DEFORMATION_PREFLIGHT_REQUEST.json",
+    "request_blob_sha": "3faf4d0c5be0601ab49cb0dba66005489a3ac6da"
+  }
+}
