@@ -1,63 +1,39 @@
 # Current research state
 
-**Updated:** 2026-10-01  
+**Updated:** 2026-10-02  
 **Status:** active public research program  
 **Publication status:** no submitted, accepted, or published paper
 
-This file is the canonical short-form state for TrueMargin.
+This file is the canonical short-form state for TrueMargin. Frozen protocols, amendments, and completed result records remain authoritative for their own scientific choices and outcomes.
 
 ## Research question
 
-When a deformable image-registration method reports local uncertainty, under what conditions does
-that signal contain useful information about true local spatial registration error?
+When a deformable image-registration method reports local uncertainty, under what conditions does that signal contain useful information about true local spatial registration error?
 
-The program separates:
+The program separates five questions:
 
 1. operational variability;
 2. pointwise error informativeness;
 3. numerical calibration;
-4. blind-spot/failure behavior;
-5. generalization.
+4. blind-spot and failure behavior;
+5. robustness and generalization.
 
-No one axis is treated as a substitute for the others.
+No one axis is treated as a substitute for another.
 
 ## Historical evidence boundary
 
-Earlier T2-to-DCE experiments used a zero-displacement reference assumption on real data. That
-value is not independently verified pointwise registration ground truth.
+Earlier T2-to-DCE experiments used a zero-displacement reference assumption on real data. That value is not independently verified pointwise registration ground truth.
 
-Historical real-data results may motivate hypotheses and operational checks, but they must not be
-described as definitive pointwise error validation. The older manuscript, product framing, and
-historical real-data narrative are archived and are not the current paper.
+Historical real-data results may motivate hypotheses and operational checks, but they are not definitive pointwise error validation. The older manuscript, product framing, and historical real-data narrative are archived and are not the current paper.
 
-## Prospective rebuild sequence
+## Completed estimator development
 
-### 1. Corrected input-intensity perturbation ensemble
+The prospective rebuild retained negative results rather than tuning around them.
 
-**Result:** failed prospective Gate A.
-
-No tested nonzero relative-intensity perturbation satisfied the frozen combination of completeness,
-non-inertness, and proxy-error degradation limits. The grid was not widened after observing the
-result.
-
-### 2. Registration convergence
-
-**Result:** mesh 3 / 15 maximum iterations selected.
-
-The prospectively specified convergence gate found 15 iterations to be the smallest candidate
-budget passing the frozen global field-stability criterion. This is a regime-specific operational
-result, not a universal convergence claim.
-
-### 3. Initialization-sensitivity ensemble
-
-**Result:** failed prospective promotion.
-
-No tested nonzero B-spline initialization perturbation strength passed the frozen
-completeness/non-inertness rule. The grid was not widened after observing the result.
-
-### 4. Registration-hyperparameter ensemble
-
-**Result:** passed operational promotion.
+- The corrected relative-intensity perturbation ensemble failed its frozen promotion gate.
+- The mesh-3, 15-iteration registration regime passed its prospective field-stability gate.
+- The initialization-sensitivity ensemble failed prospective promotion.
+- The nine-member registration-hyperparameter ensemble passed operational promotion.
 
 Frozen estimator:
 
@@ -66,41 +42,31 @@ Frozen estimator:
 - Cartesian members: 9
 - mesh size: 3
 - maximum iterations: 15
-- center_first: false
+- `center_first`: false
 
-The mechanism completed all nine members in all five frozen sensitivity patients and exceeded the
-predeclared repeatability/resolution floor in four of five. This established operational promotion
-only and did not itself establish pointwise informativeness.
+Operational promotion did not establish pointwise informativeness. That question was tested separately in M4.
 
-### 5. M4 hyperparameter known-ground-truth evaluation
+## M4 known-ground-truth result
 
-**Result:** completed successfully on 2026-09-26 under the frozen source-pinned authorization.
+M4 completed successfully on 2026-09-26 under the frozen source-pinned authorization.
 
-Result-bearing execution:
+Design:
 
-- workflow run: `36188222836`, successful attempt 3;
-- execution Git SHA: `9add89e5055ba45eb6c6b93c42da38615891a225`;
-- canonical artifact ID: `10896650804`;
-- canonical artifact digest:
-  `sha256:bd1f76e20c7e4591b5b3113c061c90534ec413bda0a242747625ed6d5f96b728`;
 - 10 held-out anatomies;
 - 3 deformation replicates per anatomy;
-- 30 / 30 complete primary cases;
-- 270 planned forward + 270 planned reverse registrations;
+- 30 of 30 complete primary cases;
+- 270 forward and 270 reverse registrations;
 - 50 frozen fixed-domain ROI locations per case.
 
 Primary anatomy-level result:
 
-- positive anatomy-level associations: **10 / 10**;
+- positive anatomy-level associations: **10 of 10**;
 - median Spearman association: **0.6840816**;
 - 10,000-replicate anatomy bootstrap 95% interval: **[0.3047779, 0.8283794]**;
 - exact one-sided anatomy sign-test: **p = 0.0009765625**;
-- median anatomy blind-spot rate under the frozen definition: **0.0**;
-- median high-vs-low uncertainty known-error delta: **1.7120 mm**.
+- median high-versus-low uncertainty known-error delta: **1.7120 mm**.
 
-This supports the bounded claim that, in the frozen synthetic known-deformation study, the promoted
-hyperparameter-ensemble sigma contains useful pointwise rank information about true local spatial
-registration error.
+This supports the bounded claim that the promoted hyperparameter-ensemble sigma contains useful pointwise rank information about true local spatial error in the frozen synthetic known-deformation study.
 
 Direct comparator context:
 
@@ -108,74 +74,90 @@ Direct comparator context:
 - same-modality residual: **0.2851**;
 - Jacobian deviation: **0.1689**.
 
-The paired target-minus-comparator anatomy bootstrap interval is wholly positive for residual and
-Jacobian deviation. The target-minus-ICE interval is **[-0.0903, 0.0736]**, so superiority over
-inverse-consistency error is not established.
+The paired target-minus-ICE bootstrap interval is **[-0.0903, 0.0736]**, so superiority over ICE is not established.
 
-Durable M4 records:
+## M5 failure characterization
 
-- `docs/hyperparameter_known_gt_result.md`;
-- `research/KNOWN_GT_M4_RESULT.json`.
+M5 completed on 2026-10-01 using only frozen M4 artifacts. No registration was rerun.
 
-### 6. M5 informativeness, comparator, and blind-spot characterization
+Post-primary findings:
 
-**Result:** complete on 2026-10-01 using only frozen M4 artifacts; no registrations rerun.
-
-All ten patient shard archive SHA-256 digests were verified against the original GitHub Actions
-artifact records. Their 30 checkpoint files preserved the 50 fixed-domain ROI locations per case,
-for 1,500 pointwise observations. Recomputed case-level rank, quartile-enrichment, and blind-spot
-metrics were required to agree with the canonical M4 case table.
-
-Post-primary descriptive findings:
-
-- 24 / 30 case-level sigma/error Spearman associations were positive and 6 / 30 were negative;
+- 24 of 30 case-level sigma/error associations were positive and 6 of 30 were negative;
 - median case-level Spearman was **0.6465**;
-- 39 / 1,500 target-sigma locations met the frozen high-error / low-sigma blind-spot rule;
-- blind spots occurred in 11 / 30 cases and 7 / 10 anatomies;
-- `aaa0069` was persistently weak across all three deformation replicates, with anatomy median
-  Spearman **0.0334**;
-- `aaa0053` replicate 1 had Spearman **-0.9020** and 10 / 50 target blind spots despite that
-  anatomy's strong median across replicates;
+- 39 of 1,500 target-sigma locations met the frozen high-error, low-sigma blind-spot rule;
+- blind spots occurred in 11 of 30 cases and 7 of 10 anatomies;
+- `aaa0069` was persistently weak across all three deformation replicates;
+- `aaa0053` replicate 1 had Spearman **-0.9020** and 10 of 50 target blind spots;
 - ICE had 34 blind-spot points among 1,350 points from its 27 valid cases;
-- 12 of the 39 target-sigma blind spots were also ICE blind spots;
-- ICE and same-modality residual each retained 3 / 30 method-invalid cases due to sampled points
-  outside the image domain; Jacobian deviation remained valid in 30 / 30 cases.
+- only 12 of the 39 target-sigma blind spots were also ICE blind spots.
 
-These findings do not alter the M4 inference. They establish that the positive anatomy-level result
-is heterogeneous across deformation instances and has real high-error/low-sigma failure locations.
-They do not establish sigma superiority over ICE or a benefit from combining signals.
+These findings do not alter the M4 inference. They show that the positive anatomy-level result is heterogeneous across deformation instances and includes real high-error, low-sigma failures.
 
-Durable M5 records:
+## M6 calibration state
 
-- `docs/m5_informativeness_characterization.md`;
-- `research/M5_CHARACTERIZATION.json`;
-- `research/M5_SOURCE_ARTIFACTS.json`;
-- `results/m5/`.
+M6 is active. Its design and pre-result gates are now substantially complete.
 
-## Current bottleneck
+Completed before any M6 estimator outcome:
 
-M1-M5 are complete. M6 is the next active design milestone.
+1. The official 80-subject NCI-ISBI image and annotation identity surface was audited successfully.
+2. All 60 official training anatomies passed the frozen geometry-eligibility gate.
+3. Exact identity comparison found zero SeriesInstanceUID and zero StudyInstanceUID overlap between the M4 cohort and the M6 challenge surface.
+4. A deterministic source-stratified split was frozen: 30 calibration and 30 evaluation anatomies, with 15 of each role within each source regime.
+5. The source-specific Hierarchical Conformal Prediction protocol was frozen prospectively.
+6. Sigma was frozen as the primary calibrated signal and ensemble-mean ICE as the secondary calibrated comparator.
+7. The first deformation-only preflight preserved four geometry failures caused by an infeasible inherited voxel-margin rule on thin through-plane images.
+8. A prospective physical-distance boundary-margin amendment was applied uniformly to all 60 anatomies.
+9. The amended deformation-only preflight completed **60 of 60** anatomies with zero failures.
 
-The next scientific question is **numerical calibration**, kept separate from ranking
-informativeness. Before any new result-bearing calibration or robustness execution:
+The amended preflight is recorded in `research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_RESULT.json` from workflow run `37050507332` and source SHA `a502466d4845be86780eb7a2306a96603ec4ab18`.
 
-1. define what numerical scale or interval the target sigma is allowed to claim;
-2. freeze calibration metrics, coverage targets, fitting/evaluation separation, and any
-   held-out/calibration partition prospectively;
-3. do not use M4-M5 failures to retune the completed estimator or sampled cases;
-4. keep robustness/generalization as a later, separately frozen milestone.
+No M6 forward registration, reverse registration, sigma, ICE, conformal score, HCP threshold, calibration result, or evaluation outcome has been observed.
 
-The completed M4 estimator definition, comparator definitions, cohort, seeds, cases, ROI rule,
-primary statistic, and M5 descriptive failure record must not be retuned based on the observed
-results.
+### Frozen M6 design
 
-## Current source-of-truth order
+- 60 official challenge training anatomies;
+- 30 calibration and 30 sealed evaluation anatomies;
+- 15 calibration and 15 evaluation anatomies per source regime;
+- one synthetic deformation per anatomy;
+- 50 frozen ROI points per anatomy;
+- source-specific HCP with anatomy as the group;
+- primary signal: nine-member hyperparameter-ensemble sigma;
+- secondary calibrated comparator: ensemble-mean ICE;
+- primary nominal coverage: 90%;
+- descriptive secondary nominal coverage: 80%;
+- 95% finite-sample sentinel retained even when its exact HCP threshold is infinite;
+- no primary abstention rule;
+- zero-signal handling frozen before outcomes.
 
-1. frozen prospective protocols, amendments, and completed M4/M5 result records in `docs/` and
-   `research/`;
-2. this file;
-3. `research/CLAIMS.md`;
-4. current README;
+### Current bottleneck
+
+The next allowed scientific operation is a separate, source-pinned **Phase A calibration request for only the 30 frozen calibration anatomies**.
+
+Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
+
+After Phase A, the complete calibration artifact and exact thresholds must be reviewed and sealed before a separate Phase B evaluation authorization can be created.
+
+The M4 estimator, M5 failure record, M6 split, ROI rule, deformation rule, score definition, zero-signal rule, and failure policy must not be changed in response to Phase A outcomes.
+
+## Not established
+
+TrueMargin does not currently establish:
+
+- numerical calibration or probabilistic coverage;
+- superiority over inverse-consistency error;
+- uniform reliability across deformation instances;
+- external-dataset generalization;
+- clinical validity or clinical usefulness;
+- a completed manuscript, preprint, or peer-reviewed publication.
+
+## Source-of-truth order
+
+When documents disagree, use this order:
+
+1. frozen prospective protocols, amendments, and completed result records;
+2. this file for current project-level state;
+3. `research/CLAIMS.md` for externally safe claim boundaries;
+4. `README.md` for the public summary;
 5. archived historical material.
 
-Website, GitHub profile, CV, and LinkedIn wording must never be stronger than this state.
+Website, GitHub profile, CV, and LinkedIn wording must not exceed the evidence recorded here and in `research/CLAIMS.md`.
