@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "milestone": "M6",
+  "record": "phase-a-diagnostic-1",
+  "workflow_run_id": 37065698410,
+  "workflow_source_git_sha": "97b414186e4016ec27b3efcc94ed7732f84fd19f",
+  "authorized_result_source_git_sha": "14bc46a0aeb6eb0afbc2b303f48f3c41a3b27f20",
+  "status": "incomplete-transport-failure",
+  "first_observed_failure": {
+    "patient_id": "Prostate3T-01-0013",
+    "job_id": 111033051595,
+    "stage": "official-training-label-acquisition",
+    "registration_started_for_failed_shard": false,
+    "error_class": "TransportUnavailable",
+    "failed_host": "wiki.cancerimagingarchive.net",
+    "urllib_result": "timeout",
+    "curl_result": "timeout"
+  },
+  "scientific_handling": {
+    "run_eligible_for_phase_a_aggregation": false,
+    "partial_shard_outputs_accepted": false,
+    "partial_numerical_results_inspected_before_repair_decision": false,
+    "evaluation_access_authorized": false,
+    "evaluation_results_inspected": false,
+    "cohort_change_authorized": false,
+    "estimator_change_authorized": false,
+    "comparator_change_authorized": false,
+    "calibration_method_change_authorized": false
+  },
+  "repair_boundary": {
+    "reason": "The result-bearing workflow independently reacquired the same legacy TCIA training-label ZIP in every anatomy shard. The first observed failure occurred before registration because the legacy attachment host timed out. The repair may change acquisition and caching only.",
+    "allowed_changes": [
+      "stage and hash-verify the already-frozen calibration label bytes once per workflow",
+      "reuse that immutable verified label cache across all calibration anatomy jobs",
+      "add bounded official transport fallbacks",
+      "improve failure diagnostics"
+    ],
+    "forbidden_changes": [
+      "change any calibration or evaluation anatomy",
+      "change any label byte without matching the pre-result identity hash",
+      "change deformation geometry",
+      "change the nine-member estimator",
+      "change ICE definition",
+      "change HCP scoring, weighting, or nominal coverage",
+      "inspect evaluation outcomes"
+    ]
+  },
+  "next_required_action": "Merge and validate a transport-only execution repair, obtain a new successful main CI source pin, then issue a new explicit Phase A authorization and rerun all 30 calibration anatomies uniformly from scratch."
+}
