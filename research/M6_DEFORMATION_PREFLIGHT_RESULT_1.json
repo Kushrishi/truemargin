@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "milestone": "M6",
+  "record": "deformation-only-preflight-result-1",
+  "status": "incomplete",
+  "workflow_run_id": 37016774222,
+  "source_git_sha": "12c5a6ca42342339f10b185de42edb6e9c1f14ae",
+  "artifact": {
+    "id": 11230183938,
+    "sha256": "051ae4f7df489551a8cf8968ab7b8c5d1069ca52bb3bf2646497898bf81372cd"
+  },
+  "audit_output_sha256": "7e7dcdf77093625e7aecabec62df224608237d34d239c23d70a5ba84d0ea9040",
+  "planned_anatomies": 60,
+  "complete_anatomies": 56,
+  "failed_anatomies": 4,
+  "complete_source_counts": {
+    "prostate_3t": 26,
+    "prostate_diagnosis": 30
+  },
+  "complete_role_counts": {
+    "calibration": 28,
+    "evaluation": 28
+  },
+  "topology_attenuated_anatomies": 0,
+  "failed_cases": [
+    {
+      "patient_id": "Prostate3T-01-0001",
+      "role": "evaluation",
+      "source": "prostate_3t",
+      "source_z_slices": 15,
+      "source_z_spacing_mm": 4.000000135235828,
+      "failure_stage": "fixed-domain ROI point eligibility",
+      "error": "fixed ROI has only 0 eligible voxels after 8-voxel margin; need 50"
+    },
+    {
+      "patient_id": "Prostate3T-01-0008",
+      "role": "calibration",
+      "source": "prostate_3t",
+      "source_z_slices": 15,
+      "source_z_spacing_mm": 3.9999999615681863,
+      "failure_stage": "fixed-domain ROI point eligibility",
+      "error": "fixed ROI has only 0 eligible voxels after 8-voxel margin; need 50"
+    },
+    {
+      "patient_id": "Prostate3T-01-0013",
+      "role": "calibration",
+      "source": "prostate_3t",
+      "source_z_slices": 15,
+      "source_z_spacing_mm": 4.000000119581299,
+      "failure_stage": "fixed-domain ROI point eligibility",
+      "error": "fixed ROI has only 0 eligible voxels after 8-voxel margin; need 50"
+    },
+    {
+      "patient_id": "Prostate3T-01-0028",
+      "role": "evaluation",
+      "source": "prostate_3t",
+      "source_z_slices": 15,
+      "source_z_spacing_mm": 4.000000097807143,
+      "failure_stage": "fixed-domain ROI point eligibility",
+      "error": "fixed ROI has only 0 eligible voxels after 8-voxel margin; need 50"
+    }
+  ],
+  "diagnosis": {
+    "cause": "The frozen 8-voxel symmetric boundary rule is mathematically infeasible on a 15-slice axis because it requires z >= 8 and z < 7 simultaneously.",
+    "outcome_dependent": false,
+    "registration_outcomes_observed": false,
+    "sigma_observed": false,
+    "ice_observed": false,
+    "calibration_outcomes_observed": false
+  },
+  "result_bearing_outcomes_observed": false,
+  "authorization_boundary": {
+    "result_bearing_authorized": false,
+    "registration_authorized": false,
+    "sigma_computation_authorized": false,
+    "ice_computation_authorized": false,
+    "calibration_fit_authorized": false,
+    "evaluation_authorized": false
+  },
+  "next_allowed_action": "Prospectively amend only the crop-boundary point-eligibility rule and rerun the same deformation-only preflight for all 60 anatomies."
+}

@@ -1,0 +1,186 @@
+name: TrueMargin M6 deformation preflight amendment 1
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "docs/m6_calibration_protocol_amendment_1.md"
+      - "research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_REQUEST.json"
+      - "research/M6_DEFORMATION_PREFLIGHT_RESULT_1.json"
+      - "scripts/m6_deformation_preflight.py"
+      - "scripts/m6_deformation_preflight_amendment_1.py"
+      - ".github/workflows/m6-deformation-preflight-amendment-1.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-deformation-preflight-amendment-1
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify amendment authorization and frozen base
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          request = json.loads(
+              Path("research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_REQUEST.json").read_text()
+          )
+          prior = json.loads(
+              Path("research/M6_DEFORMATION_PREFLIGHT_RESULT_1.json").read_text()
+          )
+
+          assert request["authorized_mode"] == "deformation-only-preflight-amendment-1"
+          assert request["expected_anatomies"] == 60
+          assert request["deformation_replicates_per_anatomy"] == 1
+          assert request["points_per_anatomy"] == 50
+          for key in (
+              "result_bearing_authorized",
+              "registration_authorized",
+              "forward_registration_authorized",
+              "reverse_registration_authorized",
+              "sigma_computation_authorized",
+              "ice_computation_authorized",
+              "calibration_fit_authorized",
+              "evaluation_authorized",
+          ):
+              assert request[key] is False, key
+
+          rule = request["amended_boundary_rule"]
+          assert rule["reference_margin_voxels"] == 8
+          assert rule["reference_margin_mm"] == "8 * min(spacing_xyz_mm)"
+          assert rule["axis_margin_rule"] == "ceil(reference_margin_mm / axis_spacing_mm)"
+          assert rule["minimum_axis_margin_voxels"] == 1
+          assert rule["apply_to_all_60_anatomies"] is True
+
+          assert prior["workflow_run_id"] == request["prior_preflight"]["workflow_run_id"]
+          assert prior["audit_output_sha256"] == request["prior_preflight"]["audit_output_sha256"]
+          assert prior["complete_anatomies"] == 56
+          assert prior["failed_anatomies"] == 4
+          assert prior["result_bearing_outcomes_observed"] is False
+
+          def blob(path: str) -> str:
+              return subprocess.check_output(["git", "hash-object", path], text=True).strip()
+
+          base = request["base_preflight"]
+          assert blob(base["script_path"]) == base["script_blob_sha"]
+          assert blob(base["request_path"]) == base["request_blob_sha"]
+
+          print("M6_DEFORMATION_AMENDMENT_1_AUTHORIZATION=PASS")
+          print("M6_DEFORMATION_CASES=60")
+          print("RESULT_BEARING_AUTHORIZED=False")
+          PY
+
+      - name: Run amended deformation-only preflight
+        id: preflight
+        continue-on-error: true
+        run: python scripts/m6_deformation_preflight_amendment_1.py
+
+      - name: Stamp and package amended preflight evidence
+        if: always()
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          output = Path("outputs/m6_deformation_preflight_amendment_1.json")
+          if not output.exists():
+              output.parent.mkdir(parents=True, exist_ok=True)
+              output.write_text(
+                  json.dumps(
+                      {
+                          "schema_version": 2,
+                          "milestone": "M6",
+                          "audit": "deformation-only-preflight-amendment-1",
+                          "status": "workflow_failed_before_preflight_record",
+                          "authorization_boundary": {
+                              "result_bearing_authorized": False,
+                              "registration_authorized": False,
+                              "sigma_computed": False,
+                              "ice_computed": False,
+                              "calibration_fit_performed": False,
+                              "evaluation_performed": False,
+                          },
+                      },
+                      indent=2,
+                      sort_keys=True,
+                  )
+                  + "\n"
+              )
+
+          payload = json.loads(output.read_text())
+
+          def blob(path: str) -> str:
+              return subprocess.check_output(["git", "hash-object", path], text=True).strip()
+
+          payload["provenance"] = {
+              "source_git_sha": os.environ["GITHUB_SHA"],
+              "workflow_run_id": int(os.environ["GITHUB_RUN_ID"]),
+              "base_preflight_script_blob_sha": blob("scripts/m6_deformation_preflight.py"),
+              "amendment_script_blob_sha": blob(
+                  "scripts/m6_deformation_preflight_amendment_1.py"
+              ),
+              "amendment_request_blob_sha": blob(
+                  "research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_REQUEST.json"
+              ),
+              "protocol_amendment_blob_sha": blob(
+                  "docs/m6_calibration_protocol_amendment_1.md"
+              ),
+              "prior_preflight_record_blob_sha": blob(
+                  "research/M6_DEFORMATION_PREFLIGHT_RESULT_1.json"
+              ),
+              "split_blob_sha": blob("research/M6_SPLIT.json"),
+          }
+          output.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+          digest = hashlib.sha256(output.read_bytes()).hexdigest()
+          Path("outputs/m6_deformation_preflight_amendment_1.sha256").write_text(
+              f"{digest}  {output.name}\n"
+          )
+          print(output.read_text())
+          print(Path("outputs/m6_deformation_preflight_amendment_1.sha256").read_text())
+          PY
+
+      - name: Upload amended preflight evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-deformation-preflight-amendment-1
+          path: |
+            docs/m6_calibration_protocol.md
+            docs/m6_calibration_protocol_amendment_1.md
+            research/M6_DEFORMATION_PREFLIGHT_REQUEST.json
+            research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_REQUEST.json
+            research/M6_DEFORMATION_PREFLIGHT_RESULT_1.json
+            research/M6_SPLIT.json
+            scripts/m6_deformation_preflight.py
+            scripts/m6_deformation_preflight_amendment_1.py
+            outputs/m6_deformation_preflight_amendment_1.json
+            outputs/m6_deformation_preflight_amendment_1.sha256
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce amended preflight outcome
+        if: always()
+        run: test "${{ steps.preflight.outcome }}" = "success"
