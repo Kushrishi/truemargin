@@ -61,9 +61,7 @@ def test_m6_split_is_loaded_without_dicom_identity_duplication():
 
 def test_m6_deformation_request_authorizes_geometry_only():
     request = json.loads(
-        (ROOT / "research" / "M6_DEFORMATION_PREFLIGHT_REQUEST.json").read_text(
-            encoding="utf-8"
-        )
+        (ROOT / "research" / "M6_DEFORMATION_PREFLIGHT_REQUEST.json").read_text(encoding="utf-8")
     )
     assert request["authorized_mode"] == "deformation-only-preflight"
     assert request["expected_anatomies"] == 60
