@@ -1,0 +1,50 @@
+{
+  "aggregate_sha256": "66e926e68912ae2e4fa039f5b78194346f7dd638f32230aad0a629f135087e55",
+  "calibration_source_git_sha": "59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c",
+  "calibration_workflow_run_id": 37114827455,
+  "date": "2026-10-03",
+  "evaluation_anatomies_accessed": 0,
+  "evaluation_authorized": false,
+  "ice_failures_retained": [
+    "Prostate3T-01-0013"
+  ],
+  "infinity_encoding": "positive_infinity represents the unchanged positive-infinity threshold, not a missing value",
+  "record": "m6-phase-a-threshold-seal",
+  "request_blob_sha": "e300105b98e23b593a7d2044d965f28630b48a34",
+  "schema_version": 1,
+  "threshold_changes_authorized": false,
+  "thresholds": {
+    "prostate_3t": {
+      "ice": {
+        "assessable": false
+      },
+      "sigma": {
+        "assessable": true,
+        "thresholds": {
+          "0.80": 26.359594160539075,
+          "0.90": 41.956170528034775,
+          "0.95": "positive_infinity"
+        }
+      }
+    },
+    "prostate_diagnosis": {
+      "ice": {
+        "assessable": true,
+        "thresholds": {
+          "0.80": 1.6803577222086956,
+          "0.90": 2.831813657011617,
+          "0.95": "positive_infinity"
+        }
+      },
+      "sigma": {
+        "assessable": true,
+        "thresholds": {
+          "0.80": 21.10737289132953,
+          "0.90": 52.08147866494837,
+          "0.95": "positive_infinity"
+        }
+      }
+    }
+  },
+  "units": "dimensionless error/signal multiplier; calibrated radii are millimeters"
+}

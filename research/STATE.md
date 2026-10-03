@@ -95,7 +95,7 @@ These findings do not alter the M4 inference. They show that the positive anatom
 
 ## M6 calibration state
 
-M6 Phase A calibration is complete and accepted. Exact source-specific thresholds are sealed; Phase B implementation has passed merged-source CI and a separate source-pinned request now authorizes held-out evaluation. No held-out coverage result is accepted yet.
+M6 calibration and held-out evaluation are complete and accepted. All 30 primary evaluation anatomies completed against unchanged sealed thresholds. See `research/M6_PHASE_B_RESULT.json` and `docs/m6_phase_b_evaluation_result.md`.
 
 Completed before any M6 estimator outcome:
 
@@ -147,7 +147,7 @@ The exact-recovery implementation and a separate uniform request were merged in 
 
 The workflow-local staging implementation was merged in PR 44 and passed merged-source CI run `37114568122` at source `59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c`. PR 45 separately pinned that source and authorized a fresh uniform run of all 30 calibration anatomies. Run `37114827455` passed source authorization, frozen-registry validation, and pre-result tests. All 30 original archives were staged with exact frozen SHA-256 equality and zero unresolved inputs before anatomy computation began.
 
-Run `37114827455` completed successfully. All 30 primary calibration anatomies are complete. The final artifact SHA-256, 33 manifest entries, five frozen blob pins, all input/geometry identities, numeric vector hashes, and complete-method ratio scores were verified. The aggregate replay is byte-identical, and its thresholds were independently recomputed with exact order statistics. See `research/M6_PHASE_A_RESULT.json`, `research/M6_PHASE_A_THRESHOLD_SEAL.json`, and `docs/m6_phase_a_calibration_result.md`. All four prior incomplete attempts remain ineligible. Evaluation remains sealed.
+Run `37114827455` completed successfully. All 30 primary calibration anatomies are complete. The final artifact SHA-256, 33 manifest entries, five frozen blob pins, all input/geometry identities, numeric vector hashes, and complete-method ratio scores were verified. The aggregate replay is byte-identical, and its thresholds were independently recomputed with exact order statistics. See `research/M6_PHASE_A_RESULT.json`, `research/M6_PHASE_A_THRESHOLD_SEAL.json`, and `docs/m6_phase_a_calibration_result.md`. All four prior incomplete attempts remain ineligible. At that Phase A checkpoint, evaluation remained sealed.
 
 Primary 90% sigma multipliers are **41.956170528034775** for `prostate_3t` and **52.08147866494837** for `prostate_diagnosis`. The 95% sentinel is positive infinity by the frozen K=15 rule. These are fitted calibration multipliers, not held-out coverage results.
 
@@ -155,7 +155,7 @@ ICE completed in 29 of 30 anatomies. `Prostate3T-01-0013` retains three reverse-
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 
-The complete Phase A artifact has been reviewed and its exact thresholds sealed. Phase B implementation was merged in PR 48 at `ee4034c58435ded3e2f9c283e38fa70d78f1d792` and passed merged-source CI `37122250493` with 242 tests. The separate `research/M6_PHASE_B_REQUEST.json` pins that implementation, all scientific identities, the exact threshold seal, and the calibration-matched numerical runtime. It authorizes only the 30 frozen evaluation anatomies, with no threshold refitting or scientific configuration change. Execution and input-staging status is recorded in `research/M6_PHASE_B_EXECUTION_STATUS.json`. No complete evaluation aggregate or held-out coverage claim has been accepted.
+The complete Phase A artifact has been reviewed and its exact thresholds sealed. Phase B implementation was merged in PR 48 at `ee4034c58435ded3e2f9c283e38fa70d78f1d792` and passed merged-source CI `37122250493` with 242 tests. The separate `research/M6_PHASE_B_REQUEST.json` pins that implementation, all scientific identities, the exact threshold seal, and the calibration-matched numerical runtime. It authorizes only the 30 frozen evaluation anatomies, with no threshold refitting or scientific configuration change. Execution and input-staging status is recorded in `research/M6_PHASE_B_EXECUTION_STATUS.json`. The complete evaluation aggregate has now passed independent verification and byte-identical replay. Primary 90% empirical coverage is 97.73% (3T) and 99.73% (Diagnosis), with median anatomy radii 3.93/4.36 mm. The retained Diagnosis outlier has a 70.69 mm median radius. The 95% radii are infinite. ICE completes in 29/30 evaluation anatomies; neither source supports a full-cohort calibrated ICE comparison.
 
 The M4 estimator, M5 failure record, M6 split, ROI rule, deformation rule, score definition, zero-signal rule, and failure policy must not be changed in response to Phase A outcomes.
 
@@ -163,7 +163,7 @@ The M4 estimator, M5 failure record, M6 split, ROI rule, deformation rule, score
 
 TrueMargin does not currently establish:
 
-- numerical calibration or probabilistic coverage;
+- exact nominal calibration or unconditional probabilistic coverage beyond the frozen hierarchical assumptions;
 - superiority over inverse-consistency error;
 - uniform reliability across deformation instances;
 - external-dataset generalization;
@@ -183,6 +183,6 @@ When documents disagree, use this order:
 Website, GitHub profile, CV, and LinkedIn wording must not exceed the evidence recorded here and in `research/CLAIMS.md`.
 
 
-## Active M6 Phase B execution checkpoint
+## Completed M6 Phase B execution checkpoint
 
-Run `37122716790` at execution commit `fd1070b1250e276ef0d17edc2d85622cb1e7a585` passed source authorization and pre-result tests. Its staging job verified all 30 evaluation DICOM archives against their original frozen SHA-256 digests, with zero unresolved inputs, and verified all 30 evaluation labels. Anatomy computation is active from those exact workflow-local inputs. No partial numerical evaluation output has been inspected and no complete aggregate or held-out coverage claim has been accepted. See `research/M6_PHASE_B_EXECUTION_STATUS.json` and [the workflow](https://github.com/Kushrishi/truemargin/actions/runs/37122716790).
+Run `37122716790` at execution commit `fd1070b1250e276ef0d17edc2d85622cb1e7a585` passed source authorization and pre-result tests. Its staging job verified all 30 evaluation DICOM archives against their original frozen SHA-256 digests, with zero unresolved inputs, and verified all 30 evaluation labels. The complete aggregate has been reviewed: 31 manifest entries, six frozen blob pins, all 30 JSON shards and all 30 numerical checkpoints agree, and source aggregation replays byte for byte. See `research/M6_PHASE_B_RESULT.json`, `research/M6_PHASE_B_EXECUTION_STATUS.json` and [the workflow](https://github.com/Kushrishi/truemargin/actions/runs/37122716790). Next, review the bounded M4–M6 contribution before authorizing further experiments.

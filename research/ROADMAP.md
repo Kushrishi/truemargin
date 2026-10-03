@@ -71,7 +71,7 @@ M5 narrows the interpretation to positive but heterogeneous rank informativeness
 
 ## M6: Numerical calibration
 
-**State:** Phase A complete and accepted; exact thresholds sealed. Phase B implementation is verified and its separate source-pinned request is committed; held-out execution and result review remain.
+**State:** Phase A and Phase B complete and accepted; unchanged thresholds and complete held-out evidence independently verified.
 
 The calibration design is prospectively frozen in `docs/m6_calibration_protocol.md`, `research/M6_PROTOCOL_FREEZE.json`, and `research/M6_SPLIT.json`.
 
@@ -108,7 +108,7 @@ ICE completed 29 of 30 anatomies. The frozen source-level policy makes `prostate
 
 ### Next operation
 
-Phase B implementation passed merged-source CI `37122250493` with 242 tests at source `ee4034c58435ded3e2f9c283e38fa70d78f1d792`. A separate prospective request pins that source and authorizes the 30 frozen evaluation anatomies against the exact sealed thresholds. Verify workflow-local inputs before computation, preserve every method failure, and independently review complete evaluation evidence before claiming coverage. See `research/M6_PHASE_B_REQUEST.json`, `research/M6_PHASE_B_EXECUTION_STATUS.json`, and `docs/m6_phase_b_execution.md`. No held-out coverage result is accepted yet.
+Assemble an M4–M6 claims and contribution review before further result-bearing work. Phase B gives conservative 90% empirical coverage (97.73%/99.73%) with median anatomy radii 3.93/4.36 mm, a retained 70.69 mm Diagnosis outlier, infinite 95% radii and no assessable full-cohort calibrated ICE comparison. See `research/M6_PHASE_B_RESULT.json` and `docs/m6_phase_b_evaluation_result.md`. No M7 execution is authorized by accepting this result.
 
 No threshold, split, ROI rule, deformation rule, score rule, estimator definition, or failure rule may change after Phase A outcomes are observed.
 

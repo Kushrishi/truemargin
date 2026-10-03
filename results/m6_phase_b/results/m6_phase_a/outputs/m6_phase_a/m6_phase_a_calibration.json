@@ -1,0 +1,852 @@
+{
+  "authorization_boundary": {
+    "evaluation_accessed": false,
+    "evaluation_authorized": false,
+    "phase_a_calibration_authorized": true,
+    "threshold_changes_after_phase_a_authorized": false
+  },
+  "calibration_anatomies": 30,
+  "evaluation_anatomies_accessed": 0,
+  "ice_failures": [
+    "Prostate3T-01-0013"
+  ],
+  "milestone": "M6",
+  "phase": "A",
+  "primary_failures": [],
+  "request_blob_sha": "e300105b98e23b593a7d2044d965f28630b48a34",
+  "schema_version": 1,
+  "shards": {
+    "Prostate3T-01-0002": {
+      "geometry_sha256": "9ea86bfe4079383f502b589078237b819604817b73a187ee642276b2895937c2",
+      "hashes": {
+        "ice_mm": "c4512e70a9a4a3541fc83c202662fcfd9e90e860aac12918506b8792c08069de",
+        "ice_scores": "6b033aad8d2728c44db3cbc7c74dcfe40649efa89a17795bcda969098b8e2b6a",
+        "known_error_mm": "f80d797e180249421141440a3ba77a5f75d2e12b97630c27b66d430f72b870af",
+        "sigma_mm": "6d20eba9c62f0270b51212c40c1eb8470b4a998bf8be60e9a51e1195445f47ec",
+        "sigma_scores": "52787c19d3b3583bf645a15936132dcd3e0915405915ea144ebfcedc41ac6571"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.203002521314946007603842576868"
+    },
+    "Prostate3T-01-0003": {
+      "geometry_sha256": "aea2fd36ae8ac8226d761861004fedfb429b91f9c57d4e921c78df129f78af25",
+      "hashes": {
+        "ice_mm": "07dbbedff0f3177fbac52e08421ccc12b7bf56413466ee23d69f9147c3c1f4b1",
+        "ice_scores": "d315af917cbfb8c17d094057c87bb14e3c1bad1cbab2e9116b87172e9bb773d4",
+        "known_error_mm": "ff4e13827aa02941b7a973d90a6d6208f7945ba7b50734c48b128549f48034c4",
+        "sigma_mm": "cf6c9b95c5371aebd7bf51b6f806f136a4b258c78b18522bb38e99e1be9b3ecb",
+        "sigma_scores": "45f80cf34e85f27dc9c60b50d1c3362a4f780c4bf08e8f63e291eac9cf7ef2c0"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.286972777734309209775498508493"
+    },
+    "Prostate3T-01-0004": {
+      "geometry_sha256": "50ec5607906ddd2e6913f0ef3294576966c0a3c7526590616a737d05ef213b26",
+      "hashes": {
+        "ice_mm": "48851cf920d471f4bec67d4c0cdaa68471e015ab8ca069ad586f7a12ba6991b5",
+        "ice_scores": "781063f9852b444e1d39420b94a5d9b13a2cfc8df59a1fd86d24209ab0cb0b9f",
+        "known_error_mm": "4b6bf2fa59973bce7755172a47105378659447ba359ce169ef5ee155b65922e0",
+        "sigma_mm": "1827322e180b4d29d7951e668372e6732b3b5f3a25303a840e0c7b8c41f704c0",
+        "sigma_scores": "fd0367d5bf41571a729c02da67e1420b6ccb2dc7d5603decb37e34d0c5eb962f"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.112694638881881463527415973833"
+    },
+    "Prostate3T-01-0005": {
+      "geometry_sha256": "e52707cd8b06f2738f3298944871343e3b041b149ea8b7be5948132c67dda6cb",
+      "hashes": {
+        "ice_mm": "6088245debab04932a526b95ff193dea9d2d98864e275e5fb3a6645ba8bba734",
+        "ice_scores": "22bbb9f6647f275f0bb9cd48916167fa66abec498c27bff89e2f0fc2681609d4",
+        "known_error_mm": "f60ba561d1a9ea171139e8515f5c499706369cd2b4838f921a5c22e3d04647ec",
+        "sigma_mm": "b0c785d7913138798c6c868ebbeb26f891b2f54ed429283b808c7218e5dc7d16",
+        "sigma_scores": "c010cf8354c46e104b262d02e80c1d42d1526e4a128208e67cce2c4dd80bc944"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.128424014954001627445680964593"
+    },
+    "Prostate3T-01-0006": {
+      "geometry_sha256": "3e8b5b459353a9d9a4d553f47eec032fed4ce09d50399b9bc8fd7eab8b43f3fd",
+      "hashes": {
+        "ice_mm": "100e366e045bc46c50fe4c78b88fc23af5800c4ad1762d1341e4d5e6a0c2992d",
+        "ice_scores": "627b9e7b16318ab3fdd0be37cf90e2123f3a91dcb3866cb83751cfe9dbde980a",
+        "known_error_mm": "e370d14fb76df07ac193cbc72cd90480f69c6f17b9aed677b1f8d5b91df2a742",
+        "sigma_mm": "df859eb9ea482d98e7b4fe05325f8e250510d8400279d1464c8333672f7f4851",
+        "sigma_scores": "675a3e98bcc4661b2df6633e3dda85cc7d45e31d898efc41d42c360a10716753"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.315447759171940778415750609237"
+    },
+    "Prostate3T-01-0007": {
+      "geometry_sha256": "583c22aa55e6d9968b33919332e7eaa9f976215090dbf8d904af73de10cc7278",
+      "hashes": {
+        "ice_mm": "eb23f58018a5443449977d49b1c2241febc98308bebde3f7ed6cf2884fb65998",
+        "ice_scores": "6cef5fd406fa9f944076850ed5e8388bdb24d20dc83d569e4d9b8788ea8935a8",
+        "known_error_mm": "5c422a32c5c7d546d39930ba0ecd96a846bdbabc67e7c0e046e95b6386b53404",
+        "sigma_mm": "60756c82cff229daaf23ca57aad1dd3d081791cafc3bdfa719f5d68d47206204",
+        "sigma_scores": "c8c1a294a994fbf7ce1f3d62de120cd6bde6302098165a51994d06fc3a54c2b6"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.913804375580641648101810595370"
+    },
+    "Prostate3T-01-0008": {
+      "geometry_sha256": "49641c829fed7ce3866f00818923d420b7ba761985c0d271c812783e9662f60b",
+      "hashes": {
+        "ice_mm": "1a9e4340c736208ef4d03ae2043e56b7f7140e0b398f76415be71246e064e631",
+        "ice_scores": "fa1aac745b0735c6ef580bf9b0bae203882bd3281189739fd602532d3b8b0fd8",
+        "known_error_mm": "2e08cdb2dcccc001092abe43ffe4c2d205015c82d794223206823cd67ff2a035",
+        "sigma_mm": "a239759d12bf660530372d9d67fb9618a3fa1d2812dd7b79f761165bc76c888b",
+        "sigma_scores": "c2470b5f106f1bd0550cc50141ee6ebe474850ab7c2c0c59f0d83b5d01612d04"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.177663837100464311301589289294"
+    },
+    "Prostate3T-01-0013": {
+      "geometry_sha256": "5bf731de5e207785a4a9b9c8dc35ac977e6b8a497311becb55f993f4078ce227",
+      "hashes": {
+        "ice_mm": null,
+        "ice_scores": null,
+        "known_error_mm": "f490d2c285ab6f8f755f09cdf325250ecfb6834114de447c1dbce997c7503307",
+        "sigma_mm": "5d5bf0172f3ca635d05f3279dbbe4721f64c6c101a1bfb750fd8d91c24aa41ee",
+        "sigma_scores": "1428bc37240732a931005ddb8033d8cf8949e22ce1640aa4645ca492f7a06fd4"
+      },
+      "ice_complete": false,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.155864588261016379928233518744"
+    },
+    "Prostate3T-01-0015": {
+      "geometry_sha256": "70ab2149c35e154e95de0f02bb9251cafc19283e347c1dc6a9e24d387d415a4a",
+      "hashes": {
+        "ice_mm": "2ae5a84bb1402b8d1d4310d390767ebe6c83242c9a887a2a88d6c513de2ff3df",
+        "ice_scores": "5f9d7abf3b68b3e950e5e5fc652c06936733bc9084f8f11b5f1aaca316d6328f",
+        "known_error_mm": "0d94b736c82ea73eec22b048ffac4cac83ed17c2ecde513416731c1b74c02f72",
+        "sigma_mm": "83dd2f9b80d602dd4851d1ba4bfca944c9e5c132b34d1c65672bc24e293cf4c4",
+        "sigma_scores": "ed38369083165520d49cb90b52cd28c3d055e304492aa6277bc94f924102992a"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.101688087736317305418918651173"
+    },
+    "Prostate3T-01-0016": {
+      "geometry_sha256": "28493dd00df56c57eac49db178a3993bd31bf82b983012d4592e1ac65760ad2b",
+      "hashes": {
+        "ice_mm": "554a7e00804d3ccc05ddedd65a6d05797a1540f97b223910fa9ed127eeda8f18",
+        "ice_scores": "f18ecb856a12510417049cd02cec5b714dd5947ebcd6f8c726a62cd844a61846",
+        "known_error_mm": "3a99edb7786485324394713e9804e967c79172a069895eef6d347b1d5935344c",
+        "sigma_mm": "cc58abfd4a834c41566b9339ffc74129ee830f8441946cb461c3b1cddd9b86e7",
+        "sigma_scores": "4e043f3a0a15204e72b0a02c3627d4de0bb590a1ed30d542d025e567793481de"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.100875285304586647581787393410"
+    },
+    "Prostate3T-01-0017": {
+      "geometry_sha256": "521a07d988f6f90035741eefa1258493700f539c11cae7c7d83772412062d4b1",
+      "hashes": {
+        "ice_mm": "e3589767e0950b48599a893aa3e059e5302ca3b0905a811a7229fb36114677b1",
+        "ice_scores": "56ee4b05e47339e52e9f87972b62fb5070f43609cba01dbc14fdf8eb7d1d8dda",
+        "known_error_mm": "b1f6c95b85910f48c296cf457346dfd339b936e9b82705f2c346cfff28c67930",
+        "sigma_mm": "e0f8d34a692fdbfa04a96b3588b42653d79717287ef18a3a1e7298dd1ee89197",
+        "sigma_scores": "10af8447dc0454088e3039e83834ba157347350a44c2609fb43cd4f47dd325a7"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.314764387969665962467416480115"
+    },
+    "Prostate3T-01-0021": {
+      "geometry_sha256": "af771e986b1241c1820228eb672d5c83d9394449d8cbb03ef385b570dc05d7fe",
+      "hashes": {
+        "ice_mm": "b964b69a8bf809be291bfd16c24bd49910163cb838c2e9dc18101b4393db2781",
+        "ice_scores": "a57f95d08160827d531c96973970fffd4accd592359ba63d0396024aab824840",
+        "known_error_mm": "2da68cda42ab348562ca7e44aee838759d3d5fe0a3236f10c1bc1c45a9429359",
+        "sigma_mm": "e3dcb2f63c3b8ac2b430b0574c10344f8a7135255de3eb71d1c4129e9a0855f5",
+        "sigma_scores": "b3fa917d0b6bc5cf8ca26f255b62da8814d4e8a484150e82985615c47a87869a"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.151525843775121462705014275076"
+    },
+    "Prostate3T-01-0022": {
+      "geometry_sha256": "01786a38b611b9799398112f1309c3541fec7bfe25a8993441c10d9094cab961",
+      "hashes": {
+        "ice_mm": "9828ed8f6b3d38ec03bf1bb4e8f69c7840abc49e36273ac0f5f257bb09b584b4",
+        "ice_scores": "b7a1af3f20432a0e7fbe366b8ead70e49aed0d6bf79defdecc03328dbc4507f4",
+        "known_error_mm": "e0a12f469a2ff3a52d351f2a5df07811dfa12025f8fbdc01d763c87c5428d0d1",
+        "sigma_mm": "a985d2a395d8d2a5b361cf3abea44dc8d825bb275f385125b63be031215cb4b4",
+        "sigma_scores": "d60aaa83b78708336f39ec8b319294b97d6295b4770dd0efabd35c2d8e677fa2"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.565010000407569484812794051333"
+    },
+    "Prostate3T-01-0024": {
+      "geometry_sha256": "6b27924b0770cdff25bf1d78ae9dc61a505793593ad9b1db1336b327cdedf408",
+      "hashes": {
+        "ice_mm": "577f82a2acc0e0b4af08234a054e88c15e787ce145a79f84517ce7e02a16e61e",
+        "ice_scores": "2c89b08f66bf5238a429abe8ace83bb953ca5175a3f718b0be6f165b8004b9e6",
+        "known_error_mm": "5db5dd8c94e2e83db643d3bd0771c0b2091a476f7573fad6024f81b28fe4a7d1",
+        "sigma_mm": "8da109ef619ba8ac90c47de0f20f015b2b62b5714ed4b131e6eb69df563eae20",
+        "sigma_scores": "0eb992443c36ef51bb2fd24a071954232fffadfd453f4611a43f30c301e37bb8"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.684786308205475843032269237007"
+    },
+    "Prostate3T-01-0026": {
+      "geometry_sha256": "a66ba52458434a3c302a0c1a24a7b37486576a4c965dcaa88c1b1b4bcba07dc4",
+      "hashes": {
+        "ice_mm": "7a0eb55f5dfbcad0e7fde737cd0922533d18c38b0915793a44a5ee93e254d873",
+        "ice_scores": "78964fe025f91cdf8db417782f1621c6b28e17160084a2d29715dd98424abc1c",
+        "known_error_mm": "7811677e40d06c3cc4986b24dbbf74fa0f1705fec7d9861b2b859456673f5dce",
+        "sigma_mm": "b46924d467a5f90117213507aa7a830e6652b005383ef32a87c82184240337e7",
+        "sigma_scores": "7785d1449c7b7b3ddd06ea9df43f83e0b6677f8580c4c54a0b16c93fc3d5b08b"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.7308.2101.211024383414588689125709203388"
+    },
+    "ProstateDx-01-0006": {
+      "geometry_sha256": "0f25e8064861472274fc3afd545fbbab97b12501236466c7521fdb86ddebd0cc",
+      "hashes": {
+        "ice_mm": "f754be3a7043729f67066b79f04895feb113d96162a39db15ce632c1ee1fb2c0",
+        "ice_scores": "65780db06e9ea9e1fa0eb210df443987a2741add631d168f2960b76b6c32977e",
+        "known_error_mm": "00907d1227be1e6525b1fe792e2fc5ad03feae0282cb96b4369de2f2d4fef369",
+        "sigma_mm": "00f4e27b714f8aff720de30e4a4d249864d7e32763fa5de12a1121a2b3e242d6",
+        "sigma_scores": "bb8be1bbf2dddc13d58e59fd7aede5152c3145edf2c373e3169a7aedbea40891"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.198926941656306408880901189680"
+    },
+    "ProstateDx-01-0011": {
+      "geometry_sha256": "78d06bac12d4fae824b76fc50cd82455af69836e96f7f003dc4ce4b6405a2012",
+      "hashes": {
+        "ice_mm": "caae5153d6fcd672658c3d367a876c2fb40990b0ff8944565f55b6e8b61ed5ed",
+        "ice_scores": "a33513824c5a2b1fffc4310794a5ffa6cefc05069e7f927bed709e99b6422977",
+        "known_error_mm": "06baaaef92eb298ee7ac5f9183b5d5d2627b401dafab93246c5f32b23b91d1cc",
+        "sigma_mm": "338d04c1841baa91917a5fa30eca7fc5fc7961a2fa953e90907c150755bc2741",
+        "sigma_scores": "64b813e636badc83f7160fd5a11eb6882b3143205ec761608932e06925deec24"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.602306478149735272752089070548"
+    },
+    "ProstateDx-01-0013": {
+      "geometry_sha256": "42d18654139d112ff5f55c605620fd3adb2640839a7a4a92140e75f9ede021b3",
+      "hashes": {
+        "ice_mm": "cea835129ad49cf99719aa0bb23e48249b5b42fd4a85006ccfbcc115262cd408",
+        "ice_scores": "877a17103f677300d865faf5d7973db1354706aaa5c695f6ec19a6258ced0b36",
+        "known_error_mm": "360cd4a839ac3ed5dd83698aa4cad86c1f54a9e75a43c18ddd01ba373c3e66c9",
+        "sigma_mm": "82ef0b208761d9e44446e7aef782349f52d7f933a6028f49970d5ad2bb9f58c6",
+        "sigma_scores": "a040f289ca0c58a0eeaefaa504da2b108fd31aea549779fa6bcbb164306404c5"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.249028522680041627184012861311"
+    },
+    "ProstateDx-01-0019": {
+      "geometry_sha256": "8b7ef66b9a7e2ffab7805b683871aa586fe8a76d4d846f99fc9d915835c30906",
+      "hashes": {
+        "ice_mm": "35c83f9aa7cbdbfad826b483011585135c865e2c4d2862c0f9b2519c7e235d94",
+        "ice_scores": "eb261fcccbf30568b4f85ba4c63135bab8f410eb7e265033efcff72fae98f4ec",
+        "known_error_mm": "65599134b3b7c0514cb4ff06fa45e54d09b2f361e140ecd9d72ec50537c9749e",
+        "sigma_mm": "c83c25a854ced85c0460d4bae562f9ad3eb925db1d323fcde051bb0e914baa5c",
+        "sigma_scores": "cdefff728984ed2e23a0a1d0ef390344546d6819b117bd82a6381b6686c4cb25"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.237441403731008512624407622620"
+    },
+    "ProstateDx-01-0028": {
+      "geometry_sha256": "c624d9a6012b739659f70105a62b594767c778dae9690e56a77f80d0a81027e2",
+      "hashes": {
+        "ice_mm": "1b63765b8ebdd310978e610043fdbd677e89620c0bfc51f627ab3902655d497d",
+        "ice_scores": "e8f00978b4b3cf02f4a8853eef6bcea03966a51650c6398cc5258a9120377d64",
+        "known_error_mm": "7b3d9dc1b0ff9059b9c3ea8b3dcd9e01eed4371ca0b01658db6e02e376b0f2ab",
+        "sigma_mm": "10372f1401b7d934a9204d72f660339b1ee1e4a736ff88c3b0fb58a8c75bdea3",
+        "sigma_scores": "4abfb11427b1fe07b2923f03c41a35cce3658577e06453dadefe1f5aa52c77b7"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.321683295027581463740634440231"
+    },
+    "ProstateDx-01-0038": {
+      "geometry_sha256": "adc2b19326eb78fd9f07a8ecff520c57697a627fae095db5f4064636f103cd4f",
+      "hashes": {
+        "ice_mm": "e3fd8705b76ddf7e95ab3ad7abd143e9d0347b2aa5be0c75d5712a936081636f",
+        "ice_scores": "382e746fef9469cba65c08d9bacdb0ac5a474eea31bfd8cb9189b8812e44d3d5",
+        "known_error_mm": "240aef51d40bd8b9ea984d88c2db9e7d34ff8d15464732c26d994518f9606b6e",
+        "sigma_mm": "42774231548728ed1bde19c7bea8fbcde9aff2408e67ca4c8b4872ff923d5aef",
+        "sigma_scores": "2d8dd1f7bc3720f96b57922af4c8988ad828382e89c6fff09cc9efae6173b290"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.263506104210887396073297185595"
+    },
+    "ProstateDx-01-0042": {
+      "geometry_sha256": "f0921537825876f5866b18f34a6fbf5ed0974dc99f81248336842f34891e9905",
+      "hashes": {
+        "ice_mm": "45e32c7f29d578caf3577991886bd7240221c5fc9ded51a1083bb5680ff727d7",
+        "ice_scores": "bcedce3030dac95502161f0e30eb375b792242357cb79933459818b4eae5d71c",
+        "known_error_mm": "19c398fbd8de4dfe6f543134b85e976f33fdd0d31aae0289c594daaf6e9fe553",
+        "sigma_mm": "f083da051a5f2a4b0a94ff7df3ce7527520f6ed6a905eeef264e7dc7c2d47841",
+        "sigma_scores": "161bc364f9c99e74f23408fc742f4151348237d762c168d6897e279db235ecaf"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.154935876569218494274463207874"
+    },
+    "ProstateDx-01-0054": {
+      "geometry_sha256": "be2030ebb91384578079cac5a12b605e260c040a1d406e2da89d2173a1256d1f",
+      "hashes": {
+        "ice_mm": "f1a6c15773dccf038c76fcd0a6ee33319612f568d79a0416b85ee4463fcb351a",
+        "ice_scores": "2ccfbc609c509e87b03f5c7196ac29eec70140347b9218b9cf445babdb6c9f2f",
+        "known_error_mm": "db0cd123f30d7605b99a420a6437e0737ebf261658b2b38cc2d556224a2dc294",
+        "sigma_mm": "3450de965b0b43fcd18eee99fd2fd3c869f12090184f857bf8f3ab5c08af4851",
+        "sigma_scores": "1a663a6d89384f93b517796c0c1a462955e96c775b49af7861a0a9ea524f91a0"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.178404581477351422191652493758"
+    },
+    "ProstateDx-01-0056": {
+      "geometry_sha256": "386832bac98b52ef0fc05b8c1f0fc303f0fe6bb8da88c7f64be977409963c1e3",
+      "hashes": {
+        "ice_mm": "ec98e41470f2f5405a82eb5a0f4d3cbec9fcf5aa83a14e4321519bdbb0fc5ba9",
+        "ice_scores": "d943d147598b2164497fa842adacf04033335fe040ff21709dab1a2fd1ccff73",
+        "known_error_mm": "6ec84257fbac73e8a48f2e42e7384099ca08d8947d114ea90501f721c53e153a",
+        "sigma_mm": "182dc53b505310cb2060a6b82c57f7ff50617ff5c0a363b55d3f445113fb6382",
+        "sigma_scores": "f7ecb5ec76a612d59142f7d3aa6c02a61f713da508f62ecb16ecd618bf6cc692"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.288964290939955886134869484363"
+    },
+    "ProstateDx-01-0060": {
+      "geometry_sha256": "3ddf1f655f0fc88b8d50d87d7e2c39a959f01bbc362b29933e64de6254d81ce1",
+      "hashes": {
+        "ice_mm": "a302d92c07079a9e3092aa2ce89163d79885c749408f020a7e44a64521059d9f",
+        "ice_scores": "688c97e23701418811c6aa394f3c46b15ac62a24bf55c5a025702ccce99b655c",
+        "known_error_mm": "8a78bfeee6212dbbafe550160c74ea52d5a9e0ed3a68cfe97b51d9c84f087f61",
+        "sigma_mm": "bb3880f46800ab17c9f1bc7a2ee8583d857f713432a97f43ba8228b5b28bcc41",
+        "sigma_scores": "b04a0989f85cf980fb9edf0c6656cb1ff27ff71de4c216e21f9c4ce1da324a34"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.142088177031706117786277531776"
+    },
+    "ProstateDx-01-0063": {
+      "geometry_sha256": "6296c6a88f159bc113e7a931218adaa1dd29cea38565dcee26364c7a3494ae9a",
+      "hashes": {
+        "ice_mm": "e83529e7869a3a22f29d6ec8fb3bdf07f1602491a31f50d8e2274a05b9f99a43",
+        "ice_scores": "e512431bb284c141b6b1cc14da0bf030ec1346cbac54116f76ed572279866ecc",
+        "known_error_mm": "4cc03cc757dc46e0520718e359ad5ec91b80d077d8f74e026685cc3c5dd2fc56",
+        "sigma_mm": "bf8583ef5482bf7acb7065e13c1ae54d4eb7d0a8f5afda6beb99727db82db7b5",
+        "sigma_scores": "0e90b9456d2df845bb47bb19b4fc5e57d39fd170256f4040994068f1d9324593"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.175492353944764831041697633058"
+    },
+    "ProstateDx-01-0073": {
+      "geometry_sha256": "b61eb0577cbc6c3528d8c97c66e33abe11ce4ff28bf3a103f75b1e4c55d8412f",
+      "hashes": {
+        "ice_mm": "aaeb40327cbf19dfda5791d2fcd105a5716f3ac6d58c6a2690583bbdb8f04d6f",
+        "ice_scores": "cdc98403926666bc77311d49e042b930cf34ec0617abb45199af1a165a637672",
+        "known_error_mm": "57dc9516b8c52cbd8ee319b98d6ba8edb8634462dca5056d82afee8913266f20",
+        "sigma_mm": "2f23e71a4e229b4c00c2540e54d6477dd5bea7eb4d7f090b068587136131702e",
+        "sigma_scores": "da9af7854fba330892adf3f717cd80c713cc95400452920ee559bdca272fe034"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.326028189546962018595220419451"
+    },
+    "ProstateDx-01-0076": {
+      "geometry_sha256": "045039a7d79c5a2763eba1b3fa851a94df8ad892a021fab3d5d26c0f53c4dae2",
+      "hashes": {
+        "ice_mm": "53787542d2f716bdc94ad43de7de1203732ef8654a920649a834679483345263",
+        "ice_scores": "7824deeb1b07017024f4dc4681ebfd8ca9a53b0af8db597cacff54164a71f129",
+        "known_error_mm": "ee367843648ed5968a1ba677e0a225b1c9983c3aaabc37f93c74adc88a2b465a",
+        "sigma_mm": "40c038e559d8a45864950ebe5a2a9c94922e25364623fbd3692ce3f9d0bbec3e",
+        "sigma_scores": "0e12d0d92a112b5703f270a8bdb146fd9d9c85c29ad52d3741a2360853a6d445"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.199813455570126811941957241667"
+    },
+    "ProstateDx-01-0080": {
+      "geometry_sha256": "fa3fb2233eabfe2abda2da0e42a1b5c1c5bcd3daac12751362eb927fa9ab1ba2",
+      "hashes": {
+        "ice_mm": "b6470041bbc56b08b2d5f14084056ab1f838cb129f6021816c02bce75cd2e096",
+        "ice_scores": "d26b6de56c5ff0ae64058ff1be3a737a8beed526afd5c8fb2ea53257d7ad48cc",
+        "known_error_mm": "c622ec7e8df6325408b7a578f57371fca8d12e44032bb8dfc4d7ee058e7dcab7",
+        "sigma_mm": "92b3dfdeef4d8564eb78f4b82a1d66ce9378e0695878b63c7eda3f7f31c91def",
+        "sigma_scores": "d89719f8af220a46679a5abede174405ce4354f01738e04c0f543a173df23e72"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.280500537279773417377484947262"
+    },
+    "ProstateDx-01-0082": {
+      "geometry_sha256": "b195058c0086ce037025e4ce17e249bec73854c613df36b03a1373b17d0de59e",
+      "hashes": {
+        "ice_mm": "97ee5a83ed1dcd7bc7b580267a89a0ffd4865ee7acd9b7b7e14f1f8a10bf8228",
+        "ice_scores": "b180ac516e7058630b8baeb00b6c10a2bc518b4bba828aee491b8466af197217",
+        "known_error_mm": "4757852ce74aa12009d78222e47d9b502d8b3f76fa4319c7b600c55ca2236edb",
+        "sigma_mm": "5a7d2ad9b4c55222408008bdc59c80080d748fa8fa85b2ee8ea0272ba6f06755",
+        "sigma_scores": "615b70b92800bf4e579e61c90d8eac5a77b167eb8e72f058ad70282f9afc0be2"
+      },
+      "ice_complete": true,
+      "primary_complete": true,
+      "series_uid": "1.3.6.1.4.1.14519.5.2.1.4792.2002.139189354359311968901003104339"
+    }
+  },
+  "source_ci_run_id": 37114568122,
+  "source_git_sha": "59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c",
+  "sources": {
+    "prostate_3t": {
+      "ice_assessable": false,
+      "methods": {
+        "ice": {
+          "assessable": false,
+          "reason": "one or more predeclared calibration anatomies are method-incomplete"
+        },
+        "sigma": {
+          "assessable": true,
+          "infinite_score_count": 0,
+          "score_hashes": {
+            "Prostate3T-01-0002": "52787c19d3b3583bf645a15936132dcd3e0915405915ea144ebfcedc41ac6571",
+            "Prostate3T-01-0003": "45f80cf34e85f27dc9c60b50d1c3362a4f780c4bf08e8f63e291eac9cf7ef2c0",
+            "Prostate3T-01-0004": "fd0367d5bf41571a729c02da67e1420b6ccb2dc7d5603decb37e34d0c5eb962f",
+            "Prostate3T-01-0005": "c010cf8354c46e104b262d02e80c1d42d1526e4a128208e67cce2c4dd80bc944",
+            "Prostate3T-01-0006": "675a3e98bcc4661b2df6633e3dda85cc7d45e31d898efc41d42c360a10716753",
+            "Prostate3T-01-0007": "c8c1a294a994fbf7ce1f3d62de120cd6bde6302098165a51994d06fc3a54c2b6",
+            "Prostate3T-01-0008": "c2470b5f106f1bd0550cc50141ee6ebe474850ab7c2c0c59f0d83b5d01612d04",
+            "Prostate3T-01-0013": "1428bc37240732a931005ddb8033d8cf8949e22ce1640aa4645ca492f7a06fd4",
+            "Prostate3T-01-0015": "ed38369083165520d49cb90b52cd28c3d055e304492aa6277bc94f924102992a",
+            "Prostate3T-01-0016": "4e043f3a0a15204e72b0a02c3627d4de0bb590a1ed30d542d025e567793481de",
+            "Prostate3T-01-0017": "10af8447dc0454088e3039e83834ba157347350a44c2609fb43cd4f47dd325a7",
+            "Prostate3T-01-0021": "b3fa917d0b6bc5cf8ca26f255b62da8814d4e8a484150e82985615c47a87869a",
+            "Prostate3T-01-0022": "d60aaa83b78708336f39ec8b319294b97d6295b4770dd0efabd35c2d8e677fa2",
+            "Prostate3T-01-0024": "0eb992443c36ef51bb2fd24a071954232fffadfd453f4611a43f30c301e37bb8",
+            "Prostate3T-01-0026": "7785d1449c7b7b3ddd06ea9df43f83e0b6677f8580c4c54a0b16c93fc3d5b08b"
+          },
+          "thresholds": {
+            "0.80": {
+              "alpha": 0.19999999999999996,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": true,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.8,
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  1.494761447980503,
+                  2.2324164523052894
+                ],
+                "median_of_anatomy_medians_mm": 1.6866370105581419,
+                "per_anatomy_median_radius_mm": [
+                  2.0319581793615757,
+                  1.4337464415269499,
+                  6.374121865680787,
+                  1.6443798867372337,
+                  1.1191924585572983,
+                  1.7146296284278166,
+                  2.5314360049911713,
+                  1.577338980117042,
+                  2.6930947355302965,
+                  1.5329032275906473,
+                  1.4566196683703585,
+                  2.376840954406573,
+                  1.1919842739147075,
+                  2.087991950204006,
+                  1.6866370105581419
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 26.359594160539075
+            },
+            "0.90": {
+              "alpha": 0.09999999999999998,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": true,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.9,
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  2.379189369466362,
+                  3.5533037721319616
+                ],
+                "median_of_anatomy_medians_mm": 2.6845948235352113,
+                "per_anatomy_median_radius_mm": [
+                  3.234237346747748,
+                  2.2820726991586406,
+                  10.145594136776689,
+                  2.6173347935720623,
+                  1.781401844009278,
+                  2.7291502533993173,
+                  4.029248707676029,
+                  2.5106267883812388,
+                  4.286558483560169,
+                  2.439899067795542,
+                  2.3184796711371822,
+                  3.7831820851926077,
+                  1.8972634843509448,
+                  3.323425459071316,
+                  2.6845948235352113
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 41.956170528034775
+            },
+            "0.95": {
+              "alpha": 0.050000000000000044,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": false,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.95,
+              "radius_efficiency": {
+                "infinite_radius_count": 750,
+                "iqr_of_anatomy_medians_mm": [
+                  Infinity,
+                  Infinity
+                ],
+                "median_of_anatomy_medians_mm": Infinity,
+                "per_anatomy_median_radius_mm": [
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": Infinity
+            }
+          },
+          "zero_signal_count": 0
+        }
+      },
+      "patients": [
+        "Prostate3T-01-0002",
+        "Prostate3T-01-0003",
+        "Prostate3T-01-0004",
+        "Prostate3T-01-0005",
+        "Prostate3T-01-0006",
+        "Prostate3T-01-0007",
+        "Prostate3T-01-0008",
+        "Prostate3T-01-0013",
+        "Prostate3T-01-0015",
+        "Prostate3T-01-0016",
+        "Prostate3T-01-0017",
+        "Prostate3T-01-0021",
+        "Prostate3T-01-0022",
+        "Prostate3T-01-0024",
+        "Prostate3T-01-0026"
+      ],
+      "primary_assessable": true
+    },
+    "prostate_diagnosis": {
+      "ice_assessable": true,
+      "methods": {
+        "ice": {
+          "assessable": true,
+          "infinite_score_count": 0,
+          "score_hashes": {
+            "ProstateDx-01-0006": "65780db06e9ea9e1fa0eb210df443987a2741add631d168f2960b76b6c32977e",
+            "ProstateDx-01-0011": "a33513824c5a2b1fffc4310794a5ffa6cefc05069e7f927bed709e99b6422977",
+            "ProstateDx-01-0013": "877a17103f677300d865faf5d7973db1354706aaa5c695f6ec19a6258ced0b36",
+            "ProstateDx-01-0019": "eb261fcccbf30568b4f85ba4c63135bab8f410eb7e265033efcff72fae98f4ec",
+            "ProstateDx-01-0028": "e8f00978b4b3cf02f4a8853eef6bcea03966a51650c6398cc5258a9120377d64",
+            "ProstateDx-01-0038": "382e746fef9469cba65c08d9bacdb0ac5a474eea31bfd8cb9189b8812e44d3d5",
+            "ProstateDx-01-0042": "bcedce3030dac95502161f0e30eb375b792242357cb79933459818b4eae5d71c",
+            "ProstateDx-01-0054": "2ccfbc609c509e87b03f5c7196ac29eec70140347b9218b9cf445babdb6c9f2f",
+            "ProstateDx-01-0056": "d943d147598b2164497fa842adacf04033335fe040ff21709dab1a2fd1ccff73",
+            "ProstateDx-01-0060": "688c97e23701418811c6aa394f3c46b15ac62a24bf55c5a025702ccce99b655c",
+            "ProstateDx-01-0063": "e512431bb284c141b6b1cc14da0bf030ec1346cbac54116f76ed572279866ecc",
+            "ProstateDx-01-0073": "cdc98403926666bc77311d49e042b930cf34ec0617abb45199af1a165a637672",
+            "ProstateDx-01-0076": "7824deeb1b07017024f4dc4681ebfd8ca9a53b0af8db597cacff54164a71f129",
+            "ProstateDx-01-0080": "d26b6de56c5ff0ae64058ff1be3a737a8beed526afd5c8fb2ea53257d7ad48cc",
+            "ProstateDx-01-0082": "b180ac516e7058630b8baeb00b6c10a2bc518b4bba828aee491b8466af197217"
+          },
+          "thresholds": {
+            "0.80": {
+              "alpha": 0.19999999999999996,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": true,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.8,
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  1.7617076587261962,
+                  2.666906499336955
+                ],
+                "median_of_anatomy_medians_mm": 2.0561452498696173,
+                "per_anatomy_median_radius_mm": [
+                  1.780444304711327,
+                  1.680254675145007,
+                  3.604327012073829,
+                  2.5332008708498543,
+                  1.4164137499439409,
+                  2.681062620290409,
+                  1.8516273981439575,
+                  1.3224085837035928,
+                  2.0561452498696173,
+                  2.126779538672632,
+                  1.7429710127410654,
+                  3.2302765757530256,
+                  2.6527503783835007,
+                  3.5934839288478386,
+                  1.80146228598618
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 1.6803577222086956
+            },
+            "0.90": {
+              "alpha": 0.09999999999999998,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": true,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.9,
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  2.9689081924088097,
+                  4.494389585610791
+                ],
+                "median_of_anatomy_medians_mm": 3.4651075318218423,
+                "per_anatomy_median_radius_mm": [
+                  3.000484022534757,
+                  2.831639997511374,
+                  6.07417237545738,
+                  4.269062906794202,
+                  2.3870035219632433,
+                  4.518246110990166,
+                  3.1204449412526474,
+                  2.228581829920694,
+                  3.4651075318218423,
+                  3.584143580540543,
+                  2.937332362282863,
+                  5.443805924323322,
+                  4.470533060231416,
+                  6.055899128780408,
+                  3.0359044604750247
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 2.831813657011617
+            },
+            "0.95": {
+              "alpha": 0.050000000000000044,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": false,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.95,
+              "radius_efficiency": {
+                "infinite_radius_count": 750,
+                "iqr_of_anatomy_medians_mm": [
+                  Infinity,
+                  Infinity
+                ],
+                "median_of_anatomy_medians_mm": Infinity,
+                "per_anatomy_median_radius_mm": [
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": Infinity
+            }
+          },
+          "zero_signal_count": 0
+        },
+        "sigma": {
+          "assessable": true,
+          "infinite_score_count": 0,
+          "score_hashes": {
+            "ProstateDx-01-0006": "bb8be1bbf2dddc13d58e59fd7aede5152c3145edf2c373e3169a7aedbea40891",
+            "ProstateDx-01-0011": "64b813e636badc83f7160fd5a11eb6882b3143205ec761608932e06925deec24",
+            "ProstateDx-01-0013": "a040f289ca0c58a0eeaefaa504da2b108fd31aea549779fa6bcbb164306404c5",
+            "ProstateDx-01-0019": "cdefff728984ed2e23a0a1d0ef390344546d6819b117bd82a6381b6686c4cb25",
+            "ProstateDx-01-0028": "4abfb11427b1fe07b2923f03c41a35cce3658577e06453dadefe1f5aa52c77b7",
+            "ProstateDx-01-0038": "2d8dd1f7bc3720f96b57922af4c8988ad828382e89c6fff09cc9efae6173b290",
+            "ProstateDx-01-0042": "161bc364f9c99e74f23408fc742f4151348237d762c168d6897e279db235ecaf",
+            "ProstateDx-01-0054": "1a663a6d89384f93b517796c0c1a462955e96c775b49af7861a0a9ea524f91a0",
+            "ProstateDx-01-0056": "f7ecb5ec76a612d59142f7d3aa6c02a61f713da508f62ecb16ecd618bf6cc692",
+            "ProstateDx-01-0060": "b04a0989f85cf980fb9edf0c6656cb1ff27ff71de4c216e21f9c4ce1da324a34",
+            "ProstateDx-01-0063": "0e90b9456d2df845bb47bb19b4fc5e57d39fd170256f4040994068f1d9324593",
+            "ProstateDx-01-0073": "da9af7854fba330892adf3f717cd80c713cc95400452920ee559bdca272fe034",
+            "ProstateDx-01-0076": "0e12d0d92a112b5703f270a8bdb146fd9d9c85c29ad52d3741a2360853a6d445",
+            "ProstateDx-01-0080": "d89719f8af220a46679a5abede174405ce4354f01738e04c0f543a173df23e72",
+            "ProstateDx-01-0082": "615b70b92800bf4e579e61c90d8eac5a77b167eb8e72f058ad70282f9afc0be2"
+          },
+          "thresholds": {
+            "0.80": {
+              "alpha": 0.19999999999999996,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": true,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.8,
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  2.2155035253763,
+                  4.809040516482294
+                ],
+                "median_of_anatomy_medians_mm": 3.1824352533655027,
+                "per_anatomy_median_radius_mm": [
+                  2.22264845495727,
+                  3.433389230766684,
+                  2.68385812390218,
+                  2.20835859579533,
+                  4.94846193858586,
+                  2.7652923178971927,
+                  10.891355483045338,
+                  2.006415120134161,
+                  9.781819452613764,
+                  4.669619094378728,
+                  3.630308114726215,
+                  3.1824352533655027,
+                  6.337988175079886,
+                  1.1500209241497985,
+                  0.2495351662117133
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 21.10737289132953
+            },
+            "0.90": {
+              "alpha": 0.09999999999999998,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": true,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.9,
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  5.46665376989678,
+                  11.866087852218193
+                ],
+                "median_of_anatomy_medians_mm": 7.85251365028094,
+                "per_anatomy_median_radius_mm": [
+                  5.484283557338813,
+                  8.471731128798716,
+                  6.622297352655298,
+                  5.449023982454747,
+                  12.210103844076015,
+                  6.8232325073514435,
+                  26.873922261334744,
+                  4.950737678738898,
+                  24.136192777214486,
+                  11.52207186036037,
+                  8.9576194819569,
+                  7.85251365028094,
+                  15.638696374891495,
+                  2.837624110481104,
+                  0.6157166267029017
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 52.08147866494837
+            },
+            "0.95": {
+              "alpha": 0.050000000000000044,
+              "calibration_groups": 15,
+              "calibration_scores": 750,
+              "finite": false,
+              "infinity_atom_mass": 0.0625,
+              "nominal_coverage": 0.95,
+              "radius_efficiency": {
+                "infinite_radius_count": 750,
+                "iqr_of_anatomy_medians_mm": [
+                  Infinity,
+                  Infinity
+                ],
+                "median_of_anatomy_medians_mm": Infinity,
+                "per_anatomy_median_radius_mm": [
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": Infinity
+            }
+          },
+          "zero_signal_count": 0
+        }
+      },
+      "patients": [
+        "ProstateDx-01-0006",
+        "ProstateDx-01-0011",
+        "ProstateDx-01-0013",
+        "ProstateDx-01-0019",
+        "ProstateDx-01-0028",
+        "ProstateDx-01-0038",
+        "ProstateDx-01-0042",
+        "ProstateDx-01-0054",
+        "ProstateDx-01-0056",
+        "ProstateDx-01-0060",
+        "ProstateDx-01-0063",
+        "ProstateDx-01-0073",
+        "ProstateDx-01-0076",
+        "ProstateDx-01-0080",
+        "ProstateDx-01-0082"
+      ],
+      "primary_assessable": true
+    }
+  },
+  "status": "complete"
+}

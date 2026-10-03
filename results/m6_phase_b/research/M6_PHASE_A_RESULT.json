@@ -1,0 +1,86 @@
+{
+  "artifact": {
+    "id": 11272139529,
+    "name": "truemargin-m6-phase-a-calibration",
+    "raw_images_retained_in_repository": false,
+    "retained_evidence_root": "results/m6_phase_a",
+    "zip_sha256": "e3bc6bb2b9985b1dd41777a77315953c6555a6fe2b2596c32db81c1b3ddf0c3e",
+    "zip_size_bytes": 110435240
+  },
+  "date": "2026-10-03",
+  "primary_complete_anatomies": 30,
+  "record": "m6-phase-a-calibration-result",
+  "request_blob_sha": "e300105b98e23b593a7d2044d965f28630b48a34",
+  "schema_version": 1,
+  "scientific_boundary": {
+    "clinical_validity_established": false,
+    "evaluation_anatomies_accessed": 0,
+    "evaluation_authorized": false,
+    "failed_comparator_case_rerun": false,
+    "held_out_coverage_established": false,
+    "incomplete_prior_runs_accepted": false
+  },
+  "secondary_ice_complete_anatomies": 29,
+  "source_ci_run_id": 37114568122,
+  "source_git_sha": "59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c",
+  "status": "complete-and-accepted",
+  "threshold_seal": "research/M6_PHASE_A_THRESHOLD_SEAL.json",
+  "verification": {
+    "aggregate_replay_byte_identical": true,
+    "aggregate_sha256": "66e926e68912ae2e4fa039f5b78194346f7dd638f32230aad0a629f135087e55",
+    "all_complete_method_ratio_scores_match": true,
+    "all_input_and_geometry_identities_match": true,
+    "all_numeric_array_hashes_match": true,
+    "evaluation_anatomies_accessed": 0,
+    "frozen_blob_pins_verified": 5,
+    "ice_failures": [
+      "Prostate3T-01-0013"
+    ],
+    "manifest_entries_verified": 33,
+    "patient_shards_verified": 30,
+    "record": "independent-phase-a-evidence-verification",
+    "replay_module_blobs": {
+      "hierarchical_conformal.py": "459d5f84d62188e1d6a8f5e2d0b3058ac3620f37",
+      "m6_phase_a.py": "8b6a9033b70a1542f24b252c549c74c960e981d9"
+    },
+    "request_blob_sha": "e300105b98e23b593a7d2044d965f28630b48a34",
+    "schema_version": 1,
+    "threshold_method": "stdlib exact ranks 640,720,760 in 750 scores plus infinity mass; each finite score mass 1/800",
+    "verified_thresholds": {
+      "prostate_3t": {
+        "ice": {
+          "assessable": false
+        },
+        "sigma": {
+          "assessable": true,
+          "thresholds": {
+            "0.80": 26.359594160539075,
+            "0.90": 41.956170528034775,
+            "0.95": "positive_infinity"
+          }
+        }
+      },
+      "prostate_diagnosis": {
+        "ice": {
+          "assessable": true,
+          "thresholds": {
+            "0.80": 1.6803577222086956,
+            "0.90": 2.831813657011617,
+            "0.95": "positive_infinity"
+          }
+        },
+        "sigma": {
+          "assessable": true,
+          "thresholds": {
+            "0.80": 21.10737289132953,
+            "0.90": 52.08147866494837,
+            "0.95": "positive_infinity"
+          }
+        }
+      }
+    }
+  },
+  "workflow_conclusion": "success",
+  "workflow_head_sha": "516ece8e32a1adfea04ce02e2137689d3550eb45",
+  "workflow_run_id": 37114827455
+}
