@@ -56,23 +56,15 @@ See `docs/m5_informativeness_characterization.md`, `research/M5_CHARACTERIZATION
 
 ## M6 calibration
 
-M6 asks a separate question: can the frozen signal be converted into a numerically interpretable upper radius for true local error on previously unseen anatomies under a prospectively separated calibration/evaluation design?
+M6 separates fitting error-radius multipliers from testing their coverage on unseen anatomies. Its frozen design uses 30 calibration and 30 sealed evaluation anatomies, with 15 of each role per source, one synthetic deformation, and 50 frozen ROI locations per anatomy.
 
-The pre-result design is now frozen.
+**Phase A is complete:** all 30 primary calibration anatomies completed in run `37114827455`. The complete artifact was verified, the aggregate replay matched byte for byte, and exact source-specific HCP thresholds were independently recomputed and sealed.
 
-- 60 official NCI-ISBI training anatomies passed the geometry-eligibility gate.
-- Exact DICOM identity comparison found no SeriesInstanceUID or StudyInstanceUID overlap with the M4 cohort.
-- The M6 split is fixed at 30 calibration and 30 evaluation anatomies, stratified 15/15 within each source regime.
-- Source-specific Hierarchical Conformal Prediction is frozen with anatomy as the group.
-- Sigma is the primary calibrated signal.
-- Ensemble-mean ICE is the secondary calibrated comparator.
-- The amended deformation-only preflight completed all **60 of 60** anatomies with zero failures.
+ICE completed 29 of 30 anatomies. The retained reverse-registration failure makes ICE calibration unassessable for the 3T source under the frozen policy; the diagnosis-source comparator remains assessable. The 95% HCP sentinel is positive infinity at 15 calibration groups.
 
-No M6 registration, sigma, ICE, conformal score, calibration threshold, or evaluation outcome has been observed yet.
+These are calibration-fit results. **Held-out coverage has not yet been tested.** The 30 evaluation anatomies remain sealed pending a separately pinned Phase B implementation and authorization. No clinical validity or superiority over ICE is claimed.
 
-The next allowed operation is a source-pinned **Phase A** run on only the 30 frozen calibration anatomies. The 30 evaluation anatomies remain sealed until the Phase A artifact and exact thresholds are reviewed and committed under a separate authorization.
-
-See `docs/m6_calibration_protocol.md`, `research/M6_PROTOCOL_FREEZE.json`, `research/M6_SPLIT.json`, and `research/M6_DEFORMATION_PREFLIGHT_AMENDMENT_1_RESULT.json` for the frozen M6 design and preflight evidence.
+See [the calibration result](docs/m6_phase_a_calibration_result.md), [accepted evidence](research/M6_PHASE_A_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json).
 
 ## Research discipline
 

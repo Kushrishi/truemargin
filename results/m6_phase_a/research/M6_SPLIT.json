@@ -1,0 +1,139 @@
+{
+  "schema_version": 2,
+  "date": "2026-10-02",
+  "milestone": "M6",
+  "record": "source-stratified-calibration-evaluation-split",
+  "assignment_rule": {
+    "scope": "60 official NCI-ISBI training anatomies only",
+    "stratification": "source_key",
+    "sources": [
+      "prostate_3t",
+      "prostate_diagnosis"
+    ],
+    "salt": "truemargin-m6-v1|split|",
+    "hash": "SHA-256(salt + patient_id)",
+    "order": "ascending hexadecimal digest, patient_id lexical tie-break",
+    "within_each_source": {
+      "calibration": 15,
+      "evaluation": 15
+    },
+    "outcome_information_used": false
+  },
+  "identity_policy": {
+    "duplicated_dicom_uids_in_split": false,
+    "reason": "DICOM StudyInstanceUID and SeriesInstanceUID remain authoritative in the completed source identity audit; the split record freezes roles only and does not duplicate identity metadata.",
+    "source_identity_audit": {
+      "workflow_run_id": 36944145013,
+      "source_git_sha": "0542b1c724692c642a93e7369849b1942d37db53",
+      "audit_output_sha256": "44c63ad874b3e6656f0bb57d56e39f04c20ecc1624bd77b62438c909e31f13d8"
+    }
+  },
+  "geometry_eligibility": {
+    "workflow_run_id": 36946204494,
+    "source_git_sha": "d4c0c294ea3082f31e58b58a421bb8ac3996e90f",
+    "audit_output_sha256": "85a40b0ca573db512be348d94805f2fa002291431697e43a8854ce01f9b8f61a",
+    "eligible_training_anatomies": 60
+  },
+  "roles": {
+    "prostate_3t": {
+      "calibration": [
+        "Prostate3T-01-0006",
+        "Prostate3T-01-0007",
+        "Prostate3T-01-0005",
+        "Prostate3T-01-0013",
+        "Prostate3T-01-0004",
+        "Prostate3T-01-0026",
+        "Prostate3T-01-0021",
+        "Prostate3T-01-0024",
+        "Prostate3T-01-0022",
+        "Prostate3T-01-0008",
+        "Prostate3T-01-0003",
+        "Prostate3T-01-0002",
+        "Prostate3T-01-0016",
+        "Prostate3T-01-0017",
+        "Prostate3T-01-0015"
+      ],
+      "evaluation": [
+        "Prostate3T-01-0030",
+        "Prostate3T-01-0012",
+        "Prostate3T-01-0011",
+        "Prostate3T-01-0009",
+        "Prostate3T-01-0018",
+        "Prostate3T-01-0023",
+        "Prostate3T-01-0029",
+        "Prostate3T-01-0019",
+        "Prostate3T-01-0028",
+        "Prostate3T-01-0014",
+        "Prostate3T-01-0025",
+        "Prostate3T-01-0020",
+        "Prostate3T-01-0027",
+        "Prostate3T-01-0001",
+        "Prostate3T-01-0010"
+      ]
+    },
+    "prostate_diagnosis": {
+      "calibration": [
+        "ProstateDx-01-0076",
+        "ProstateDx-01-0042",
+        "ProstateDx-01-0011",
+        "ProstateDx-01-0082",
+        "ProstateDx-01-0006",
+        "ProstateDx-01-0063",
+        "ProstateDx-01-0019",
+        "ProstateDx-01-0054",
+        "ProstateDx-01-0060",
+        "ProstateDx-01-0038",
+        "ProstateDx-01-0013",
+        "ProstateDx-01-0080",
+        "ProstateDx-01-0073",
+        "ProstateDx-01-0028",
+        "ProstateDx-01-0056"
+      ],
+      "evaluation": [
+        "ProstateDx-01-0044",
+        "ProstateDx-01-0005",
+        "ProstateDx-01-0074",
+        "ProstateDx-01-0043",
+        "ProstateDx-01-0035",
+        "ProstateDx-01-0052",
+        "ProstateDx-01-0059",
+        "ProstateDx-01-0014",
+        "ProstateDx-01-0023",
+        "ProstateDx-01-0001",
+        "ProstateDx-01-0058",
+        "ProstateDx-01-0055",
+        "ProstateDx-01-0021",
+        "ProstateDx-01-0071",
+        "ProstateDx-01-0075"
+      ]
+    }
+  },
+  "counts": {
+    "calibration": 30,
+    "evaluation": 30,
+    "by_source": {
+      "prostate_3t": {
+        "calibration": 15,
+        "evaluation": 15
+      },
+      "prostate_diagnosis": {
+        "calibration": 15,
+        "evaluation": 15
+      }
+    }
+  },
+  "m7_reserve": {
+    "official_partitions": [
+      "leaderboard",
+      "test"
+    ],
+    "subjects": 20,
+    "untouched_by_m6": true
+  },
+  "authorization_boundary": {
+    "registration_authorized": false,
+    "calibration_fit_authorized": false,
+    "evaluation_authorized": false,
+    "role_reassignment_after_outcomes_authorized": false
+  }
+}

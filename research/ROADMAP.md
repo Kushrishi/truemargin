@@ -71,7 +71,7 @@ M5 narrows the interpretation to positive but heterogeneous rank informativeness
 
 ## M6: Numerical calibration
 
-**State:** active. Exact historical calibration archives recovered; a new source-pinned execution gate remains.
+**State:** Phase A complete and accepted; exact thresholds sealed. Phase B implementation and separate source-pinned evaluation request remain.
 
 The calibration design is prospectively frozen in `docs/m6_calibration_protocol.md`, `research/M6_PROTOCOL_FREEZE.json`, and `research/M6_SPLIT.json`.
 
@@ -102,15 +102,13 @@ Completed pre-result gates:
 7. a prospective physical-distance boundary amendment was applied uniformly to all 60 anatomies;
 8. amended deformation-only preflight completed **60 of 60** anatomies with zero failures.
 
-Phase A run `37065698410` is incomplete and ineligible for aggregation. Uniform rerun `37075119713` failed label staging before any anatomy job started. Run `37078110203` passed label staging but all 30 anatomy jobs failed frozen-input validation. Aggregation was skipped, and nine artifact uploads also failed. No complete Phase A thresholds have been established, and evaluation remains sealed. See the three Phase A diagnostic records.
+Four earlier Phase A attempts remain incomplete and ineligible. Run `37114827455` completed all 30 primary calibration anatomies using exact frozen cached inputs. Its complete aggregate and all retained numerical records were verified; exact thresholds are now sealed in `research/M6_PHASE_A_THRESHOLD_SEAL.json`. See `research/M6_PHASE_A_RESULT.json` for provenance and `docs/m6_phase_a_calibration_result.md` for interpretation.
 
-### Next authorized operation
+ICE completed 29 of 30 anatomies. The frozen source-level policy makes `prostate_3t` ICE calibration unassessable; `prostate_diagnosis` ICE remains assessable. The failure is retained without dropping or rerunning the anatomy.
 
-All 30 historical calibration archives have now been recovered with exact equality to the unchanged frozen SHA-256 values. The original preflight artifact was independently verified. The bounded recovery alters only ZIP timestamp fields and accepts no candidate unless its entire archive reproduces the original digest. See `research/M6_INPUT_RECOVERY_RESULT.json` and `docs/m6_phase_a_input_recovery.md`.
+### Next operation
 
-After green merged implementation-source CI, a separate request may authorize a uniform fresh execution of all 30 frozen calibration anatomies. No input registry, protocol, estimator, split, geometry, or failure rule was changed. Evaluation remains sealed; earlier partial outputs remain ineligible for aggregation.
-
-Phase A may run the frozen estimator and comparator, compute calibration scores, and fit the predeclared source-specific HCP thresholds. The 30 evaluation anatomies remain sealed until the Phase A artifact and exact thresholds are reviewed and committed under a separate evaluation authorization.
+Implement Phase B using only the sealed thresholds and unchanged study rules. Verify cohort boundaries, method-specific failures, source-specific equal-anatomy coverage, and provenance before any held-out computation. After green merged implementation-source CI, commit a separate source-pinned evaluation request. No evaluation outcome has been accessed and no held-out coverage claim is established.
 
 No threshold, split, ROI rule, deformation rule, score rule, estimator definition, or failure rule may change after Phase A outcomes are observed.
 
@@ -157,3 +155,4 @@ Negative or inefficient calibration is valid evidence. M4 and M5 must not be ret
 The private `Kushrishi/truemargin-lab` repository is historical provenance only and must not resume active result-bearing development.
 
 Website, GitHub profile, CV, and LinkedIn wording may summarize only completed evidence and must not exceed `research/CLAIMS.md`.
+
