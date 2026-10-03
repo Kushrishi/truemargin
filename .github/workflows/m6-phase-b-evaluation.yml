@@ -1,0 +1,280 @@
+name: TrueMargin M6 Phase B evaluation
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "research/M6_PHASE_B_REQUEST.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: truemargin-m6-phase-b-evaluation
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      patients: ${{ steps.matrix.outputs.patients }}
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package and research dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata,dev]"
+
+      - name: Verify source-pinned Phase B authorization
+        run: python scripts/m6_phase_b_evaluation.py --verify-only
+
+      - name: Verify frozen input registry source identity
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("research/M6_PHASE_B_INPUT_FREEZE.json")
+          request = json.loads(Path("research/M6_PHASE_B_REQUEST.json").read_text(encoding="utf-8"))
+          source_sha = str(request["source_git_sha"])
+          frozen = subprocess.check_output(
+              ["git", "show", f"{source_sha}:{path.as_posix()}"]
+          )
+          current = path.read_bytes()
+          if current != frozen:
+              raise RuntimeError(
+                  "M6 Phase B input freeze differs from the authorized source commit"
+              )
+          print(f"M6_PHASE_B_INPUT_FREEZE=PINNED source_git_sha={source_sha}")
+          PY
+
+      - name: Re-run focused pre-result contracts
+        run: |
+          pytest -q tests/test_m6_phase_b.py tests/test_hierarchical_conformal.py \
+            tests/test_hyperparameter_known_gt.py tests/test_comparators.py
+
+      - name: Build evaluation-only matrix
+        id: matrix
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          from truemargin.m6_phase_b import evaluation_cohort
+          patients = sorted(evaluation_cohort(Path("research/M6_SPLIT.json")))
+          print("patients=" + json.dumps(patients, separators=(",", ":")))
+          PY
+
+  labels:
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package and transport dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify source-pinned Phase B authorization
+        run: python scripts/m6_phase_b_evaluation.py --verify-only
+
+      - name: Stage and verify frozen evaluation labels once
+        run: python scripts/stage_m6_phase_b_labels.py
+
+      - name: Acquire and verify all frozen evaluation archives before computation
+        id: staged_inputs
+        run: python scripts/recover_m6_phase_b_inputs.py --output-dir inputs/m6_phase_b/dicom
+
+      - name: Preserve acquisition record even when staging is incomplete
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-b-input-staging-record
+          path: inputs/m6_phase_b/dicom/recovery.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload verified workflow-local input cache
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-b-input-cache
+          path: |
+            inputs/m6_phase_b/training-labels.zip
+            inputs/m6_phase_b/training-labels.zip.sha256
+            inputs/m6_phase_b/label-transport.json
+            inputs/m6_phase_b/dicom
+          if-no-files-found: error
+          retention-days: 1
+
+  anatomy:
+    needs: [preflight, labels]
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        patient: ${{ fromJSON(needs.preflight.outputs.patients) }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package and execution dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify source-pinned Phase B authorization
+        run: python scripts/m6_phase_b_evaluation.py --verify-only
+
+      - name: Download verified workflow-local input cache
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: m6-phase-b-input-cache
+          path: inputs/m6_phase_b
+
+      - name: Run frozen evaluation anatomy
+        id: shard
+        continue-on-error: true
+        env:
+          PATIENT: ${{ matrix.patient }}
+          M6_EVALUATION_LABEL_ARCHIVE: ${{ github.workspace }}/inputs/m6_phase_b/training-labels.zip
+          M6_EVALUATION_DICOM_CACHE: ${{ github.workspace }}/inputs/m6_phase_b/dicom
+        run: python scripts/m6_phase_b_evaluation.py --patient "$PATIENT"
+
+      - name: Validate evaluation shard provenance and cache identity
+        if: always()
+        env:
+          PATIENT: ${{ matrix.patient }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from truemargin.m6_phase_a import git_blob_sha
+          patient = os.environ["PATIENT"]
+          row = json.loads((Path("outputs/m6_phase_b/shards") / f"{patient}.json").read_text())
+          frozen = json.loads(Path("research/M6_PHASE_B_INPUT_FREEZE.json").read_text())["evaluation"][patient]
+          request = json.loads(Path("research/M6_PHASE_B_REQUEST.json").read_text())
+          assert row["patient_id"] == patient and row["phase"] == "B"
+          assert row["evaluation_accessed"] is True
+          assert row["source_git_sha"] == request["source_git_sha"]
+          assert row["request_blob_sha"] == git_blob_sha(Path("research/M6_PHASE_B_REQUEST.json"))
+          assert row["threshold_seal_blob_sha"] == git_blob_sha(Path("research/M6_PHASE_A_THRESHOLD_SEAL.json"))
+          for key, value in frozen.items():
+              assert row[key] == value
+          if row["primary_complete"]:
+              assert (Path("outputs/m6_phase_b/checkpoints") / f"{patient}.npz").is_file()
+          PY
+
+      - name: Upload immutable anatomy evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-b-${{ matrix.patient }}
+          path: |
+            outputs/m6_phase_b/shards/${{ matrix.patient }}.json
+            outputs/m6_phase_b/checkpoints/${{ matrix.patient }}.npz
+          if-no-files-found: error
+          retention-days: 90
+
+  aggregate:
+    needs: anatomy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[realdata]"
+
+      - name: Verify source-pinned Phase B authorization
+        run: python scripts/m6_phase_b_evaluation.py --verify-only
+
+      - name: Download all evaluation anatomy evidence
+        uses: actions/download-artifact@v8.0.1
+        with:
+          pattern: "m6-phase-b-Prostate*"
+          path: phase-b-shards
+          merge-multiple: true
+
+      - name: Evaluate exact sealed thresholds without fitting
+        id: aggregate
+        continue-on-error: true
+        run: |
+          python scripts/m6_phase_b_evaluation.py \
+            --aggregate-root phase-b-shards \
+            --aggregate-output outputs/m6_phase_b/m6_phase_b_evaluation.json
+
+      - name: Hash Phase B evidence
+        if: always()
+        run: |
+          mkdir -p outputs/m6_phase_b
+          find phase-b-shards -type f -name '*.json' -print0 \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > outputs/m6_phase_b/m6_phase_b_shards.sha256
+          if test -f outputs/m6_phase_b/m6_phase_b_evaluation.json; then
+            sha256sum outputs/m6_phase_b/m6_phase_b_evaluation.json \
+              > outputs/m6_phase_b/m6_phase_b_evaluation.sha256
+          fi
+
+      - name: Upload final Phase B evidence
+        if: always()
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: truemargin-m6-phase-b-evaluation
+          path: |
+            research/M6_PHASE_B_REQUEST.json
+            research/M6_SPLIT.json
+            research/M6_PHASE_B_INPUT_FREEZE.json
+            research/M6_PHASE_A_THRESHOLD_SEAL.json
+            research/M6_PHASE_A_RESULT.json
+            results/m6_phase_a/outputs/m6_phase_a/m6_phase_a_calibration.json
+            docs/m6_phase_b_execution.md
+            docs/m6_calibration_protocol.md
+            docs/m6_calibration_protocol_amendment_1.md
+            outputs/m6_phase_b/m6_phase_b_evaluation.json
+            outputs/m6_phase_b/m6_phase_b_evaluation.sha256
+            outputs/m6_phase_b/m6_phase_b_shards.sha256
+            phase-b-shards
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Enforce primary Phase B outcome
+        if: always()
+        run: test "${{ steps.aggregate.outcome }}" = "success"
