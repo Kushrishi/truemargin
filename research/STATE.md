@@ -1,7 +1,7 @@
 # Current research state
 
 **Updated:** 2026-10-03 UTC
-**Status:** completed M4–M6 case study; new experiments paused pending a distinct scientific justification
+**Status:** completed M4–M6 case study; retained-data scale development continues; new registration experiments require a distinct scientific justification
 **Publication status:** no submitted, accepted, or published paper
 
 This file is the canonical short-form state for TrueMargin. Frozen protocols, amendments, and completed result records remain authoritative for their own scientific choices and outcomes.
@@ -198,3 +198,7 @@ The concise M4–M6 technical report and four evidence panels are complete in `d
 The October 3 post-outcome diagnostic audit covers all 60 M6 primary anatomies without new registration, threshold refitting or exclusions. All 31 Diagnosis calibration scores at or above the sealed 90% cutoff belong to `ProstateDx-01-0082`, whose median spread is 0.01182 mm and median error is 0.75995 mm. The evaluation radius tail is a different behavior: `ProstateDx-01-0043` has a within-case rank correlation of 0.97455 but a mean calibrated radius of 79.46 mm, contributing 51.62% of the source radius sum.
 
 The analysis checks retained vector digests and geometry identities, but missing member-level and optimizer records prevent identifying the mechanism. This is descriptive evidence, not a new confirmatory endpoint or a reason to delete either anatomy. The bounded diagnostic note is complete; M7 remains unexecuted. A fresh utility study is conditional on a distinct question and prospective design. See [the note](../docs/m6_failure_diagnostics.md) and `results/m6_exploratory/failure_diagnostics.json`.
+
+## Exploratory error-scale development
+
+PR 55 adds the nonnegative affine scale comparison and all three fit-block records. The same previously observed evaluation cohort is reused; this is not confirmation. Mean radii are smaller than spread-only in six source/block settings at different coverage, and constant comparisons are sometimes close. Accepted thresholds and results are unchanged. See [development results](../docs/m6_scale_development.md) and [the continuation architecture](../docs/continuation_architecture.md) for calibration-only validation before a fresh study.
