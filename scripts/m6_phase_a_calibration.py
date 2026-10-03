@@ -11,6 +11,7 @@ import argparse
 import json
 import runpy
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -33,6 +34,7 @@ from truemargin.m6_phase_a import (
     load_split,
     verify_request,
 )
+from truemargin.m6_zip_recovery import recover_frozen_zip
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REQUEST_PATH = REPO_ROOT / "research" / "M6_PHASE_A_REQUEST.json"
@@ -52,6 +54,7 @@ AMENDED = runpy.run_path(str(AMENDED_PREFLIGHT_PATH), run_name="m6_phase_a_amend
 RESULT_DEFINING_PATHS = (
     "scripts/stage_m6_phase_a_labels.py",
     "src/truemargin/m6_input_identity.py",
+    "src/truemargin/m6_zip_recovery.py",
     "research/M6_PHASE_A_INPUT_FREEZE.json",
     "scripts/m6_phase_a_calibration.py",
     "scripts/m6_deformation_preflight.py",
@@ -115,6 +118,12 @@ def load_exact_input(
         input_kind="label",
     )
     dicom_payload = BASE["download_series"](series_uid)
+    dicom_payload, _ = recover_frozen_zip(
+        dicom_payload,
+        frozen["dicom_zip_sha256"],
+        start=datetime(2026, 10, 2, 18, 53, 44),
+        end=datetime(2026, 10, 2, 18, 54, 58),
+    )
     dicom_sha = assert_frozen_digest(
         dicom_payload,
         frozen["dicom_zip_sha256"],

@@ -9,3 +9,7 @@ Two fresh official downloads of the same calibration series had identical filena
 The acquisition guard now checks the frozen label and DICOM ZIP digests before image decoding, synthetic-case construction, and registration. A mismatch remains a failure; no digest is refreshed, normalized, or substituted. The original input registry remains unchanged.
 
 The next permitted work is to recover the original frozen archives or establish historical byte identity from retained provenance. No new calibration request is issued by this guard correction. Any later execution requires green source CI, a separate source-pinned request, and a uniform 30-anatomy run. Evaluation and Phase B remain sealed. Numerical calibration arrays, sigma/ICE scores, and HCP outcomes were not inspected to diagnose this failure.
+
+## Subsequent exact recovery
+
+On 2026-10-03 UTC, all 30 historical calibration ZIP digests were reproduced exactly from official payload bytes through a bounded timestamp-field search. See `m6_phase_a_input_recovery.md` and `research/M6_INPUT_RECOVERY_RESULT.json`. The original registry and digest guard remain unchanged. A new source-pinned request after green CI is still required before calibration.
