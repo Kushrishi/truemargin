@@ -33,6 +33,8 @@
 | Registration uncertainty generally predicts registration error. | **Unsupported** | The positive M4 result is conditional on one frozen estimator, registration regime, anatomy source, deformation design, and sampling rule. M5 also shows deformation-specific inversions. |
 | TrueMargin has a completed paper, preprint, or peer-reviewed publication. | **False** | No current manuscript or preprint has been completed or submitted. Historical drafts are superseded. |
 
+| M6 establishes an efficiency advantage for spatially adaptive sigma radii over a constant radius. | **Unsupported** | A post-outcome exploratory check gives smaller constant radii with different achieved coverage. It is not coverage-matched, does not establish statistical superiority, and does not change accepted M6 thresholds or endpoints. |
+
 ## Public-use rule
 
 A manuscript, README, website, CV, GitHub profile, or LinkedIn claim may not exceed the strongest wording supported here. Process gates such as identity resolution, eligibility, protocol freeze, and deformation preflight must not be described as calibration or validation outcomes.

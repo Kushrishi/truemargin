@@ -348,3 +348,15 @@ retuning.
 No primary statistic, comparator statistic, anatomy effect, p-value, bootstrap
 interval, or blind-spot outcome had been observed when this authorization was
 frozen.
+
+
+## 2026-10-03 — Contribution decision after accepted M6
+
+- Rechecked the closest ensemble, conformal-registration, quality-metric and hierarchical-inference literature against completed M4–M6 evidence.
+- Kept the inherited methods and study-specific claims distinct from novelty.
+- Ran a separately labeled post-outcome constant-radius efficiency exploration using retained calibration errors only; no new registration, primary threshold change or confirmatory endpoint.
+- Did not establish adaptive numerical efficiency, ICE superiority or clinical usefulness.
+- Chose a bounded technical report and evidence figures as the next research deliverable. M7 remains paused; no new image acquisition or result-bearing request is created.
+- Prioritize the bounded C++ inference/replay engineering application after the report release. Publication suitability still requires expert assessment; no outreach has been authorized or performed.
+
+See `docs/m4_m6_contribution_review.md` and `results/m6_exploratory/constant_radius_comparison.json`.

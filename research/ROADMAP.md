@@ -108,13 +108,13 @@ ICE completed 29 of 30 anatomies. The frozen source-level policy makes `prostate
 
 ### Next operation
 
-Assemble an M4–M6 claims and contribution review before further result-bearing work. Phase B gives conservative 90% empirical coverage (97.73%/99.73%) with median anatomy radii 3.93/4.36 mm, a retained 70.69 mm Diagnosis outlier, infinite 95% radii and no assessable full-cohort calibrated ICE comparison. See `research/M6_PHASE_B_RESULT.json` and `docs/m6_phase_b_evaluation_result.md`. No M7 execution is authorized by accepting this result.
+The bounded M4–M6 technical report and evidence figures are complete in `docs/technical_report.md`. Proceed with the bounded engineering application; further research requires a specific scientific gate. The October 3 contribution review does not justify further calibration development or M7 execution yet; see `docs/m4_m6_contribution_review.md`. Phase B gives conservative 90% empirical coverage (97.73%/99.73%) with median anatomy radii 3.93/4.36 mm, a retained 70.69 mm Diagnosis outlier, infinite 95% radii and no assessable full-cohort calibrated ICE comparison. See `research/M6_PHASE_B_RESULT.json` and `docs/m6_phase_b_evaluation_result.md`. No M7 execution is authorized by accepting this result.
 
 No threshold, split, ROI rule, deformation rule, score rule, estimator definition, or failure rule may change after Phase A outcomes are observed.
 
 ## M7: Robustness and generalization
 
-**State:** downstream and contingent on M6
+**State:** paused after the M4–M6 contribution review; no protocol or execution authorization
 
 The 10 official leaderboard and 10 official test subjects remain untouched for a separately frozen robustness study. They belong to the same challenge and source collections and must not be described as an independent external-validation dataset.
 
@@ -122,7 +122,7 @@ Any broader external-generalization claim requires a genuinely independent subst
 
 ## M8: Paper and reproducibility release
 
-**State:** contingent on evidence
+**State:** bounded technical report and evidence figures complete; manuscript/preprint decision remains unresolved
 
 Deliverables:
 
