@@ -95,7 +95,7 @@ These findings do not alter the M4 inference. They show that the positive anatom
 
 ## M6 calibration state
 
-M6 is active and has entered source-pinned Phase A calibration execution.
+M6 Phase A calibration is complete and accepted. Exact source-specific thresholds are sealed; Phase B held-out evaluation is not yet authorized.
 
 Completed before any M6 estimator outcome:
 
@@ -113,7 +113,7 @@ The amended preflight is recorded in `research/M6_DEFORMATION_PREFLIGHT_AMENDMEN
 
 The first Phase A attempt, run `37065698410`, completed 26 anatomy jobs but remained incomplete after four pre-result label-transport failures. Its partial outputs are preserved and are not accepted for aggregation. Partial numerical outputs were not inspected to select the transport repair.
 
-The uniform rerun, `37075119713`, passed preflight but failed centralized legacy-host label staging. All anatomy and aggregate jobs were skipped. No complete Phase A calibration artifact or thresholds have been established. Evaluation remains sealed. These failures are recorded in `M6_PHASE_A_DIAGNOSTIC_1.json` and `M6_PHASE_A_DIAGNOSTIC_2.json`.
+The uniform rerun, `37075119713`, passed preflight but failed centralized legacy-host label staging. All anatomy and aggregate jobs were skipped. At that historical checkpoint, no complete Phase A calibration artifact or thresholds existed. Those failures are recorded in `M6_PHASE_A_DIAGNOSTIC_1.json` and `M6_PHASE_A_DIAGNOSTIC_2.json`.
 
 ### Frozen M6 design
 
@@ -147,11 +147,15 @@ The exact-recovery implementation and a separate uniform request were merged in 
 
 The workflow-local staging implementation was merged in PR 44 and passed merged-source CI run `37114568122` at source `59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c`. PR 45 separately pinned that source and authorized a fresh uniform run of all 30 calibration anatomies. Run `37114827455` passed source authorization, frozen-registry validation, and pre-result tests. All 30 original archives were staged with exact frozen SHA-256 equality and zero unresolved inputs before anatomy computation began.
 
-Phase A anatomy computation is now active from the verified workflow-local cache. No complete calibration aggregate or thresholds have yet been accepted. Missing or altered cached bytes fail before decoding, with no image-download fallback. See `docs/m6_phase_a_staged_inputs.md` and `research/M6_PHASE_A_EXECUTION_STATUS.json`. All four prior incomplete attempts remain ineligible; no partial numerical shards may be reused. Evaluation remains sealed.
+Run `37114827455` completed successfully. All 30 primary calibration anatomies are complete. The final artifact SHA-256, 33 manifest entries, five frozen blob pins, all input/geometry identities, numeric vector hashes, and complete-method ratio scores were verified. The aggregate replay is byte-identical, and its thresholds were independently recomputed with exact order statistics. See `research/M6_PHASE_A_RESULT.json`, `research/M6_PHASE_A_THRESHOLD_SEAL.json`, and `docs/m6_phase_a_calibration_result.md`. All four prior incomplete attempts remain ineligible. Evaluation remains sealed.
+
+Primary 90% sigma multipliers are **41.956170528034775** for `prostate_3t` and **52.08147866494837** for `prostate_diagnosis`. The 95% sentinel is positive infinity by the frozen K=15 rule. These are fitted calibration multipliers, not held-out coverage results.
+
+ICE completed in 29 of 30 anatomies. `Prostate3T-01-0013` retains three reverse-member overlap failures; primary forward registration is complete. Under the frozen failure policy, ICE calibration is unassessable for `prostate_3t`, while `prostate_diagnosis` ICE calibration is assessable. No failed anatomy was dropped, rerun, or reinitialized.
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 
-After Phase A, the complete calibration artifact and exact thresholds must be reviewed and sealed before a separate Phase B evaluation authorization can be created.
+The complete Phase A artifact has been reviewed and its exact thresholds sealed. The next operation is to implement and verify Phase B against the unchanged protocol, pass source CI, and commit a separate prospective evaluation request before accessing evaluation outcomes.
 
 The M4 estimator, M5 failure record, M6 split, ROI rule, deformation rule, score definition, zero-signal rule, and failure policy must not be changed in response to Phase A outcomes.
 
@@ -177,3 +181,4 @@ When documents disagree, use this order:
 5. archived historical material.
 
 Website, GitHub profile, CV, and LinkedIn wording must not exceed the evidence recorded here and in `research/CLAIMS.md`.
+

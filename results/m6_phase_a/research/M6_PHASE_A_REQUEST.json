@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "milestone": "M6",
+  "authorized_mode": "phase-a-calibration-only",
+  "result_bearing_authorized": true,
+  "phase_a_calibration_authorized": true,
+  "evaluation_authorized": false,
+  "evaluation_anatomies_authorized": 0,
+  "calibration_anatomies_authorized": 30,
+  "forward_registrations_planned": 270,
+  "reverse_registrations_planned": 270,
+  "primary_signal": "sigma_mm",
+  "secondary_signal": "ice_mm",
+  "points_per_anatomy": 50,
+  "nominal_coverages": [
+    0.8,
+    0.9,
+    0.95
+  ],
+  "source_git_sha": "59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c",
+  "source_ci_run_id": 37114568122,
+  "source_ci_conclusion": "success",
+  "pinned_blobs": {
+    "protocol": "507c6fe8bdb92e06373545ef112a5be142e1b3ce",
+    "amendment": "735eef1c04da35ab9d8ccab7398877d11e7ab170",
+    "split": "ea96f506d1790af092733c29067fb54d6d44920d",
+    "geometry_freeze": "878a94ae2bea3a91502bf69416b30966cf1208d1",
+    "input_freeze": "72ded1c7d0711e560eb73f2b413f0659c11843d3"
+  },
+  "previous_incomplete_run": {
+    "workflow_run_id": 37093645674,
+    "accepted_for_aggregation": false,
+    "partial_shard_outputs_accepted": false,
+    "failure_class": "incomplete-uniform-run-with-sampled-image-download-timeouts"
+  },
+  "rerun_semantics": {
+    "scope": "all-30-calibration-anatomies-from-scratch",
+    "selective_failed-shard_retry": false,
+    "transport_only_amendment": true
+  },
+  "scientific_boundary": {
+    "evaluation_cohort_sealed": true,
+    "evaluation_results_authorized": false,
+    "leaderboard_test_access_authorized": false,
+    "m7_robustness_authorized": false,
+    "estimator_change_authorized": false,
+    "comparator_change_authorized": false,
+    "split_change_authorized": false,
+    "geometry_change_authorized": false
+  },
+  "purpose": "Authorize a fresh uniform run of all 30 frozen calibration anatomies after the workflow-local staging implementation passed merged-source CI. All original archives are acquired and verified before computation; previous partial numerical outputs remain ineligible. Estimator, comparator, split, geometry, and statistical rules are unchanged. Evaluation remains sealed.",
+  "previous_incomplete_runs": [
+    37065698410,
+    37075119713,
+    37078110203,
+    37093645674
+  ],
+  "transport_archive_sha256": "c3436559b474c60e78633ea98601241f39cb27e30fb9d48b1d29f2821bfbf047",
+  "input_recovery": {
+    "pull_request": 42,
+    "record": "research/M6_INPUT_RECOVERY_RESULT.json",
+    "record_sha256": "540be21a844e9a56d80e935cfbd6f5a0ea94af75249c0cddfab0add74a8672a5",
+    "complete_inputs": 30,
+    "failed_inputs": 0,
+    "input_registry_changed": false,
+    "historical_preflight_run_id": 37050507332
+  },
+  "prior_unchanged_label_transport_preflight_run_id": 37077593985,
+  "workflow_local_inputs": {
+    "implementation_pull_request": 44,
+    "all_30_archives_verified_before_computation": true,
+    "image_download_fallback_permitted": false,
+    "cached_archive_recovery_permitted": false,
+    "original_full_archive_sha256_required": true
+  }
+}

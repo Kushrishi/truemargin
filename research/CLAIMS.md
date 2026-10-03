@@ -1,6 +1,6 @@
 # Claims ledger
 
-**Updated:** 2026-10-02
+**Updated:** 2026-10-03
 
 | Claim | Status | Current boundary |
 | --- | --- | --- |
@@ -22,7 +22,8 @@
 | The M6 training substrate is disjoint from the M4 cohort at recorded DICOM identity level. | **Supported** | The frozen overlap audit found 0 SeriesInstanceUID overlaps and 0 StudyInstanceUID overlaps. This is an identity-level non-overlap statement, not proof of broader population independence. |
 | The M6 calibration/evaluation split and calibration method were frozen before M6 estimator outcomes. | **Supported** | The frozen design uses 30 calibration and 30 sealed evaluation anatomies, stratified 15/15 within each source, with source-specific HCP, sigma as primary signal, and ICE as the secondary calibrated comparator. |
 | The amended M6 deformation-only preflight completed the full frozen cohort. | **Supported** | The physical-distance boundary amendment was applied uniformly to all 60 anatomies. The source-pinned amended preflight completed 60 of 60 with zero failures and no registration, sigma, ICE, calibration, or evaluation outcome. |
-| The promoted estimator is numerically calibrated. | **Untested** | M6 Phase A result-bearing calibration has not run. No HCP threshold or held-out coverage result has been observed. |
+| Source-specific M6 calibration thresholds have been fitted and sealed. | **Supported** | Phase A completed all 30 primary calibration anatomies; provenance and exact thresholds were verified. ICE is unassessable for 3T after one retained reverse-registration failure. |
+| The promoted estimator achieves the nominal coverage on held-out anatomies. | **Untested** | Calibration fitting does not establish held-out coverage. Phase B evaluation remains unopened. |
 | The M6 calibration protocol guarantees 90% coverage for every anatomy or every voxel. | **False** | The frozen target is source-specific marginal coverage for a randomly sampled eligible ROI location in a new exchangeable anatomy under the stated hierarchical assumptions. It is not simultaneous whole-volume, arbitrary-voxel, or per-anatomy guaranteed coverage. |
 | The 20 official leaderboard/test subjects constitute an independent external-validation dataset. | **False** | They belong to the same challenge and source collections. They remain untouched for a separately frozen M7 robustness study. |
 | The promoted estimator is clinically useful or clinically validated. | **Unsupported** | No clinical-performance study supports this claim. |
