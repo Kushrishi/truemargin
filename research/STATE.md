@@ -133,7 +133,9 @@ The uniform rerun, `37075119713`, passed preflight but failed centralized legacy
 
 ### Current bottleneck
 
-The transport amendment in `docs/m6_phase_a_transport_amendment_2.md` uses the current official TCIA archive after confirming all 30 calibration labels match their frozen hashes. Hosted acquisition preflight and main CI must pass before a separate source-pinned request authorizes another uniform execution of all 30 calibration anatomies.
+The current official label transport passed hosted preflight and the separately authorized run `37078110203`. All 30 anatomy jobs then failed the frozen-input validation step; nine also failed artifact upload. Aggregation was skipped. The sampled DICOM ZIP digest differed from the unchanged input registry while patient, series, label, and geometry identities matched. Two current official downloads had identical member bytes but mutable ZIP timestamps. Historical frozen image identity has not been established from that observation.
+
+`M6_PHASE_A_DIAGNOSTIC_3.json` records the operational failure without analyzing numerical calibration outcomes. The guard correction in `docs/m6_phase_a_input_identity_failure.md` enforces original input digests before decoding or registration. The bottleneck is recovery or independent verification of the historical frozen DICOM bytes. No new calibration request is issued by this correction.
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 

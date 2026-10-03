@@ -8,7 +8,6 @@ predeclared source-specific HCP thresholds. It cannot authorize or run evaluatio
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import runpy
 import tempfile
@@ -22,6 +21,7 @@ from truemargin import comparators
 from truemargin import hyperparameter as hyper
 from truemargin import io_utils as ioutil
 from truemargin.hierarchical_conformal import ratio_nonconformity
+from truemargin.m6_input_identity import assert_frozen_digest
 from truemargin.m6_phase_a import (
     EXPECTED_CALIBRATION_ANATOMIES,
     EXPECTED_POINTS,
@@ -38,6 +38,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 REQUEST_PATH = REPO_ROOT / "research" / "M6_PHASE_A_REQUEST.json"
 SPLIT_PATH = REPO_ROOT / "research" / "M6_SPLIT.json"
 GEOMETRY_FREEZE_PATH = REPO_ROOT / "research" / "M6_PHASE_A_GEOMETRY_FREEZE.json"
+INPUT_FREEZE_PATH = REPO_ROOT / "research" / "M6_PHASE_A_INPUT_FREEZE.json"
 PROTOCOL_PATH = REPO_ROOT / "docs" / "m6_calibration_protocol.md"
 AMENDMENT_PATH = REPO_ROOT / "docs" / "m6_calibration_protocol_amendment_1.md"
 BASE_PREFLIGHT_PATH = REPO_ROOT / "scripts" / "m6_deformation_preflight.py"
@@ -50,6 +51,8 @@ AMENDED = runpy.run_path(str(AMENDED_PREFLIGHT_PATH), run_name="m6_phase_a_amend
 
 RESULT_DEFINING_PATHS = (
     "scripts/stage_m6_phase_a_labels.py",
+    "src/truemargin/m6_input_identity.py",
+    "research/M6_PHASE_A_INPUT_FREEZE.json",
     "scripts/m6_phase_a_calibration.py",
     "scripts/m6_deformation_preflight.py",
     "scripts/m6_deformation_preflight_amendment_1.py",
@@ -102,7 +105,22 @@ def load_exact_input(
     labels = BASE["label_members"](labels_zip)
     if patient_id not in labels:
         raise RuntimeError(f"official training label is missing for {patient_id}")
+    frozen = json.loads(INPUT_FREEZE_PATH.read_text(encoding="utf-8"))["calibration"][patient_id]
+    if frozen["series_uid"] != series_uid:
+        raise RuntimeError("input registry SeriesInstanceUID mismatch")
+    label_sha = assert_frozen_digest(
+        labels[patient_id],
+        frozen["label_sha256"],
+        patient_id=patient_id,
+        input_kind="label",
+    )
     dicom_payload = BASE["download_series"](series_uid)
+    dicom_sha = assert_frozen_digest(
+        dicom_payload,
+        frozen["dicom_zip_sha256"],
+        patient_id=patient_id,
+        input_kind="dicom_zip",
+    )
     observed_patient, image = BASE["_read_series"](dicom_payload, series_uid, root / "dicom")
     if observed_patient != patient_id:
         raise RuntimeError(
@@ -112,8 +130,8 @@ def load_exact_input(
     return (
         image,
         label,
-        hashlib.sha256(dicom_payload).hexdigest(),
-        hashlib.sha256(labels[patient_id]).hexdigest(),
+        dicom_sha,
+        label_sha,
     )
 
 
