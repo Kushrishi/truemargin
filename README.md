@@ -66,6 +66,8 @@ ICE completed 29 of 30 anatomies. The retained reverse-registration failure make
 
 See [the held-out result](docs/m6_phase_b_evaluation_result.md), [accepted evidence](research/M6_PHASE_B_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json). Read the [technical report](docs/technical_report.md) and [post-result contribution review](docs/m4_m6_contribution_review.md) before considering further experiments. An explicitly exploratory constant-radius check does not establish an adaptive-efficiency advantage; it leaves all accepted M6 results unchanged.
 
+The [retained-data failure analysis](docs/m6_failure_diagnostics.md) distinguishes a concentrated small-spread calibration tail from an evaluation case with strong local ranking but very large radii. It does not identify a causal mechanism or change the accepted study.
+
 ## Research discipline
 
 Result-defining choices are frozen before the corresponding outcomes are observed. Negative results and scientific failures are preserved rather than repaired after seeing outcomes.
@@ -84,7 +86,7 @@ See `research/STATE.md` for current project state, `research/CLAIMS.md` for publ
 
 TrueMargin does **not** currently establish:
 
-- numerical calibration or probabilistic coverage;
+- exact nominal calibration or unconditional probabilistic coverage beyond the frozen hierarchical assumptions;
 - superiority over inverse-consistency error;
 - uniform reliability across deformation instances;
 - independent external-dataset validation;
