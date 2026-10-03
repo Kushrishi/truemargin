@@ -62,9 +62,9 @@ M6 separates fitting error-radius multipliers from testing their coverage on uns
 
 ICE completed 29 of 30 anatomies. The retained reverse-registration failure makes ICE calibration unassessable for the 3T source under the frozen policy; the diagnosis-source comparator remains assessable. The 95% HCP sentinel is positive infinity at 15 calibration groups.
 
-These are calibration-fit results. **Held-out coverage has not yet been tested.** A separately pinned Phase B request now authorizes the 30 held-out evaluation anatomies against the exact sealed thresholds; held-out anatomy computation is active, with the complete aggregate and result review still pending. No clinical validity or superiority over ICE is claimed.
+**Phase B is complete and reviewed:** all 30 held-out primary anatomies completed. At nominal 90%, equal-anatomy coverage was 97.73% for Prostate-3T and 99.73% for Prostate-Diagnosis, with median anatomy radii of 3.93 mm and 4.36 mm. One diagnosis anatomy had a 70.69 mm median radius. These are conservative bounds in a frozen synthetic study, not evidence of clinical precision. The 95% thresholds are infinite; their 100% coverage is not useful finite-radius validation. ICE failures prevent the planned full-cohort calibrated comparison.
 
-See [the calibration result](docs/m6_phase_a_calibration_result.md), [accepted evidence](research/M6_PHASE_A_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json).
+See [the held-out result](docs/m6_phase_b_evaluation_result.md), [accepted evidence](research/M6_PHASE_B_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json). The next step is a contribution and claims review before further experiments.
 
 ## Research discipline
 

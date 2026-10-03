@@ -1,0 +1,98 @@
+{
+  "aggregate_replay_byte_identical": true,
+  "aggregate_sha256": "75680f4eaf829a7f8415025e5781fd87d405205407ab863712e47a398863ba63",
+  "frozen_blob_pins_verified": 6,
+  "ice_failures": [
+    "ProstateDx-01-0043"
+  ],
+  "manifest_entries_verified": 31,
+  "numerical_checkpoints_verified": 30,
+  "patient_shards_verified": 30,
+  "primary_failures": [],
+  "record": "independent-phase-b-evidence-verification",
+  "request_blob_sha": "5774482b715db4e8d59be1587ec42a9c019661eb",
+  "schema_version": 1,
+  "thresholds_refitted": false,
+  "verified_sources": {
+    "prostate_3t": {
+      "ice": {
+        "calibrated_assessable": false,
+        "evaluation_complete": true,
+        "levels": {
+          "uncalibrated": {
+            "coverage": 0.6266666666666667,
+            "maximum_anatomy_median_radius_mm": 1.8639508127357556,
+            "median_radius_mm": 1.404503994433838,
+            "minimum_anatomy_coverage": 0.42
+          }
+        }
+      },
+      "sigma": {
+        "calibrated_assessable": true,
+        "evaluation_complete": true,
+        "levels": {
+          "0.80": {
+            "coverage": 0.8813333333333334,
+            "maximum_anatomy_median_radius_mm": 5.924206615721781,
+            "median_radius_mm": 2.4673377921120205,
+            "minimum_anatomy_coverage": 0.7
+          },
+          "0.90": {
+            "coverage": 0.9773333333333334,
+            "maximum_anatomy_median_radius_mm": 9.429470783910265,
+            "median_radius_mm": 3.9272245439608726,
+            "minimum_anatomy_coverage": 0.88
+          },
+          "0.95": {
+            "coverage": 1.0,
+            "maximum_anatomy_median_radius_mm": "positive_infinity",
+            "median_radius_mm": "positive_infinity",
+            "minimum_anatomy_coverage": 1.0
+          },
+          "uncalibrated": {
+            "coverage": 0.0013333333333333333,
+            "maximum_anatomy_median_radius_mm": 0.22474574455286783,
+            "median_radius_mm": 0.09360302655211902,
+            "minimum_anatomy_coverage": 0.0
+          }
+        }
+      }
+    },
+    "prostate_diagnosis": {
+      "ice": {
+        "calibrated_assessable": false,
+        "evaluation_complete": false
+      },
+      "sigma": {
+        "calibrated_assessable": true,
+        "evaluation_complete": true,
+        "levels": {
+          "0.80": {
+            "coverage": 0.8666666666666667,
+            "maximum_anatomy_median_radius_mm": 28.650677964593882,
+            "median_radius_mm": 1.7672877166769267,
+            "minimum_anatomy_coverage": 0.72
+          },
+          "0.90": {
+            "coverage": 0.9973333333333334,
+            "maximum_anatomy_median_radius_mm": 70.69423944096118,
+            "median_radius_mm": 4.360701731324603,
+            "minimum_anatomy_coverage": 0.98
+          },
+          "0.95": {
+            "coverage": 1.0,
+            "maximum_anatomy_median_radius_mm": "positive_infinity",
+            "median_radius_mm": "positive_infinity",
+            "minimum_anatomy_coverage": 1.0
+          },
+          "uncalibrated": {
+            "coverage": 0.004,
+            "maximum_anatomy_median_radius_mm": 1.3573777329893568,
+            "median_radius_mm": 0.08372845478097807,
+            "minimum_anatomy_coverage": 0.0
+          }
+        }
+      }
+    }
+  }
+}

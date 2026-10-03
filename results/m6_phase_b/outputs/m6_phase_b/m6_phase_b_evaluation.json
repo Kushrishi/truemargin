@@ -1,0 +1,663 @@
+{
+  "balanced_across_sources": {
+    "ice": {
+      "assessable": false
+    },
+    "sigma": {
+      "assessable": true,
+      "levels": {
+        "0.80": {
+          "equal_source_equal_anatomy_mean_coverage": 0.874,
+          "nominal_coverage": 0.8
+        },
+        "0.90": {
+          "equal_source_equal_anatomy_mean_coverage": 0.9873333333333334,
+          "nominal_coverage": 0.9
+        },
+        "0.95": {
+          "equal_source_equal_anatomy_mean_coverage": 1.0,
+          "nominal_coverage": 0.95
+        }
+      }
+    }
+  },
+  "calibration_aggregate_sha256": "66e926e68912ae2e4fa039f5b78194346f7dd638f32230aad0a629f135087e55",
+  "evaluation_anatomies": 30,
+  "ice_failures": [
+    "ProstateDx-01-0043"
+  ],
+  "milestone": "M6",
+  "near_zero_diagnostic_rule": "0 < value <= float64 epsilon; descriptive only, no flooring or abstention",
+  "phase": "B",
+  "pooled_independent_point_inference_used": false,
+  "primary_failures": [],
+  "request_blob_sha": "5774482b715db4e8d59be1587ec42a9c019661eb",
+  "schema_version": 1,
+  "source_ci_run_id": 37122250493,
+  "source_git_sha": "ee4034c58435ded3e2f9c283e38fa70d78f1d792",
+  "sources": {
+    "prostate_3t": {
+      "methods": {
+        "ice": {
+          "calibrated_assessable": false,
+          "calibration_assessable": false,
+          "evaluation_complete": true,
+          "failures": [],
+          "reason": "calibration unavailable or at least one predeclared evaluation anatomy method-incomplete; no reduced-cohort claim",
+          "score_diagnostics": {
+            "count": 750,
+            "infinite_fraction": 0.0,
+            "near_zero_positive_fraction": 0.0,
+            "near_zero_positive_upper_bound": 2.220446049250313e-16,
+            "zero_fraction": 0.0
+          },
+          "signal_diagnostics": {
+            "count": 750,
+            "infinite_fraction": 0.0,
+            "near_zero_positive_fraction": 0.0,
+            "near_zero_positive_upper_bound": 2.220446049250313e-16,
+            "zero_fraction": 0.0
+          },
+          "uncalibrated_reference": {
+            "coverage_gap": null,
+            "equal_anatomy_mean_coverage": 0.6266666666666666,
+            "nominal_coverage": null,
+            "per_anatomy_coverage": {
+              "Prostate3T-01-0001": 0.6,
+              "Prostate3T-01-0009": 0.68,
+              "Prostate3T-01-0010": 0.68,
+              "Prostate3T-01-0011": 0.5,
+              "Prostate3T-01-0012": 0.76,
+              "Prostate3T-01-0014": 0.66,
+              "Prostate3T-01-0018": 0.42,
+              "Prostate3T-01-0019": 0.88,
+              "Prostate3T-01-0020": 0.72,
+              "Prostate3T-01-0023": 0.5,
+              "Prostate3T-01-0025": 0.76,
+              "Prostate3T-01-0027": 0.58,
+              "Prostate3T-01-0028": 0.46,
+              "Prostate3T-01-0029": 0.66,
+              "Prostate3T-01-0030": 0.54
+            },
+            "radius_diagnostics": {
+              "count": 750,
+              "infinite_fraction": 0.0,
+              "near_zero_positive_fraction": 0.0,
+              "near_zero_positive_upper_bound": 2.220446049250313e-16,
+              "zero_fraction": 0.0
+            },
+            "radius_efficiency": {
+              "infinite_radius_count": 0,
+              "iqr_of_anatomy_medians_mm": [
+                1.112985272779719,
+                1.50460568701657
+              ],
+              "median_of_anatomy_medians_mm": 1.404503994433838,
+              "per_anatomy_median_radius_mm": [
+                1.8638383511406174,
+                1.2388084908817647,
+                1.5764711417347304,
+                1.404503994433838,
+                1.4197105234152871,
+                1.1434049722174915,
+                1.059423222325389,
+                1.692140925143125,
+                1.4259898920538154,
+                1.0703130094823463,
+                1.8639508127357556,
+                1.43274023229841,
+                1.0952493877588418,
+                1.0732155962096246,
+                1.130721157800596
+              ],
+              "total_radius_count": 750
+            },
+            "threshold": 1.0
+          }
+        },
+        "sigma": {
+          "calibrated_assessable": true,
+          "calibration_assessable": true,
+          "evaluation_complete": true,
+          "failures": [],
+          "levels": {
+            "0.80": {
+              "coverage_gap": 0.08133333333333326,
+              "equal_anatomy_mean_coverage": 0.8813333333333333,
+              "nominal_coverage": 0.8,
+              "per_anatomy_coverage": {
+                "Prostate3T-01-0001": 0.82,
+                "Prostate3T-01-0009": 0.94,
+                "Prostate3T-01-0010": 0.84,
+                "Prostate3T-01-0011": 0.92,
+                "Prostate3T-01-0012": 0.98,
+                "Prostate3T-01-0014": 0.7,
+                "Prostate3T-01-0018": 0.92,
+                "Prostate3T-01-0019": 1.0,
+                "Prostate3T-01-0020": 0.92,
+                "Prostate3T-01-0023": 0.82,
+                "Prostate3T-01-0025": 1.0,
+                "Prostate3T-01-0027": 0.84,
+                "Prostate3T-01-0028": 0.76,
+                "Prostate3T-01-0029": 0.76,
+                "Prostate3T-01-0030": 1.0
+              },
+              "radius_diagnostics": {
+                "count": 750,
+                "infinite_fraction": 0.0,
+                "near_zero_positive_fraction": 0.0,
+                "near_zero_positive_upper_bound": 2.220446049250313e-16,
+                "zero_fraction": 0.0
+              },
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  1.9921711645696945,
+                  3.036783089499874
+                ],
+                "median_of_anatomy_medians_mm": 2.4673377921120205,
+                "per_anatomy_median_radius_mm": [
+                  2.7218404584979057,
+                  2.3045864999195285,
+                  1.5040585310735513,
+                  2.4673377921120205,
+                  3.130444841793909,
+                  1.360693824381856,
+                  2.290920318933384,
+                  5.924206615721781,
+                  2.9431213372058393,
+                  2.022514694322676,
+                  5.084501709576086,
+                  2.774118489775386,
+                  1.961827634816713,
+                  1.4426144762675936,
+                  4.139586544143246
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 26.359594160539075
+            },
+            "0.90": {
+              "coverage_gap": 0.07733333333333348,
+              "equal_anatomy_mean_coverage": 0.9773333333333335,
+              "nominal_coverage": 0.9,
+              "per_anatomy_coverage": {
+                "Prostate3T-01-0001": 0.94,
+                "Prostate3T-01-0009": 1.0,
+                "Prostate3T-01-0010": 1.0,
+                "Prostate3T-01-0011": 1.0,
+                "Prostate3T-01-0012": 1.0,
+                "Prostate3T-01-0014": 0.96,
+                "Prostate3T-01-0018": 1.0,
+                "Prostate3T-01-0019": 1.0,
+                "Prostate3T-01-0020": 1.0,
+                "Prostate3T-01-0023": 0.92,
+                "Prostate3T-01-0025": 1.0,
+                "Prostate3T-01-0027": 0.88,
+                "Prostate3T-01-0028": 0.98,
+                "Prostate3T-01-0029": 0.98,
+                "Prostate3T-01-0030": 1.0
+              },
+              "radius_diagnostics": {
+                "count": 750,
+                "infinite_fraction": 0.0,
+                "near_zero_positive_fraction": 0.0,
+                "near_zero_positive_upper_bound": 2.220446049250313e-16,
+                "zero_fraction": 0.0
+              },
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  3.1709089522647784,
+                  4.833602079900283
+                ],
+                "median_of_anatomy_medians_mm": 3.9272245439608726,
+                "per_anatomy_median_radius_mm": [
+                  4.332312619509126,
+                  3.6681757540857793,
+                  2.3939873971328574,
+                  3.9272245439608726,
+                  4.982682085733071,
+                  2.1657959445245654,
+                  3.6464234988564472,
+                  9.429470783910265,
+                  4.684522074067495,
+                  3.219206293300645,
+                  8.092925083665095,
+                  4.415522777517987,
+                  3.122611611228912,
+                  2.296187817000021,
+                  6.5889177922791
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 41.956170528034775
+            },
+            "0.95": {
+              "coverage_gap": 0.050000000000000044,
+              "equal_anatomy_mean_coverage": 1.0,
+              "nominal_coverage": 0.95,
+              "per_anatomy_coverage": {
+                "Prostate3T-01-0001": 1.0,
+                "Prostate3T-01-0009": 1.0,
+                "Prostate3T-01-0010": 1.0,
+                "Prostate3T-01-0011": 1.0,
+                "Prostate3T-01-0012": 1.0,
+                "Prostate3T-01-0014": 1.0,
+                "Prostate3T-01-0018": 1.0,
+                "Prostate3T-01-0019": 1.0,
+                "Prostate3T-01-0020": 1.0,
+                "Prostate3T-01-0023": 1.0,
+                "Prostate3T-01-0025": 1.0,
+                "Prostate3T-01-0027": 1.0,
+                "Prostate3T-01-0028": 1.0,
+                "Prostate3T-01-0029": 1.0,
+                "Prostate3T-01-0030": 1.0
+              },
+              "radius_diagnostics": {
+                "count": 750,
+                "infinite_fraction": 1.0,
+                "near_zero_positive_fraction": 0.0,
+                "near_zero_positive_upper_bound": 2.220446049250313e-16,
+                "zero_fraction": 0.0
+              },
+              "radius_efficiency": {
+                "infinite_radius_count": 750,
+                "iqr_of_anatomy_medians_mm": [
+                  Infinity,
+                  Infinity
+                ],
+                "median_of_anatomy_medians_mm": Infinity,
+                "per_anatomy_median_radius_mm": [
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": Infinity
+            }
+          },
+          "score_diagnostics": {
+            "count": 750,
+            "infinite_fraction": 0.0,
+            "near_zero_positive_fraction": 0.0,
+            "near_zero_positive_upper_bound": 2.220446049250313e-16,
+            "zero_fraction": 0.0
+          },
+          "signal_diagnostics": {
+            "count": 750,
+            "infinite_fraction": 0.0,
+            "near_zero_positive_fraction": 0.0,
+            "near_zero_positive_upper_bound": 2.220446049250313e-16,
+            "zero_fraction": 0.0
+          },
+          "uncalibrated_reference": {
+            "coverage_gap": null,
+            "equal_anatomy_mean_coverage": 0.0013333333333333333,
+            "nominal_coverage": null,
+            "per_anatomy_coverage": {
+              "Prostate3T-01-0001": 0.0,
+              "Prostate3T-01-0009": 0.0,
+              "Prostate3T-01-0010": 0.0,
+              "Prostate3T-01-0011": 0.0,
+              "Prostate3T-01-0012": 0.0,
+              "Prostate3T-01-0014": 0.0,
+              "Prostate3T-01-0018": 0.0,
+              "Prostate3T-01-0019": 0.02,
+              "Prostate3T-01-0020": 0.0,
+              "Prostate3T-01-0023": 0.0,
+              "Prostate3T-01-0025": 0.0,
+              "Prostate3T-01-0027": 0.0,
+              "Prostate3T-01-0028": 0.0,
+              "Prostate3T-01-0029": 0.0,
+              "Prostate3T-01-0030": 0.0
+            },
+            "radius_diagnostics": {
+              "count": 750,
+              "infinite_fraction": 0.0,
+              "near_zero_positive_fraction": 0.0,
+              "near_zero_positive_upper_bound": 2.220446049250313e-16,
+              "zero_fraction": 0.0
+            },
+            "radius_efficiency": {
+              "infinite_radius_count": 0,
+              "iqr_of_anatomy_medians_mm": [
+                0.07557670093236947,
+                0.11520598803626533
+              ],
+              "median_of_anatomy_medians_mm": 0.09360302655211902,
+              "per_anatomy_median_radius_mm": [
+                0.10325805632366541,
+                0.08742875500600643,
+                0.057059244611783966,
+                0.09360302655211902,
+                0.1187592199913403,
+                0.05162043907409038,
+                0.08691030313216828,
+                0.22474574455286783,
+                0.11165275608119037,
+                0.07672783890392468,
+                0.19288998451985667,
+                0.10524132021456939,
+                0.07442556296081426,
+                0.054728250650657624,
+                0.15704287854098692
+              ],
+              "total_radius_count": 750
+            },
+            "threshold": 1.0
+          }
+        }
+      },
+      "patients": [
+        "Prostate3T-01-0001",
+        "Prostate3T-01-0009",
+        "Prostate3T-01-0010",
+        "Prostate3T-01-0011",
+        "Prostate3T-01-0012",
+        "Prostate3T-01-0014",
+        "Prostate3T-01-0018",
+        "Prostate3T-01-0019",
+        "Prostate3T-01-0020",
+        "Prostate3T-01-0023",
+        "Prostate3T-01-0025",
+        "Prostate3T-01-0027",
+        "Prostate3T-01-0028",
+        "Prostate3T-01-0029",
+        "Prostate3T-01-0030"
+      ]
+    },
+    "prostate_diagnosis": {
+      "methods": {
+        "ice": {
+          "calibrated_assessable": false,
+          "calibration_assessable": true,
+          "evaluation_complete": false,
+          "failures": [
+            "ProstateDx-01-0043"
+          ],
+          "reason": "calibration unavailable or at least one predeclared evaluation anatomy method-incomplete; no reduced-cohort claim"
+        },
+        "sigma": {
+          "calibrated_assessable": true,
+          "calibration_assessable": true,
+          "evaluation_complete": true,
+          "failures": [],
+          "levels": {
+            "0.80": {
+              "coverage_gap": 0.06666666666666665,
+              "equal_anatomy_mean_coverage": 0.8666666666666667,
+              "nominal_coverage": 0.8,
+              "per_anatomy_coverage": {
+                "ProstateDx-01-0001": 0.88,
+                "ProstateDx-01-0005": 0.84,
+                "ProstateDx-01-0014": 0.82,
+                "ProstateDx-01-0021": 0.76,
+                "ProstateDx-01-0023": 1.0,
+                "ProstateDx-01-0035": 0.8,
+                "ProstateDx-01-0043": 1.0,
+                "ProstateDx-01-0044": 0.82,
+                "ProstateDx-01-0052": 0.96,
+                "ProstateDx-01-0055": 0.72,
+                "ProstateDx-01-0058": 0.96,
+                "ProstateDx-01-0059": 0.9,
+                "ProstateDx-01-0071": 0.82,
+                "ProstateDx-01-0074": 1.0,
+                "ProstateDx-01-0075": 0.72
+              },
+              "radius_diagnostics": {
+                "count": 750,
+                "infinite_fraction": 0.0,
+                "near_zero_positive_fraction": 0.0,
+                "near_zero_positive_upper_bound": 2.220446049250313e-16,
+                "zero_fraction": 0.0
+              },
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  1.3850269965409607,
+                  2.3828443980062395
+                ],
+                "median_of_anatomy_medians_mm": 1.7672877166769267,
+                "per_anatomy_median_radius_mm": [
+                  1.9625727353896145,
+                  1.005290749675368,
+                  1.075306954493505,
+                  1.7672877166769267,
+                  4.479978217411634,
+                  1.3497378137467089,
+                  28.650677964593882,
+                  1.7622022508775204,
+                  2.4015054880729583,
+                  1.4588268781789075,
+                  3.512627022478299,
+                  2.2161047798254385,
+                  2.3641833079395207,
+                  1.416039535659661,
+                  1.3540144574222606
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 21.10737289132953
+            },
+            "0.90": {
+              "coverage_gap": 0.09733333333333338,
+              "equal_anatomy_mean_coverage": 0.9973333333333334,
+              "nominal_coverage": 0.9,
+              "per_anatomy_coverage": {
+                "ProstateDx-01-0001": 1.0,
+                "ProstateDx-01-0005": 1.0,
+                "ProstateDx-01-0014": 1.0,
+                "ProstateDx-01-0021": 1.0,
+                "ProstateDx-01-0023": 1.0,
+                "ProstateDx-01-0035": 1.0,
+                "ProstateDx-01-0043": 1.0,
+                "ProstateDx-01-0044": 0.98,
+                "ProstateDx-01-0052": 1.0,
+                "ProstateDx-01-0055": 1.0,
+                "ProstateDx-01-0058": 1.0,
+                "ProstateDx-01-0059": 1.0,
+                "ProstateDx-01-0071": 1.0,
+                "ProstateDx-01-0074": 1.0,
+                "ProstateDx-01-0075": 0.98
+              },
+              "radius_diagnostics": {
+                "count": 750,
+                "infinite_fraction": 0.0,
+                "near_zero_positive_fraction": 0.0,
+                "near_zero_positive_upper_bound": 2.220446049250313e-16,
+                "zero_fraction": 0.0
+              },
+              "radius_efficiency": {
+                "infinite_radius_count": 0,
+                "iqr_of_anatomy_medians_mm": [
+                  3.4174908617053346,
+                  5.879559730885896
+                ],
+                "median_of_anatomy_medians_mm": 4.360701731324603,
+                "per_anatomy_median_radius_mm": [
+                  4.842558596602557,
+                  2.480509014591523,
+                  2.653270802437436,
+                  4.360701731324603,
+                  11.054141657079553,
+                  3.330416414768488,
+                  70.69423944096118,
+                  4.348153576710729,
+                  5.9256051183994565,
+                  3.599588699308862,
+                  8.66724676116722,
+                  5.468137337791573,
+                  5.833514343372335,
+                  3.494012885681134,
+                  3.340968837729535
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": 52.08147866494837
+            },
+            "0.95": {
+              "coverage_gap": 0.050000000000000044,
+              "equal_anatomy_mean_coverage": 1.0,
+              "nominal_coverage": 0.95,
+              "per_anatomy_coverage": {
+                "ProstateDx-01-0001": 1.0,
+                "ProstateDx-01-0005": 1.0,
+                "ProstateDx-01-0014": 1.0,
+                "ProstateDx-01-0021": 1.0,
+                "ProstateDx-01-0023": 1.0,
+                "ProstateDx-01-0035": 1.0,
+                "ProstateDx-01-0043": 1.0,
+                "ProstateDx-01-0044": 1.0,
+                "ProstateDx-01-0052": 1.0,
+                "ProstateDx-01-0055": 1.0,
+                "ProstateDx-01-0058": 1.0,
+                "ProstateDx-01-0059": 1.0,
+                "ProstateDx-01-0071": 1.0,
+                "ProstateDx-01-0074": 1.0,
+                "ProstateDx-01-0075": 1.0
+              },
+              "radius_diagnostics": {
+                "count": 750,
+                "infinite_fraction": 1.0,
+                "near_zero_positive_fraction": 0.0,
+                "near_zero_positive_upper_bound": 2.220446049250313e-16,
+                "zero_fraction": 0.0
+              },
+              "radius_efficiency": {
+                "infinite_radius_count": 750,
+                "iqr_of_anatomy_medians_mm": [
+                  Infinity,
+                  Infinity
+                ],
+                "median_of_anatomy_medians_mm": Infinity,
+                "per_anatomy_median_radius_mm": [
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity,
+                  Infinity
+                ],
+                "total_radius_count": 750
+              },
+              "threshold": Infinity
+            }
+          },
+          "score_diagnostics": {
+            "count": 750,
+            "infinite_fraction": 0.0,
+            "near_zero_positive_fraction": 0.0,
+            "near_zero_positive_upper_bound": 2.220446049250313e-16,
+            "zero_fraction": 0.0
+          },
+          "signal_diagnostics": {
+            "count": 750,
+            "infinite_fraction": 0.0,
+            "near_zero_positive_fraction": 0.0,
+            "near_zero_positive_upper_bound": 2.220446049250313e-16,
+            "zero_fraction": 0.0
+          },
+          "uncalibrated_reference": {
+            "coverage_gap": null,
+            "equal_anatomy_mean_coverage": 0.004,
+            "nominal_coverage": null,
+            "per_anatomy_coverage": {
+              "ProstateDx-01-0001": 0.0,
+              "ProstateDx-01-0005": 0.02,
+              "ProstateDx-01-0014": 0.0,
+              "ProstateDx-01-0021": 0.0,
+              "ProstateDx-01-0023": 0.0,
+              "ProstateDx-01-0035": 0.02,
+              "ProstateDx-01-0043": 0.0,
+              "ProstateDx-01-0044": 0.0,
+              "ProstateDx-01-0052": 0.0,
+              "ProstateDx-01-0055": 0.0,
+              "ProstateDx-01-0058": 0.02,
+              "ProstateDx-01-0059": 0.0,
+              "ProstateDx-01-0071": 0.0,
+              "ProstateDx-01-0074": 0.0,
+              "ProstateDx-01-0075": 0.0
+            },
+            "radius_diagnostics": {
+              "count": 750,
+              "infinite_fraction": 0.0,
+              "near_zero_positive_fraction": 0.0,
+              "near_zero_positive_upper_bound": 2.220446049250313e-16,
+              "zero_fraction": 0.0
+            },
+            "radius_efficiency": {
+              "infinite_radius_count": 0,
+              "iqr_of_anatomy_medians_mm": [
+                0.06561816118337972,
+                0.11289156686027291
+              ],
+              "median_of_anatomy_medians_mm": 0.08372845478097807,
+              "per_anatomy_median_radius_mm": [
+                0.09298043605397234,
+                0.04762746907685137,
+                0.05094461352578931,
+                0.08372845478097807,
+                0.21224707785647334,
+                0.06394627226684155,
+                1.3573777329893568,
+                0.08348752163285068,
+                0.11377566978311389,
+                0.06911456417099464,
+                0.16641706386497834,
+                0.10499197561131675,
+                0.11200746393743194,
+                0.06708743636406503,
+                0.06414888600269442
+              ],
+              "total_radius_count": 750
+            },
+            "threshold": 1.0
+          }
+        }
+      },
+      "patients": [
+        "ProstateDx-01-0001",
+        "ProstateDx-01-0005",
+        "ProstateDx-01-0014",
+        "ProstateDx-01-0021",
+        "ProstateDx-01-0023",
+        "ProstateDx-01-0035",
+        "ProstateDx-01-0043",
+        "ProstateDx-01-0044",
+        "ProstateDx-01-0052",
+        "ProstateDx-01-0055",
+        "ProstateDx-01-0058",
+        "ProstateDx-01-0059",
+        "ProstateDx-01-0071",
+        "ProstateDx-01-0074",
+        "ProstateDx-01-0075"
+      ]
+    }
+  },
+  "status": "complete",
+  "threshold_seal_blob_sha": "1c3bdd6133994e22bce58660cf25ec85cab62614",
+  "thresholds_refitted": false
+}
