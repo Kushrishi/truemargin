@@ -18,8 +18,8 @@
     0.9,
     0.95
   ],
-  "source_git_sha": "2fd48dae3ce07a1df743c3cb8dede05e6299b032",
-  "source_ci_run_id": 37093211318,
+  "source_git_sha": "59dddf5c045b75fe9ad3bb84866ae4bdc27ce30c",
+  "source_ci_run_id": 37114568122,
   "source_ci_conclusion": "success",
   "pinned_blobs": {
     "protocol": "507c6fe8bdb92e06373545ef112a5be142e1b3ce",
@@ -29,12 +29,10 @@
     "input_freeze": "72ded1c7d0711e560eb73f2b413f0659c11843d3"
   },
   "previous_incomplete_run": {
-    "workflow_run_id": 37078110203,
+    "workflow_run_id": 37093645674,
     "accepted_for_aggregation": false,
     "partial_shard_outputs_accepted": false,
-    "anatomy_jobs_started": 30,
-    "aggregate_skipped": true,
-    "failure_class": "historical-frozen-DICOM-archive-identity-mismatch"
+    "failure_class": "incomplete-uniform-run-with-sampled-image-download-timeouts"
   },
   "rerun_semantics": {
     "scope": "all-30-calibration-anatomies-from-scratch",
@@ -51,11 +49,12 @@
     "split_change_authorized": false,
     "geometry_change_authorized": false
   },
-  "purpose": "Authorize a fresh uniform execution of all 30 frozen calibration anatomies after all 30 original archive SHA-256 identities were recovered exactly and merged-source CI passed. Previous partial outputs remain ineligible. Evaluation remains sealed.",
+  "purpose": "Authorize a fresh uniform run of all 30 frozen calibration anatomies after the workflow-local staging implementation passed merged-source CI. All original archives are acquired and verified before computation; previous partial numerical outputs remain ineligible. Estimator, comparator, split, geometry, and statistical rules are unchanged. Evaluation remains sealed.",
   "previous_incomplete_runs": [
     37065698410,
     37075119713,
-    37078110203
+    37078110203,
+    37093645674
   ],
   "transport_archive_sha256": "c3436559b474c60e78633ea98601241f39cb27e30fb9d48b1d29f2821bfbf047",
   "input_recovery": {
@@ -67,5 +66,12 @@
     "input_registry_changed": false,
     "historical_preflight_run_id": 37050507332
   },
-  "prior_unchanged_label_transport_preflight_run_id": 37077593985
+  "prior_unchanged_label_transport_preflight_run_id": 37077593985,
+  "workflow_local_inputs": {
+    "implementation_pull_request": 44,
+    "all_30_archives_verified_before_computation": true,
+    "image_download_fallback_permitted": false,
+    "cached_archive_recovery_permitted": false,
+    "original_full_archive_sha256_required": true
+  }
 }
