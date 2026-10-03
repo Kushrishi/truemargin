@@ -8,7 +8,7 @@ The project separates operational variability, pointwise informativeness, numeri
 
 TrueMargin is research software, not a clinical product or medical device.
 
-**Status:** the M4–M6 study and retained-data diagnostics are complete. New experiments are paused. The results support a bounded technical report, not a validated clinical uncertainty method or a published paper.
+**Status:** the M4–M6 study and retained-data diagnostics are complete. New registration experiments are paused; bounded retained-data error-scale development continues. The results support a bounded technical report, not a validated clinical uncertainty method or a published paper.
 
 ## Start here
 
@@ -79,6 +79,10 @@ ICE completed 29 of 30 anatomies. The retained reverse-registration failure make
 See [the held-out result](docs/m6_phase_b_evaluation_result.md), [accepted evidence](research/M6_PHASE_B_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json). Read the [technical report](docs/technical_report.md) and [post-result contribution review](docs/m4_m6_contribution_review.md) before considering further experiments. An explicitly exploratory constant-radius check does not establish an adaptive-efficiency advantage; it leaves all accepted M6 results unchanged.
 
 The [retained-data failure analysis](docs/m6_failure_diagnostics.md) distinguishes a concentrated small-spread calibration tail from an evaluation case with strong local ranking but very large radii. It does not identify a causal mechanism or change the accepted study.
+
+## Exploratory continuation
+
+An [affine error-scale analysis](docs/m6_scale_development.md) fits a nonnegative baseline error term plus ensemble spread. All three fit blocks are retained. Mean radii were smaller than spread-only in six source/block settings, with different achieved coverage; constant comparisons were close in some settings. These reuse observed evaluation anatomies and do not establish superiority. The next milestone is calibration-cohort-only development validation, before any fresh study. See the [architecture and gates](docs/continuation_architecture.md).
 
 ## Research discipline
 
