@@ -143,7 +143,9 @@ On 2026-10-03 UTC, all 30 calibration DICOM archives were recovered with exact e
 
 See `research/M6_INPUT_RECOVERY_RESULT.json` and `docs/m6_phase_a_input_recovery.md`. No evaluation input or numerical calibration output was inspected. The input registry, statistical design, geometry, and scientific rules remain unchanged.
 
-The next gate is green merged-source CI followed by a separate source-pinned request for a uniform 30-anatomy Phase A rerun. The recovery implementation alone does not authorize that run. All three prior attempts remain ineligible for aggregation.
+The exact-recovery implementation and a separate uniform request were merged in PRs 42 and 43. Run `37093645674` then encountered multiple anatomy failures; sampled operational failures were image-download timeouts. This attempt is incomplete and remains ineligible for aggregation. Partial numerical calibration outputs were not inspected to choose the next repair.
+
+The next transport implementation stages and verifies all 30 frozen calibration archives before computation, then supplies the exact workflow-local inputs to every anatomy job. Missing or altered cached bytes fail before decoding, with no image-download fallback. See `docs/m6_phase_a_staged_inputs.md`. Green merged-source CI and a new source-pinned request are required before a fresh uniform Phase A run. All four prior incomplete attempts remain ineligible; no partial numerical shards may be reused.
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 
