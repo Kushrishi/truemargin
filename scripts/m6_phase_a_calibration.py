@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import runpy
 import tempfile
 from datetime import datetime
@@ -52,6 +53,7 @@ BASE = runpy.run_path(str(BASE_PREFLIGHT_PATH), run_name="m6_phase_a_base_prefli
 AMENDED = runpy.run_path(str(AMENDED_PREFLIGHT_PATH), run_name="m6_phase_a_amended_preflight")
 
 RESULT_DEFINING_PATHS = (
+    "scripts/recover_m6_phase_a_inputs.py",
     "scripts/stage_m6_phase_a_labels.py",
     "src/truemargin/m6_input_identity.py",
     "src/truemargin/m6_zip_recovery.py",
@@ -117,13 +119,17 @@ def load_exact_input(
         patient_id=patient_id,
         input_kind="label",
     )
-    dicom_payload = BASE["download_series"](series_uid)
-    dicom_payload, _ = recover_frozen_zip(
-        dicom_payload,
-        frozen["dicom_zip_sha256"],
-        start=datetime(2026, 10, 2, 18, 53, 44),
-        end=datetime(2026, 10, 2, 18, 54, 58),
-    )
+    cache_root = os.environ.get("M6_CALIBRATION_DICOM_CACHE")
+    if cache_root:
+        dicom_payload = (Path(cache_root) / f"{patient_id}.zip").read_bytes()
+    else:
+        dicom_payload = BASE["download_series"](series_uid)
+        dicom_payload, _ = recover_frozen_zip(
+            dicom_payload,
+            frozen["dicom_zip_sha256"],
+            start=datetime(2026, 10, 2, 18, 53, 44),
+            end=datetime(2026, 10, 2, 18, 54, 58),
+        )
     dicom_sha = assert_frozen_digest(
         dicom_payload,
         frozen["dicom_zip_sha256"],

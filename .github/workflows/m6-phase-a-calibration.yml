@@ -64,6 +64,7 @@ jobs:
             tests/test_hierarchical_conformal.py \
             tests/test_m6_phase_a_geometry_freeze.py \
             tests/test_m6_phase_a_calibration.py \
+            tests/test_m6_staged_inputs.py \
             tests/test_hyperparameter_known_gt.py \
             tests/test_comparators.py
 
@@ -115,14 +116,28 @@ jobs:
       - name: Stage and verify frozen calibration labels once
         run: python scripts/stage_m6_phase_a_labels.py
 
-      - name: Upload verified workflow-local label cache
+      - name: Acquire and verify all frozen calibration archives before computation
+        id: staged_inputs
+        run: python scripts/recover_m6_phase_a_inputs.py --output-dir inputs/m6_phase_a/dicom
+
+      - name: Preserve acquisition record even when staging is incomplete
+        if: always()
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: m6-phase-a-label-cache
+          name: m6-phase-a-input-staging-record
+          path: inputs/m6_phase_a/dicom/recovery.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload verified workflow-local input cache
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: m6-phase-a-input-cache
           path: |
             inputs/m6_phase_a/training-labels.zip
             inputs/m6_phase_a/training-labels.zip.sha256
             inputs/m6_phase_a/label-transport.json
+            inputs/m6_phase_a/dicom
           if-no-files-found: error
           retention-days: 1
 
@@ -154,10 +169,10 @@ jobs:
       - name: Verify source-pinned Phase A authorization
         run: python scripts/m6_phase_a_calibration.py --verify-only
 
-      - name: Download verified workflow-local label cache
+      - name: Download verified workflow-local input cache
         uses: actions/download-artifact@v8.0.1
         with:
-          name: m6-phase-a-label-cache
+          name: m6-phase-a-input-cache
           path: inputs/m6_phase_a
 
       - name: Run frozen calibration anatomy
@@ -166,6 +181,7 @@ jobs:
         env:
           PATIENT: ${{ matrix.patient }}
           LABEL_ARCHIVE: ${{ github.workspace }}/inputs/m6_phase_a/training-labels.zip
+          M6_CALIBRATION_DICOM_CACHE: ${{ github.workspace }}/inputs/m6_phase_a/dicom
         run: |
           python - <<'PY'
           import hashlib
@@ -325,4 +341,3 @@ jobs:
       - name: Enforce primary Phase A outcome
         if: always()
         run: test "${{ steps.aggregate.outcome }}" = "success"
-
