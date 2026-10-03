@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "date": "2026-10-02",
+  "date": "2026-10-03",
   "milestone": "M6",
   "authorized_mode": "phase-a-calibration-only",
   "result_bearing_authorized": true,
@@ -18,8 +18,8 @@
     0.9,
     0.95
   ],
-  "source_git_sha": "b723638c4c0f4264f2eeee7d8c34a1a3d76bfb20",
-  "source_ci_run_id": 37077593991,
+  "source_git_sha": "2fd48dae3ce07a1df743c3cb8dede05e6299b032",
+  "source_ci_run_id": 37093211318,
   "source_ci_conclusion": "success",
   "pinned_blobs": {
     "protocol": "507c6fe8bdb92e06373545ef112a5be142e1b3ce",
@@ -29,12 +29,12 @@
     "input_freeze": "72ded1c7d0711e560eb73f2b413f0659c11843d3"
   },
   "previous_incomplete_run": {
-    "workflow_run_id": 37075119713,
+    "workflow_run_id": 37078110203,
     "accepted_for_aggregation": false,
     "partial_shard_outputs_accepted": false,
-    "anatomy_jobs_started": 0,
-    "registration_outputs_produced": 0,
-    "failure_class": "official-legacy-label-staging-transport-before-any-anatomy-execution"
+    "anatomy_jobs_started": 30,
+    "aggregate_skipped": true,
+    "failure_class": "historical-frozen-DICOM-archive-identity-mismatch"
   },
   "rerun_semantics": {
     "scope": "all-30-calibration-anatomies-from-scratch",
@@ -51,11 +51,21 @@
     "split_change_authorized": false,
     "geometry_change_authorized": false
   },
-  "purpose": "Authorize a source-pinned uniform execution of all 30 frozen M6 Phase A calibration anatomies after current-host official archive transport passed byte-identity preflight. Evaluation remains sealed.",
-  "source_transport_preflight_run_id": 37077593985,
+  "purpose": "Authorize a fresh uniform execution of all 30 frozen calibration anatomies after all 30 original archive SHA-256 identities were recovered exactly and merged-source CI passed. Previous partial outputs remain ineligible. Evaluation remains sealed.",
   "previous_incomplete_runs": [
     37065698410,
-    37075119713
+    37075119713,
+    37078110203
   ],
-  "transport_archive_sha256": "c3436559b474c60e78633ea98601241f39cb27e30fb9d48b1d29f2821bfbf047"
+  "transport_archive_sha256": "c3436559b474c60e78633ea98601241f39cb27e30fb9d48b1d29f2821bfbf047",
+  "input_recovery": {
+    "pull_request": 42,
+    "record": "research/M6_INPUT_RECOVERY_RESULT.json",
+    "record_sha256": "540be21a844e9a56d80e935cfbd6f5a0ea94af75249c0cddfab0add74a8672a5",
+    "complete_inputs": 30,
+    "failed_inputs": 0,
+    "input_registry_changed": false,
+    "historical_preflight_run_id": 37050507332
+  },
+  "prior_unchanged_label_transport_preflight_run_id": 37077593985
 }
