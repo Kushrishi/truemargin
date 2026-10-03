@@ -64,7 +64,7 @@ ICE completed 29 of 30 anatomies. The retained reverse-registration failure make
 
 **Phase B is complete and reviewed:** all 30 held-out primary anatomies completed. At nominal 90%, equal-anatomy coverage was 97.73% for Prostate-3T and 99.73% for Prostate-Diagnosis, with median anatomy radii of 3.93 mm and 4.36 mm. One diagnosis anatomy had a 70.69 mm median radius. These are conservative bounds in a frozen synthetic study, not evidence of clinical precision. The 95% thresholds are infinite; their 100% coverage is not useful finite-radius validation. ICE failures prevent the planned full-cohort calibrated comparison.
 
-See [the held-out result](docs/m6_phase_b_evaluation_result.md), [accepted evidence](research/M6_PHASE_B_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json). The next step is a contribution and claims review before further experiments.
+See [the held-out result](docs/m6_phase_b_evaluation_result.md), [accepted evidence](research/M6_PHASE_B_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json). Read the [technical report](docs/technical_report.md) and [post-result contribution review](docs/m4_m6_contribution_review.md) before considering further experiments. An explicitly exploratory constant-radius check does not establish an adaptive-efficiency advantage; it leaves all accepted M6 results unchanged.
 
 ## Research discipline
 

@@ -1,0 +1,613 @@
+{
+  "accepted_sigma_thresholds_changed": false,
+  "baseline_fit_uses_evaluation_errors": false,
+  "confirmatory": false,
+  "coverage_matched_comparison": false,
+  "evaluation_results_observed_before_analysis_choice": true,
+  "input_sha256": {
+    "research/M6_PHASE_A_THRESHOLD_SEAL.json": "ba080a85d0afe3166509d3d7a7f4cf0bb0911d772a32508a97ccedde8edb8f84",
+    "research/M6_SPLIT.json": "34cb61fc9c39eea7c75aa39890b09586066e149e5487bcea6022dcc3560ae990",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0002.json": "97390d9263ea001bbdb978f50d6dacd7a37824c68bd61b679a1aa4204f4298e5",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0003.json": "3cedf554c5337e22dcf83e5e86446e7b1b90d9cf2deb1bdd98b8721fa0f7a297",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0004.json": "421eed0848a7bd10a7bdcb8b00e15f44dc92f1f0d952abca3ae8bba82bd0f357",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0005.json": "05df197cf804293ab554eaec895299315b76c4eefbb14192fbaa5c43c8929a9f",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0006.json": "d6d60af9998663fd42d8da78dfde47bd0981a659aeb704446d4a5fe671bc43c7",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0007.json": "562c910aa39cf2762a3bffe30f98264405d7addbc4da3cc909f40be0dd344086",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0008.json": "b294385c2154067e23bce32ee689e3e24215fbbe1847d74bc65a6544a8f7331a",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0013.json": "0f1f936d5db8196c10166e3f3749e8552372276aeaafc2805e6c709b7b089a11",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0015.json": "e480f8e9e17c872d5531543760b65af7a5b2c483f0d95aba16bd07e2286f8910",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0016.json": "58c15e7a84f3b85bd63187f9f598587bbaebd88b314e6d54fa76c69d1da9afd0",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0017.json": "f2d513e47c320ad6a027965ca7f21a0c336b4b893fdf07404282bf8930ef1a69",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0021.json": "f4e3a3c550dc3efc455f77e5cd32dd028d7fe455f221fc32070cc1447c4c5a4b",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0022.json": "14c0e69ece9e3d6cefc27ff67c01406709639f22608fd5b12402c043b154f11e",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0024.json": "39edfc100990ae1d1766e94df64aad212cf8d50382175cc6ec92540bab617ca9",
+    "results/m6_phase_a/phase-a-shards/shards/Prostate3T-01-0026.json": "ca7f4ce482d9968a3cea08e06f3cb23ad526a1955fa742c9aa55d53e25e2582d",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0006.json": "bc1e4f14474c549ab9e733eb22bf4b1ac710841c6ddb5f05ed07b4165c2b000f",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0011.json": "71ff18446bfe421c7affc43f21543e71c3368e776e4485777d9e922adb5208d2",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0013.json": "263511c43f2bface1909daccec741902132ec5e098e0f9beac27c657d9f72b42",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0019.json": "39544e156248424541cb8c69c324b85f99af47db5ee84a01f9bbba2aa5dadf9d",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0028.json": "b000b3dbb1e8d9d4e43df04b4f97e8f4c74c6678ae7bc90e551da43259576bcf",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0038.json": "d85e60b39e8c5f6b778a188baaeb0b3b005fb93b1bc923a81aae99b680dc1b71",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0042.json": "832c24c1071c63c5dffdf9ac88786d3cdf1dee978533a97d2b5f0a52988f76a8",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0054.json": "ff5f11742e8321fb355b996c974684295d6481d74891c4e240cac07e60eb31e7",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0056.json": "4d8ae361773c2ebec43fa0941763d2b3d811a03ccd23b7578d2262b8d49447dd",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0060.json": "436817e2e7027ade70e47f5c184211ec14a625dccfb8f52728d4838c374d69c1",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0063.json": "9683460784a2cf18c833f8576c2ee8b0a5cf45840902625adb2a23522e04de06",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0073.json": "776f224b133284bae7e7aa487353bd2351b279dedc8b21b5eb4bc0375fa74814",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0076.json": "52240c428d636e1a472615d1b304b7e9fddcdea7d80fafc75788555b87f5203a",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0080.json": "a32165f06b67aa87c95ba3b6bcaaec1c4bfabe4a717f007ee118c2f92c1a0e48",
+    "results/m6_phase_a/phase-a-shards/shards/ProstateDx-01-0082.json": "ecfe46d51812f5335905bf107d8351b01b41f289c6a7086bf213b29846a98e27",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0001.json": "70d02e9dfae8377cc84f9f5b1b13b3842e80d1cfea63e8b5eb4d5f93fe3b2a69",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0009.json": "8a90f008cc3bb49e5db8fb93662f975c32a2b93df8fda0031b1e9693e380b7e5",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0010.json": "49ec92b01eaf76c054928dfc77307c655ad2116ab7de72576610ab7231d19018",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0011.json": "bf0e41177afec049e43a1d0ea0849c2d24f57c227f2fe844a62826ece892c276",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0012.json": "3d16ac4f16b5ffd9b1e64e2ddc305a946304d1d9401f9188d0ddc40f569afbaf",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0014.json": "69820f16a09dff99c35e2bcd7a93a2ad06f158365786692b00072909d2ce7d50",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0018.json": "af75edade176903e6be40f94dc453b97e866d96fa54f1986985a32992e534d03",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0019.json": "512b0db087d241ecd58eb7bafcdd192b24ac86d4035d361cd6d651b1ac808968",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0020.json": "f63131aa7f1c107495cc103c4bef24ec2b586333b9a4ba8901998799a8c3323e",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0023.json": "31fccb028a6bed1fa9dcf2ad1dce96c91b4e1ece904f8f61b54229102bcc32be",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0025.json": "70d0c0adbf88a72318801d06e2d1695ebdea51f52fec201c55c3812d9a6c8887",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0027.json": "f2a4ad0658bf917d911c2d150f8c692424ad9ae8217058e496cd168b0c084054",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0028.json": "449a9bd86de7f57ad61f66b4d5adfc7f664278e1073d83a9fb56754f91c92735",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0029.json": "ea15c8e4a45e79ed4ff230d6ab9b701f0ca56c92aeed8971684d1239e81a4415",
+    "results/m6_phase_b/phase-b-shards/shards/Prostate3T-01-0030.json": "8c93c9a0495ef4139b0fa1776f0e896df671f28601fab19efe5a0c2ec4d76e05",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0001.json": "6557964db340714a35ed20142ff421cc184d0c3c53bc8949792659753e0abaac",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0005.json": "295992796a21a0089cbdaf749dacd715ff64577217eb3f32e4a0b7839c1e645a",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0014.json": "eb4f83b8e43b8d67b1682a3b089ab6bc4e7d8abad9ef08b9aee36d9974f78b91",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0021.json": "48fe1941c5858d2803a8a79edcf212ff372172c257ec2732ade3aabb828a4774",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0023.json": "273175aaecbcd2f8656e367288715a47431ef92cceceb93b360246e90bb7abd4",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0035.json": "57a2f1fd1c8dea8ca90783ef263c3599e0585ad68666530044fc73cb381a52cb",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0043.json": "c8e20c20162208757c0f2e40acd8dad7a5a3f2f300377d68adb42f14c4da41ad",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0044.json": "dbdfcc68d7561d31d67a92691123eeb2159395b7092a4fe013b78f18e3cc3a06",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0052.json": "8d18668beea6a7f7bfda0278ed0d24d021f022893070456e5208623182d8c374",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0055.json": "71612db181ddca7c08e04c8cf1c01b5b34db91e87e8631c2fda4bf7106c7a062",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0058.json": "2718e6d97be4345c88f496769901aefca4eb96c06dd5f35d22197516b21a7af7",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0059.json": "949b000b1e29293341dad293618a9d6851aa1e7007bd3ca1a964e9471ada3683",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0071.json": "09aed3796ae3c04d9de071edb7b72334f32d9b28c67847806d5e74345a261ba5",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0074.json": "eb76df6cb9c90ff438d471bd33353febaef534d77aeb9bc2a6eeb3a568b3389b",
+    "results/m6_phase_b/phase-b-shards/shards/ProstateDx-01-0075.json": "639494ff3eb0eb204e6ad2a8fbc6a88113d58e663f56e31fb5e6b3891a2957c4"
+  },
+  "new_registrations": 0,
+  "ninety_five_percent_constant_and_sigma_radii": "positive_infinity",
+  "record": "m6-post-outcome-exploratory-efficiency-comparison",
+  "schema_version": 1,
+  "sources": {
+    "prostate_3t": {
+      "0.80": {
+        "anatomies_with_smaller_sigma_mean_radius": 3,
+        "constant_equal_anatomy_coverage": 0.8119999999999999,
+        "constant_equal_anatomy_mean_radius_mm": 1.6781288593556234,
+        "constant_threshold_mm": 1.6781288593556234,
+        "per_anatomy": [
+          {
+            "constant_coverage": 0.56,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0001",
+            "sigma_coverage": 0.82,
+            "sigma_mean_radius_mm": 2.8588494652234018,
+            "sigma_median_radius_mm": 2.7218404584979057
+          },
+          {
+            "constant_coverage": 0.82,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0009",
+            "sigma_coverage": 0.94,
+            "sigma_mean_radius_mm": 2.362923813626325,
+            "sigma_median_radius_mm": 2.3045864999195285
+          },
+          {
+            "constant_coverage": 0.9,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0010",
+            "sigma_coverage": 0.84,
+            "sigma_mean_radius_mm": 1.5744889017980566,
+            "sigma_median_radius_mm": 1.5040585310735513
+          },
+          {
+            "constant_coverage": 0.7,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0011",
+            "sigma_coverage": 0.92,
+            "sigma_mean_radius_mm": 2.61334925741168,
+            "sigma_median_radius_mm": 2.4673377921120205
+          },
+          {
+            "constant_coverage": 0.9,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0012",
+            "sigma_coverage": 0.98,
+            "sigma_mean_radius_mm": 3.6616017756166808,
+            "sigma_median_radius_mm": 3.130444841793909
+          },
+          {
+            "constant_coverage": 0.9,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0014",
+            "sigma_coverage": 0.7,
+            "sigma_mean_radius_mm": 1.4156352123691018,
+            "sigma_median_radius_mm": 1.360693824381856
+          },
+          {
+            "constant_coverage": 0.8,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0018",
+            "sigma_coverage": 0.92,
+            "sigma_mean_radius_mm": 2.304617430497075,
+            "sigma_median_radius_mm": 2.290920318933384
+          },
+          {
+            "constant_coverage": 0.78,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0019",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 6.2527844624165185,
+            "sigma_median_radius_mm": 5.924206615721781
+          },
+          {
+            "constant_coverage": 0.94,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0020",
+            "sigma_coverage": 0.92,
+            "sigma_mean_radius_mm": 3.294566888062459,
+            "sigma_median_radius_mm": 2.9431213372058393
+          },
+          {
+            "constant_coverage": 0.92,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0023",
+            "sigma_coverage": 0.82,
+            "sigma_mean_radius_mm": 2.17614121761528,
+            "sigma_median_radius_mm": 2.022514694322676
+          },
+          {
+            "constant_coverage": 0.64,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0025",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 5.44032230801988,
+            "sigma_median_radius_mm": 5.084501709576086
+          },
+          {
+            "constant_coverage": 0.74,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0027",
+            "sigma_coverage": 0.84,
+            "sigma_mean_radius_mm": 2.8086890993411258,
+            "sigma_median_radius_mm": 2.774118489775386
+          },
+          {
+            "constant_coverage": 0.84,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0028",
+            "sigma_coverage": 0.76,
+            "sigma_mean_radius_mm": 1.9134652830995582,
+            "sigma_median_radius_mm": 1.961827634816713
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0029",
+            "sigma_coverage": 0.76,
+            "sigma_mean_radius_mm": 1.3707667363191687,
+            "sigma_median_radius_mm": 1.4426144762675936
+          },
+          {
+            "constant_coverage": 0.76,
+            "constant_radius_mm": 1.6781288593556234,
+            "patient_id": "Prostate3T-01-0030",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 3.8389816188308834,
+            "sigma_median_radius_mm": 4.139586544143246
+          }
+        ],
+        "sealed_sigma_multiplier": 26.359594160539075,
+        "sigma_equal_anatomy_coverage": 0.8813333333333334,
+        "sigma_equal_anatomy_mean_radius_mm": 2.925812231349813,
+        "sigma_median_of_anatomy_medians_mm": 2.4673377921120205,
+        "sigma_to_constant_mean_radius_ratio": 1.7434967613114536
+      },
+      "0.90": {
+        "anatomies_with_smaller_sigma_mean_radius": 1,
+        "constant_equal_anatomy_coverage": 0.9373333333333334,
+        "constant_equal_anatomy_mean_radius_mm": 2.2116712006996475,
+        "constant_threshold_mm": 2.2116712006996475,
+        "per_anatomy": [
+          {
+            "constant_coverage": 0.84,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0001",
+            "sigma_coverage": 0.94,
+            "sigma_mean_radius_mm": 4.550387799841644,
+            "sigma_median_radius_mm": 4.332312619509126
+          },
+          {
+            "constant_coverage": 0.92,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0009",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 3.7610303810243817,
+            "sigma_median_radius_mm": 3.6681757540857793
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0010",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 2.5060903614832624,
+            "sigma_median_radius_mm": 2.3939873971328574
+          },
+          {
+            "constant_coverage": 0.82,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0011",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 4.1596288025337005,
+            "sigma_median_radius_mm": 3.9272245439608726
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0012",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 5.828116607861561,
+            "sigma_median_radius_mm": 4.982682085733071
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0014",
+            "sigma_coverage": 0.96,
+            "sigma_mean_radius_mm": 2.253245327447564,
+            "sigma_median_radius_mm": 2.1657959445245654
+          },
+          {
+            "constant_coverage": 0.96,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0018",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 3.6682249858219804,
+            "sigma_median_radius_mm": 3.6464234988564472
+          },
+          {
+            "constant_coverage": 0.86,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0019",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 9.95246321253789,
+            "sigma_median_radius_mm": 9.429470783910265
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0020",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 5.243912684304337,
+            "sigma_median_radius_mm": 4.684522074067495
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0023",
+            "sigma_coverage": 0.92,
+            "sigma_mean_radius_mm": 3.463731325425107,
+            "sigma_median_radius_mm": 3.219206293300645
+          },
+          {
+            "constant_coverage": 0.88,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0025",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 8.659279391503569,
+            "sigma_median_radius_mm": 8.092925083665095
+          },
+          {
+            "constant_coverage": 0.94,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0027",
+            "sigma_coverage": 0.88,
+            "sigma_mean_radius_mm": 4.470548298069045,
+            "sigma_median_radius_mm": 4.415522777517987
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0028",
+            "sigma_coverage": 0.98,
+            "sigma_mean_radius_mm": 3.0456339816256706,
+            "sigma_median_radius_mm": 3.122611611228912
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0029",
+            "sigma_coverage": 0.98,
+            "sigma_mean_radius_mm": 2.181828847322001,
+            "sigma_median_radius_mm": 2.296187817000021
+          },
+          {
+            "constant_coverage": 0.9,
+            "constant_radius_mm": 2.2116712006996475,
+            "patient_id": "Prostate3T-01-0030",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 6.110449442912271,
+            "sigma_median_radius_mm": 6.5889177922791
+          }
+        ],
+        "sealed_sigma_multiplier": 41.956170528034775,
+        "sigma_equal_anatomy_coverage": 0.9773333333333334,
+        "sigma_equal_anatomy_mean_radius_mm": 4.656971429980932,
+        "sigma_median_of_anatomy_medians_mm": 3.9272245439608726,
+        "sigma_to_constant_mean_radius_ratio": 2.105634611739634
+      }
+    },
+    "prostate_diagnosis": {
+      "0.80": {
+        "anatomies_with_smaller_sigma_mean_radius": 7,
+        "constant_equal_anatomy_coverage": 0.876,
+        "constant_equal_anatomy_mean_radius_mm": 1.9852337696576154,
+        "constant_threshold_mm": 1.9852337696576154,
+        "per_anatomy": [
+          {
+            "constant_coverage": 0.9,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0001",
+            "sigma_coverage": 0.88,
+            "sigma_mean_radius_mm": 1.9872685229785978,
+            "sigma_median_radius_mm": 1.9625727353896145
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0005",
+            "sigma_coverage": 0.84,
+            "sigma_mean_radius_mm": 1.0803826641464014,
+            "sigma_median_radius_mm": 1.005290749675368
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0014",
+            "sigma_coverage": 0.82,
+            "sigma_mean_radius_mm": 1.0705868779815875,
+            "sigma_median_radius_mm": 1.075306954493505
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0021",
+            "sigma_coverage": 0.76,
+            "sigma_mean_radius_mm": 1.978605560827599,
+            "sigma_median_radius_mm": 1.7672877166769267
+          },
+          {
+            "constant_coverage": 0.8,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0023",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 4.482313050868745,
+            "sigma_median_radius_mm": 4.479978217411634
+          },
+          {
+            "constant_coverage": 0.96,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0035",
+            "sigma_coverage": 0.8,
+            "sigma_mean_radius_mm": 1.3343721701385476,
+            "sigma_median_radius_mm": 1.3497378137467089
+          },
+          {
+            "constant_coverage": 0.26,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0043",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 32.202089713899895,
+            "sigma_median_radius_mm": 28.650677964593882
+          },
+          {
+            "constant_coverage": 0.94,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0044",
+            "sigma_coverage": 0.82,
+            "sigma_mean_radius_mm": 2.1797490516368985,
+            "sigma_median_radius_mm": 1.7622022508775204
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0052",
+            "sigma_coverage": 0.96,
+            "sigma_mean_radius_mm": 2.588944827822833,
+            "sigma_median_radius_mm": 2.4015054880729583
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0055",
+            "sigma_coverage": 0.72,
+            "sigma_mean_radius_mm": 1.5022163280549652,
+            "sigma_median_radius_mm": 1.4588268781789075
+          },
+          {
+            "constant_coverage": 0.64,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0058",
+            "sigma_coverage": 0.96,
+            "sigma_mean_radius_mm": 3.7629362904412273,
+            "sigma_median_radius_mm": 3.512627022478299
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0059",
+            "sigma_coverage": 0.9,
+            "sigma_mean_radius_mm": 2.500689989925934,
+            "sigma_median_radius_mm": 2.2161047798254385
+          },
+          {
+            "constant_coverage": 0.72,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0071",
+            "sigma_coverage": 0.82,
+            "sigma_mean_radius_mm": 2.565659403665267,
+            "sigma_median_radius_mm": 2.3641833079395207
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0074",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 1.386732735442876,
+            "sigma_median_radius_mm": 1.416039535659661
+          },
+          {
+            "constant_coverage": 0.96,
+            "constant_radius_mm": 1.9852337696576154,
+            "patient_id": "ProstateDx-01-0075",
+            "sigma_coverage": 0.72,
+            "sigma_mean_radius_mm": 1.7598561775299708,
+            "sigma_median_radius_mm": 1.3540144574222606
+          }
+        ],
+        "sealed_sigma_multiplier": 21.10737289132953,
+        "sigma_equal_anatomy_coverage": 0.8666666666666667,
+        "sigma_equal_anatomy_mean_radius_mm": 4.1588268910240895,
+        "sigma_median_of_anatomy_medians_mm": 1.7672877166769267,
+        "sigma_to_constant_mean_radius_ratio": 2.094880187204021
+      },
+      "0.90": {
+        "anatomies_with_smaller_sigma_mean_radius": 2,
+        "constant_equal_anatomy_coverage": 0.952,
+        "constant_equal_anatomy_mean_radius_mm": 2.8382229743593825,
+        "constant_threshold_mm": 2.8382229743593825,
+        "per_anatomy": [
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0001",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 4.903494324656049,
+            "sigma_median_radius_mm": 4.842558596602557
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0005",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 2.6657948842053467,
+            "sigma_median_radius_mm": 2.480509014591523
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0014",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 2.641624229203619,
+            "sigma_median_radius_mm": 2.653270802437436
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0021",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 4.882118861173911,
+            "sigma_median_radius_mm": 4.360701731324603
+          },
+          {
+            "constant_coverage": 0.98,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0023",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 11.059902752006376,
+            "sigma_median_radius_mm": 11.054141657079553
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0035",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 3.292502390892955,
+            "sigma_median_radius_mm": 3.330416414768488
+          },
+          {
+            "constant_coverage": 0.4,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0043",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 79.45718574433117,
+            "sigma_median_radius_mm": 70.69423944096118
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0044",
+            "sigma_coverage": 0.98,
+            "sigma_mean_radius_mm": 5.378431238801969,
+            "sigma_median_radius_mm": 4.348153576710729
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0052",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 6.3881031291379315,
+            "sigma_median_radius_mm": 5.9256051183994565
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0055",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 3.7066501853421157,
+            "sigma_median_radius_mm": 3.599588699308862
+          },
+          {
+            "constant_coverage": 0.94,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0058",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 9.284873448589094,
+            "sigma_median_radius_mm": 8.66724676116722
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0059",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 6.1703383471032165,
+            "sigma_median_radius_mm": 5.468137337791573
+          },
+          {
+            "constant_coverage": 0.96,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0071",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 6.330647408442121,
+            "sigma_median_radius_mm": 5.833514343372335
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0074",
+            "sigma_coverage": 1.0,
+            "sigma_mean_radius_mm": 3.4216996945470832,
+            "sigma_median_radius_mm": 3.494012885681134
+          },
+          {
+            "constant_coverage": 1.0,
+            "constant_radius_mm": 2.8382229743593825,
+            "patient_id": "ProstateDx-01-0075",
+            "sigma_coverage": 0.98,
+            "sigma_mean_radius_mm": 4.342364747867562,
+            "sigma_median_radius_mm": 3.340968837729535
+          }
+        ],
+        "sealed_sigma_multiplier": 52.08147866494837,
+        "sigma_equal_anatomy_coverage": 0.9973333333333334,
+        "sigma_equal_anatomy_mean_radius_mm": 10.26171542575337,
+        "sigma_median_of_anatomy_medians_mm": 4.360701731324603,
+        "sigma_to_constant_mean_radius_ratio": 3.615542372272407
+      }
+    }
+  }
+}
