@@ -1,0 +1,4 @@
+# Numerical runtime from accepted Phase A anatomy job 111179731638.
+numpy==2.5.3
+scipy==1.18.1
+SimpleITK==2.5.6
