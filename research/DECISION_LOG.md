@@ -360,3 +360,7 @@ frozen.
 - Prioritize the bounded C++ inference/replay engineering application after the report release. Publication suitability still requires expert assessment; no outreach has been authorized or performed.
 
 See `docs/m4_m6_contribution_review.md` and `results/m6_exploratory/constant_radius_comparison.json`.
+
+## October 3, 2026 — bounded M6 retained-evidence diagnostics
+
+Reassessed the earlier closure recommendation without changing the accepted study. Added descriptive all-anatomy diagnostics that separate a concentrated small-spread Diagnosis calibration tail from a large-spread evaluation case with strong local rank informativeness. The primary vectors, sealed thresholds, split and failure policy remain unchanged. Vector/geometry checks establish consistency of the retained records, not a registration rerun or a causal explanation. Missing member/optimizer diagnostics limit the audit. Keep M7 unexecuted; a new utility experiment requires a distinct question, prospective design and fresh evaluation. See `docs/m6_failure_diagnostics.md`.
