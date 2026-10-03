@@ -182,3 +182,7 @@ When documents disagree, use this order:
 
 Website, GitHub profile, CV, and LinkedIn wording must not exceed the evidence recorded here and in `research/CLAIMS.md`.
 
+
+## Active M6 Phase B execution checkpoint
+
+Run `37122716790` at execution commit `fd1070b1250e276ef0d17edc2d85622cb1e7a585` passed source authorization and pre-result tests. Its staging job verified all 30 evaluation DICOM archives against their original frozen SHA-256 digests, with zero unresolved inputs, and verified all 30 evaluation labels. Anatomy computation is active from those exact workflow-local inputs. No partial numerical evaluation output has been inspected and no complete aggregate or held-out coverage claim has been accepted. See `research/M6_PHASE_B_EXECUTION_STATUS.json` and [the workflow](https://github.com/Kushrishi/truemargin/actions/runs/37122716790).

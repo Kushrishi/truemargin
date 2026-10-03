@@ -1,12 +1,22 @@
 {
+  "anatomy_jobs_started": true,
+  "authorization_pull_request": 49,
   "calibration_thresholds_changed": false,
   "complete_evaluation_aggregate_accepted": false,
   "date_utc": "2026-10-03",
   "evaluation_anatomies_authorized": 30,
   "evaluation_estimator_outcomes_observed_before_authorization": false,
+  "evaluation_labels_verified": 30,
+  "exact_frozen_evaluation_archives_staged": 30,
+  "execution_commit_sha": "fd1070b1250e276ef0d17edc2d85622cb1e7a585",
   "forward_registrations_planned": 270,
   "implementation_pull_request": 48,
+  "input_staging_conclusion": "success",
+  "input_staging_job_id": 111201937749,
   "next_gate": "Require exact input staging, all frozen evaluation records, and independent aggregate review before a held-out coverage claim.",
+  "partial_evaluation_numeric_outputs_inspected": false,
+  "preflight_conclusion": "success",
+  "preflight_job_id": 111201849095,
   "record": "m6-phase-b-prospective-execution",
   "reverse_registrations_planned": 270,
   "schema_version": 1,
@@ -14,6 +24,8 @@
   "source_ci_conclusion": "success",
   "source_ci_run_id": 37122250493,
   "source_git_sha": "ee4034c58435ded3e2f9c283e38fa70d78f1d792",
-  "status": "authorized-awaiting-workflow",
-  "workflow_run_id": null
+  "status": "anatomy-computation-active",
+  "unresolved_evaluation_inputs": 0,
+  "workflow_run_id": 37122716790,
+  "workflow_url": "https://github.com/Kushrishi/truemargin/actions/runs/37122716790"
 }
