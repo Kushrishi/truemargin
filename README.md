@@ -8,6 +8,18 @@ The project separates operational variability, pointwise informativeness, numeri
 
 TrueMargin is research software, not a clinical product or medical device.
 
+**Status:** the M4–M6 study and retained-data diagnostics are complete. New experiments are paused. The results support a bounded technical report, not a validated clinical uncertainty method or a published paper.
+
+## Start here
+
+| Reader goal | Link |
+| --- | --- |
+| Understand the findings and limitations | [Technical report](docs/technical_report.md) |
+| Review the held-out calibration result | [M6 evaluation](docs/m6_phase_b_evaluation_result.md) |
+| Understand the large radii and calibration tail | [Failure diagnostics](docs/m6_failure_diagnostics.md) |
+| Check why new experiments are paused | [Contribution review](docs/m4_m6_contribution_review.md) |
+| Check project state and public claim boundaries | [State](research/STATE.md) and [claims](research/CLAIMS.md) |
+
 ## Current evidence
 
 The prospective rebuild produced both negative and positive results before the primary known-ground-truth study:
