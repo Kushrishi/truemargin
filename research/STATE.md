@@ -1,7 +1,7 @@
 # Current research state
 
 **Updated:** 2026-10-03 UTC
-**Status:** active public research program  
+**Status:** completed M4–M6 case study; new experiments paused pending a distinct scientific justification
 **Publication status:** no submitted, accepted, or published paper
 
 This file is the canonical short-form state for TrueMargin. Frozen protocols, amendments, and completed result records remain authoritative for their own scientific choices and outcomes.
