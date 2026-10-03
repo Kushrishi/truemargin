@@ -204,6 +204,19 @@ def test_transport_entrypoints_stop_before_download_without_request(monkeypatch,
     assert list(tmp_path.iterdir()) == []
 
 
+def test_transport_rejects_alternative_input_registry(monkeypatch, tmp_path):
+    import importlib
+    import sys
+
+    monkeypatch.syspath_prepend(str(ROOT / "scripts"))
+    phase = importlib.import_module("m6_phase_b_evaluation")
+    monkeypatch.setattr(phase, "verify_execution_authorization", lambda: {})
+    script = runpy.run_path(str(ROOT / "scripts/stage_m6_phase_b_labels.py"))
+    monkeypatch.setattr(sys, "argv", ["stage", "--freeze", str(tmp_path / "other.json")])
+    with pytest.raises(RuntimeError, match="canonical"):
+        script["main"]()
+
+
 def test_patient_runner_retains_checkpoint_and_provenance_with_synthetic_inputs(
     monkeypatch, tmp_path
 ):

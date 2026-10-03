@@ -91,6 +91,10 @@ RESULT_DEFINING_PATHS = (
     "src/truemargin/io_utils.py",
     "src/truemargin/m6_input_identity.py",
     "src/truemargin/m6_zip_recovery.py",
+    "tests/test_m6_phase_b.py",
+    "tests/test_hierarchical_conformal.py",
+    "tests/test_hyperparameter_known_gt.py",
+    "tests/test_comparators.py",
 )
 
 
@@ -270,6 +274,8 @@ def run_patient(patient_id: str, output_root: Path) -> Path:
         payload.update(
             {
                 **frozen,
+                "forward_member_reasons": list(forward.member_reasons),
+                "reverse_member_reasons": [],
                 "source_git_sha": request["source_git_sha"],
                 "request_blob_sha": git_blob_sha(REQUEST_PATH),
                 "threshold_seal_blob_sha": git_blob_sha(SEAL_PATH),

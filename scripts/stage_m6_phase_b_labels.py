@@ -142,6 +142,9 @@ def main() -> None:
     from m6_phase_b_evaluation import verify_execution_authorization
 
     verify_execution_authorization()
+    canonical = Path(__file__).resolve().parents[1] / "research/M6_PHASE_B_INPUT_FREEZE.json"
+    if args.freeze.resolve() != canonical:
+        raise RuntimeError("Phase B staging requires the canonical source-pinned input freeze")
     record = stage(args.freeze, args.output)
     print(
         "M6_PHASE_B_LABEL_CACHE=VERIFIED evaluation_labels=30 "
