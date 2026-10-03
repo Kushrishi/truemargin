@@ -1,6 +1,6 @@
 # Research roadmap
 
-**Updated:** 2026-10-02  
+**Updated:** 2026-10-03 UTC
 **Active program:** known-ground-truth registration-uncertainty evaluation  
 **Target:** a defensible comparative study of when local registration-uncertainty or quality surrogates are informative about true local spatial error
 
@@ -71,7 +71,7 @@ M5 narrows the interpretation to positive but heterogeneous rank informativeness
 
 ## M6: Numerical calibration
 
-**State:** active. Phase A execution has begun; incomplete attempts are preserved and input transport is being repaired.
+**State:** active. Exact historical calibration archives recovered; a new source-pinned execution gate remains.
 
 The calibration design is prospectively frozen in `docs/m6_calibration_protocol.md`, `research/M6_PROTOCOL_FREEZE.json`, and `research/M6_SPLIT.json`.
 
@@ -106,9 +106,9 @@ Phase A run `37065698410` is incomplete and ineligible for aggregation. Uniform 
 
 ### Next authorized operation
 
-Recover the historical frozen DICOM bytes or independently establish their exact identity. Current official ZIP downloads have mutable transport timestamps; matching current member bytes and frozen geometry alone does not establish historical equality. The unchanged input digests are now checked before decoding and registration. Do not refresh the registry or issue a new calibration request while historical input identity remains unresolved.
+All 30 historical calibration archives have now been recovered with exact equality to the unchanged frozen SHA-256 values. The original preflight artifact was independently verified. The bounded recovery alters only ZIP timestamp fields and accepts no candidate unless its entire archive reproduces the original digest. See `research/M6_INPUT_RECOVERY_RESULT.json` and `docs/m6_phase_a_input_recovery.md`.
 
-After that prerequisite and green implementation-source CI, a separate request may authorize a uniform execution of all 30 frozen calibration anatomies.
+After green merged implementation-source CI, a separate request may authorize a uniform fresh execution of all 30 frozen calibration anatomies. No input registry, protocol, estimator, split, geometry, or failure rule was changed. Evaluation remains sealed; earlier partial outputs remain ineligible for aggregation.
 
 Phase A may run the frozen estimator and comparator, compute calibration scores, and fit the predeclared source-specific HCP thresholds. The 30 evaluation anatomies remain sealed until the Phase A artifact and exact thresholds are reviewed and committed under a separate evaluation authorization.
 

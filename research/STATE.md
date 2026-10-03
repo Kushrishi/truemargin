@@ -1,6 +1,6 @@
 # Current research state
 
-**Updated:** 2026-10-02  
+**Updated:** 2026-10-03 UTC
 **Status:** active public research program  
 **Publication status:** no submitted, accepted, or published paper
 
@@ -131,11 +131,19 @@ The uniform rerun, `37075119713`, passed preflight but failed centralized legacy
 - no primary abstention rule;
 - zero-signal handling frozen before outcomes.
 
-### Current bottleneck
+### Historical input-identity failure
 
 The current official label transport passed hosted preflight and the separately authorized run `37078110203`. All 30 anatomy jobs then failed the frozen-input validation step; nine also failed artifact upload. Aggregation was skipped. The sampled DICOM ZIP digest differed from the unchanged input registry while patient, series, label, and geometry identities matched. Two current official downloads had identical member bytes but mutable ZIP timestamps. Historical frozen image identity has not been established from that observation.
 
-`M6_PHASE_A_DIAGNOSTIC_3.json` records the operational failure without analyzing numerical calibration outcomes. The guard correction in `docs/m6_phase_a_input_identity_failure.md` enforces original input digests before decoding or registration. The bottleneck is recovery or independent verification of the historical frozen DICOM bytes. No new calibration request is issued by this correction.
+`M6_PHASE_A_DIAGNOSTIC_3.json` records the operational failure without analyzing numerical calibration outcomes. The guard correction in `docs/m6_phase_a_input_identity_failure.md` enforces original input digests before decoding or registration. That correction did not authorize a new calibration request. Exact recovery is recorded below.
+
+### Exact historical input recovery
+
+On 2026-10-03 UTC, all 30 calibration DICOM archives were recovered with exact equality to their original frozen SHA-256 digests. The source-pinned historical preflight artifact was independently retrieved and verified, and every registry digest agreed with that original record. A bounded ZIP timestamp search changed no member bytes and accepted only complete-archive digest equality. The unchanged input guard remains before decoding and registration.
+
+See `research/M6_INPUT_RECOVERY_RESULT.json` and `docs/m6_phase_a_input_recovery.md`. No evaluation input or numerical calibration output was inspected. The input registry, statistical design, geometry, and scientific rules remain unchanged.
+
+The next gate is green merged-source CI followed by a separate source-pinned request for a uniform 30-anatomy Phase A rerun. The recovery implementation alone does not authorize that run. All three prior attempts remain ineligible for aggregation.
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 
