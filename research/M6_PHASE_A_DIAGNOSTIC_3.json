@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-03",
+  "record": "m6-phase-a-diagnostic-3",
+  "workflow_run_id": 37078110203,
+  "workflow_source_git_sha": "f68d0f157854fc25b596794f363edd30285630d7",
+  "authorized_result_source_git_sha": "b723638c4c0f4264f2eeee7d8c34a1a3d76bfb20",
+  "status": "failed-frozen-input-identity-boundary",
+  "preflight_passed": true,
+  "label_staging_passed": true,
+  "anatomy_jobs": 30,
+  "anatomy_jobs_failed": 30,
+  "aggregate_job_conclusion": "skipped",
+  "run_eligible_for_aggregation": false,
+  "registration_performed_before_workflow_input_guard": true,
+  "sampled_failure": {
+    "job_id": 111072689231,
+    "patient_id": "Prostate3T-01-0002",
+    "failed_assertion": "record.dicom_zip_sha256 equals frozen.dicom_zip_sha256",
+    "observed_dicom_zip_sha256": "d80ac0d79fe16fd962deb9b0c8bbebc4dd4bce45472927ceca765979c9317c58",
+    "expected_dicom_zip_sha256": "ac120d49d221e5cf8d5cfc563a5e4a4bff817c3e2fa76eeec8e835c6ec91e5ce",
+    "patient_series_label_geometry_match": true
+  },
+  "artifact_upload_failures": [
+    "anatomy (Prostate3T-01-0003)",
+    "anatomy (ProstateDx-01-0019)",
+    "anatomy (Prostate3T-01-0013)",
+    "anatomy (Prostate3T-01-0021)",
+    "anatomy (ProstateDx-01-0042)",
+    "anatomy (ProstateDx-01-0056)",
+    "anatomy (ProstateDx-01-0073)",
+    "anatomy (ProstateDx-01-0082)",
+    "anatomy (ProstateDx-01-0080)"
+  ],
+  "current_transport_probe": {
+    "patient_id": "Prostate3T-01-0002",
+    "downloads": 2,
+    "member_files": 21,
+    "member_bytes_identical": true,
+    "zip_timestamp_metadata_different": true,
+    "archive_sha256": [
+      "d3c7a0b94a62b3bbff4759588af2c3d76d7c246b98b03cccac85a0ffe69eabb4",
+      "5fd4410e6f71dbd1ab1a84c9c3039591ec2b9569d81d1f9c1d9b3dc7807843a2"
+    ],
+    "historical_frozen_input_equality_established": false
+  },
+  "scientific_configuration_changed": false,
+  "input_freeze_changed": false,
+  "numerical_calibration_outputs_analyzed": false,
+  "evaluation_results_accessed": false,
+  "evaluation_access_authorized": false,
+  "new_calibration_request_issued": false,
+  "next_action": "Enforce original input digests before decoding and registration, then recover exact historical frozen archives or establish historical byte identity from retained provenance before any new authorization."
+}
