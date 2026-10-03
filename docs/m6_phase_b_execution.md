@@ -29,3 +29,7 @@ The request pins protocol, amendment, split, evaluation input registry, threshol
 After merged-source CI passes, a separate prospective request may authorize exactly 270 forward and 270 reverse evaluation registrations. Its merge triggers the dedicated workflow. All scientific rules remain fixed. Infrastructure retries may use only the same request and exact inputs; scientific failures are preserved rather than retried with different settings.
 
 The final aggregate identifies implementation, request and seal provenance. Per-anatomy numerical records and point checkpoints are retained along with a SHA-256 manifest. The final aggregate downloads only anatomy artifacts; it excludes raw input cache archives. Results must be independently reviewed before any held-out coverage claim or public-facing summary is updated.
+
+## Numerical runtime
+
+Accepted Phase A anatomy job `111179731638` records CPython 3.12.14, NumPy 2.5.3, SciPy 1.18.1, and SimpleITK 2.5.6. Phase B uses the same Python version and `requirements-m6.txt` constraints. The request must declare those versions, and the execution guard rejects a different installed numerical runtime before staging or registration. Complete anatomy records include the observed versions. These pins preserve the numerical environment; they do not change the estimator or scientific protocol.

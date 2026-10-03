@@ -21,6 +21,7 @@ from truemargin.m6_phase_a import (
     verify_source_files,
 )
 
+RUNTIME_VERSIONS = {"python": "3.12.14", "numpy": "2.5.3", "scipy": "1.18.1", "SimpleITK": "2.5.6"}
 NEAR_ZERO_VALUE = float(np.finfo(np.float64).eps)
 NOMINALS = ("0.80", "0.90", "0.95")
 
@@ -123,6 +124,12 @@ def verify_request(
         "secondary_signal": "ice_mm",
         "nominal_coverages": [0.8, 0.9, 0.95],
         "threshold_changes_authorized": False,
+        "runtime_versions": {
+            "python": "3.12.14",
+            "numpy": "2.5.3",
+            "scipy": "1.18.1",
+            "SimpleITK": "2.5.6",
+        },
     }
     for key, value in expected.items():
         if request.get(key) != value:
@@ -195,6 +202,7 @@ def aggregate_records(
             "source_git_sha": source_git_sha,
             "request_blob_sha": request_blob_sha,
             "threshold_seal_blob_sha": threshold_seal_blob_sha,
+            "runtime_versions": RUNTIME_VERSIONS,
             **freeze[patient],
         }
         for key, value in required.items():

@@ -12,6 +12,7 @@ import hashlib
 import io
 import json
 import os
+import platform
 import runpy
 import tempfile
 import zipfile
@@ -19,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+import scipy
 import SimpleITK as sitk
 
 from truemargin import comparators
@@ -67,6 +69,7 @@ PINNED_PATHS = {
     "calibration_aggregate": AGGREGATE_PATH,
 }
 RESULT_DEFINING_PATHS = (
+    "requirements-m6.txt",
     "scripts/m6_phase_b_evaluation.py",
     "scripts/recover_m6_phase_b_inputs.py",
     "scripts/stage_m6_phase_b_labels.py",
@@ -99,12 +102,22 @@ RESULT_DEFINING_PATHS = (
 
 
 def verify_execution_authorization() -> dict[str, Any]:
-    return verify_request(
+    request = verify_request(
         repo_root=REPO_ROOT,
         request_path=REQUEST_PATH,
         pinned_paths=PINNED_PATHS,
         result_defining_paths=RESULT_DEFINING_PATHS,
     )
+
+    observed = {
+        "python": platform.python_version(),
+        "numpy": np.__version__,
+        "scipy": scipy.__version__,
+        "SimpleITK": sitk.Version_VersionString(),
+    }
+    if observed != request["runtime_versions"]:
+        raise RuntimeError(f"Phase B numerical runtime differs from calibration: {observed}")
+    return request
 
 
 def load_geometry_freeze(path: Path) -> dict[str, dict[str, str]]:
@@ -274,6 +287,7 @@ def run_patient(patient_id: str, output_root: Path) -> Path:
         payload.update(
             {
                 **frozen,
+                "runtime_versions": request["runtime_versions"],
                 "forward_member_reasons": list(forward.member_reasons),
                 "reverse_member_reasons": [],
                 "source_git_sha": request["source_git_sha"],
@@ -374,6 +388,12 @@ def run_patient(patient_id: str, output_root: Path) -> Path:
         "source_git_sha": request["source_git_sha"],
         "request_blob_sha": git_blob_sha(REQUEST_PATH),
         "threshold_seal_blob_sha": git_blob_sha(SEAL_PATH),
+        "runtime_versions": {
+            "python": platform.python_version(),
+            "numpy": np.__version__,
+            "scipy": scipy.__version__,
+            "SimpleITK": sitk.Version_VersionString(),
+        },
         "evaluation_accessed": True,
     }
     output_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")

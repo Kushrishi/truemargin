@@ -27,12 +27,12 @@ jobs:
 
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.12.14"
 
       - name: Install package and research dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[realdata,dev]"
+          python -m pip install -c requirements-m6.txt -e ".[realdata,dev]"
 
       - name: Verify source-pinned Phase B authorization
         run: python scripts/m6_phase_b_evaluation.py --verify-only
@@ -86,12 +86,12 @@ jobs:
 
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.12.14"
 
       - name: Install package and transport dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[realdata]"
+          python -m pip install -c requirements-m6.txt -e ".[realdata]"
 
       - name: Verify source-pinned Phase B authorization
         run: python scripts/m6_phase_b_evaluation.py --verify-only
@@ -142,12 +142,12 @@ jobs:
 
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.12.14"
 
       - name: Install package and execution dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[realdata]"
+          python -m pip install -c requirements-m6.txt -e ".[realdata]"
 
       - name: Verify source-pinned Phase B authorization
         run: python scripts/m6_phase_b_evaluation.py --verify-only
@@ -215,12 +215,12 @@ jobs:
 
       - uses: actions/setup-python@v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.12.14"
 
       - name: Install package
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e ".[realdata]"
+          python -m pip install -c requirements-m6.txt -e ".[realdata]"
 
       - name: Verify source-pinned Phase B authorization
         run: python scripts/m6_phase_b_evaluation.py --verify-only
