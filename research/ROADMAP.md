@@ -102,11 +102,13 @@ Completed pre-result gates:
 7. a prospective physical-distance boundary amendment was applied uniformly to all 60 anatomies;
 8. amended deformation-only preflight completed **60 of 60** anatomies with zero failures.
 
-Phase A run `37065698410` is incomplete and ineligible for aggregation. Uniform rerun `37075119713` failed label staging before any anatomy job started. No complete Phase A thresholds have been established, and evaluation remains sealed. See the two Phase A diagnostic records.
+Phase A run `37065698410` is incomplete and ineligible for aggregation. Uniform rerun `37075119713` failed label staging before any anatomy job started. Run `37078110203` passed label staging but all 30 anatomy jobs failed frozen-input validation. Aggregation was skipped, and nine artifact uploads also failed. No complete Phase A thresholds have been established, and evaluation remains sealed. See the three Phase A diagnostic records.
 
 ### Next authorized operation
 
-Validate the current-host official label transport amendment and main CI, then create a separate source-pinned Phase A request for a uniform execution of all 30 frozen calibration anatomies.
+Recover the historical frozen DICOM bytes or independently establish their exact identity. Current official ZIP downloads have mutable transport timestamps; matching current member bytes and frozen geometry alone does not establish historical equality. The unchanged input digests are now checked before decoding and registration. Do not refresh the registry or issue a new calibration request while historical input identity remains unresolved.
+
+After that prerequisite and green implementation-source CI, a separate request may authorize a uniform execution of all 30 frozen calibration anatomies.
 
 Phase A may run the frozen estimator and comparator, compute calibration scores, and fit the predeclared source-specific HCP thresholds. The 30 evaluation anatomies remain sealed until the Phase A artifact and exact thresholds are reviewed and committed under a separate evaluation authorization.
 
