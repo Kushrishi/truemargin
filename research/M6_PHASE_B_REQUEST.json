@@ -1,0 +1,57 @@
+{
+  "authorized_mode": "phase-b-evaluation-only",
+  "calibration_anatomies_authorized": 0,
+  "calibration_fit_authorized": false,
+  "date": "2026-10-03",
+  "evaluation_anatomies_authorized": 30,
+  "evaluation_authorized": true,
+  "forward_registrations_planned": 270,
+  "implementation_pull_request": 48,
+  "milestone": "M6",
+  "nominal_coverages": [
+    0.8,
+    0.9,
+    0.95
+  ],
+  "pinned_blobs": {
+    "amendment": "735eef1c04da35ab9d8ccab7398877d11e7ab170",
+    "calibration_aggregate": "fe8eecd464abc46907cf237add6e7dc36adfc428",
+    "input_freeze": "1e3361b894f6d22cc317cf2ffa50763c2bb51cce",
+    "protocol": "507c6fe8bdb92e06373545ef112a5be142e1b3ce",
+    "split": "ea96f506d1790af092733c29067fb54d6d44920d",
+    "threshold_seal": "1c3bdd6133994e22bce58660cf25ec85cab62614"
+  },
+  "points_per_anatomy": 50,
+  "primary_signal": "sigma_mm",
+  "purpose": "Evaluate the frozen held-out anatomies against exact sealed calibration thresholds; preserve failures and continuous coverage gaps.",
+  "result_bearing_authorized": true,
+  "reverse_registrations_planned": 270,
+  "runtime_versions": {
+    "SimpleITK": "2.5.6",
+    "numpy": "2.5.3",
+    "python": "3.12.14",
+    "scipy": "1.18.1"
+  },
+  "schema_version": 1,
+  "scientific_boundary": {
+    "calibration_refitting_authorized": false,
+    "estimator_changed": false,
+    "evaluation_estimator_outcomes_observed_before_authorization": false,
+    "failure_policy_changed": false,
+    "primary_abstention_authorized": false,
+    "sampling_changed": false,
+    "split_changed": false,
+    "three_t_ice_calibration_available": false
+  },
+  "sealed_phase_a": {
+    "aggregate_sha256": "66e926e68912ae2e4fa039f5b78194346f7dd638f32230aad0a629f135087e55",
+    "result_record": "research/M6_PHASE_A_RESULT.json",
+    "threshold_seal": "research/M6_PHASE_A_THRESHOLD_SEAL.json",
+    "workflow_run_id": 37114827455
+  },
+  "secondary_signal": "ice_mm",
+  "source_ci_conclusion": "success",
+  "source_ci_run_id": 37122250493,
+  "source_git_sha": "ee4034c58435ded3e2f9c283e38fa70d78f1d792",
+  "threshold_changes_authorized": false
+}

@@ -95,7 +95,7 @@ These findings do not alter the M4 inference. They show that the positive anatom
 
 ## M6 calibration state
 
-M6 Phase A calibration is complete and accepted. Exact source-specific thresholds are sealed; Phase B held-out evaluation is not yet authorized.
+M6 Phase A calibration is complete and accepted. Exact source-specific thresholds are sealed; Phase B implementation has passed merged-source CI and a separate source-pinned request now authorizes held-out evaluation. No held-out coverage result is accepted yet.
 
 Completed before any M6 estimator outcome:
 
@@ -155,7 +155,7 @@ ICE completed in 29 of 30 anatomies. `Prostate3T-01-0013` retains three reverse-
 
 Phase A is allowed to run the frozen forward estimator and reverse ICE comparator, compute the predeclared calibration scores, and fit source-specific HCP thresholds. It must not run any of the 30 evaluation anatomies.
 
-The complete Phase A artifact has been reviewed and its exact thresholds sealed. The next operation is to implement and verify Phase B against the unchanged protocol, pass source CI, and commit a separate prospective evaluation request before accessing evaluation outcomes.
+The complete Phase A artifact has been reviewed and its exact thresholds sealed. Phase B implementation was merged in PR 48 at `ee4034c58435ded3e2f9c283e38fa70d78f1d792` and passed merged-source CI `37122250493` with 242 tests. The separate `research/M6_PHASE_B_REQUEST.json` pins that implementation, all scientific identities, the exact threshold seal, and the calibration-matched numerical runtime. It authorizes only the 30 frozen evaluation anatomies, with no threshold refitting or scientific configuration change. Execution and input-staging status is recorded in `research/M6_PHASE_B_EXECUTION_STATUS.json`. No complete evaluation aggregate or held-out coverage claim has been accepted.
 
 The M4 estimator, M5 failure record, M6 split, ROI rule, deformation rule, score definition, zero-signal rule, and failure policy must not be changed in response to Phase A outcomes.
 

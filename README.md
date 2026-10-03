@@ -62,7 +62,7 @@ M6 separates fitting error-radius multipliers from testing their coverage on uns
 
 ICE completed 29 of 30 anatomies. The retained reverse-registration failure makes ICE calibration unassessable for the 3T source under the frozen policy; the diagnosis-source comparator remains assessable. The 95% HCP sentinel is positive infinity at 15 calibration groups.
 
-These are calibration-fit results. **Held-out coverage has not yet been tested.** The 30 evaluation anatomies remain sealed pending a separately pinned Phase B implementation and authorization. No clinical validity or superiority over ICE is claimed.
+These are calibration-fit results. **Held-out coverage has not yet been tested.** A separately pinned Phase B request now authorizes the 30 held-out evaluation anatomies against the exact sealed thresholds; execution and result review remain pending. No clinical validity or superiority over ICE is claimed.
 
 See [the calibration result](docs/m6_phase_a_calibration_result.md), [accepted evidence](research/M6_PHASE_A_RESULT.json), and [threshold seal](research/M6_PHASE_A_THRESHOLD_SEAL.json).
 
