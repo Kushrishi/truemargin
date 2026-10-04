@@ -41,9 +41,7 @@ def _dataset(tmp_path: Path, cases: tuple[str, ...] = ("001", "002")) -> Path:
         _write_image(masks / f"case_{case_id}_exp.nii.gz", value=1.0)
         _write_image(masks / f"case_{case_id}_insp.nii.gz", value=1.0)
 
-    (keypoints / "case_001.csv").write_text(
-        "THIS IS NOT A LANDMARK FILE\n", encoding="utf-8"
-    )
+    (keypoints / "case_001.csv").write_text("THIS IS NOT A LANDMARK FILE\n", encoding="utf-8")
     return root
 
 
