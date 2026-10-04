@@ -145,12 +145,17 @@ def inspect_pair(pair: LungCTPair) -> LungCTGeometry:
     ]
     diagonal = float(math.sqrt(sum(value * value for value in extents)))
 
+    size_xyz = (fixed_size[0], fixed_size[1], fixed_size[2])
+    shape_zyx = (int(fixed.shape[0]), int(fixed.shape[1]), int(fixed.shape[2]))
+    spacing_xyz = (fixed_spacing[0], fixed_spacing[1], fixed_spacing[2])
+    origin_xyz = (fixed_origin[0], fixed_origin[1], fixed_origin[2])
+
     return LungCTGeometry(
         case_id=pair.case_id,
-        size_xyz=fixed_size,
-        shape_zyx=tuple(int(value) for value in fixed.shape),
-        spacing_xyz=fixed_spacing,
-        origin_xyz=fixed_origin,
+        size_xyz=size_xyz,
+        shape_zyx=shape_zyx,
+        spacing_xyz=spacing_xyz,
+        origin_xyz=origin_xyz,
         direction=fixed_direction,
         diagonal_mm=diagonal,
         fixed_min=float(fixed.min()),
