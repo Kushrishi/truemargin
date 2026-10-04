@@ -38,8 +38,7 @@ def _read_phase_a(root: Path, patient_id: str) -> dict:
 def _evaluate(row: dict, multiplier: float, scale, field: str) -> dict:
     radii = [multiplier * scale(value) for value in row[field]]
     coverage = sum(
-        error <= radius
-        for error, radius in zip(row["known_error_mm"], radii, strict=True)
+        error <= radius for error, radius in zip(row["known_error_mm"], radii, strict=True)
     ) / len(radii)
     return {
         "coverage": coverage,
@@ -70,9 +69,7 @@ def _summarize(folds: list[dict], method: str) -> dict:
         "mean_coverage": statistics.fmean(row["coverage"] for row in rows),
         "median_coverage": statistics.median(row["coverage"] for row in rows),
         "mean_radius_mm": statistics.fmean(row["mean_radius_mm"] for row in rows),
-        "median_anatomy_radius_mm": statistics.median(
-            row["median_radius_mm"] for row in rows
-        ),
+        "median_anatomy_radius_mm": statistics.median(row["median_radius_mm"] for row in rows),
         "maximum_anatomy_mean_radius_mm": max(row["mean_radius_mm"] for row in rows),
     }
 
@@ -121,9 +118,7 @@ def validate(root: Path) -> dict:
 
             ice_rows = [*multiplier_rows, holdout]
             if all(row.get("ice_complete") is True for row in ice_rows):
-                ice_multiplier = threshold(
-                    multiplier_rows, lambda value: value, nominal="0.90"
-                )
+                ice_multiplier = threshold(multiplier_rows, lambda value: value, nominal="0.90")
                 models["ice"] = {
                     "assessable": True,
                     "multiplier": ice_multiplier,
