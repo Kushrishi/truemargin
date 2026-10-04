@@ -13,9 +13,10 @@ import hashlib
 import json
 import math
 import statistics
+from fractions import Fraction
 from pathlib import Path
 
-from m6_scale_development import fit_affine, threshold
+from m6_scale_development import fit_affine
 
 
 def _ordered(patient_ids):
@@ -33,6 +34,24 @@ def _read_phase_a(root: Path, patient_id: str) -> dict:
         if len(row.get(field, [])) != 50:
             raise ValueError(f"{patient_id}: {field} must contain 50 points")
     return row
+
+
+def _threshold(groups: list[dict], scale, field: str, nominal: str = "0.90") -> float:
+    scores = []
+    for row in groups:
+        values = row.get(field, [])
+        if len(values) != 50 or len(row.get("known_error_mm", [])) != 50:
+            raise ValueError(f"{field} and known_error_mm must contain 50 points")
+        for value, error in zip(values, row["known_error_mm"], strict=True):
+            denominator = scale(value)
+            if not math.isfinite(denominator) or denominator <= 0:
+                raise ValueError("scale must be finite and positive")
+            scores.append(error / denominator)
+
+    if not groups:
+        raise ValueError("requires at least one calibration anatomy")
+    rank = math.ceil(Fraction(nominal) * (len(groups) + 1) * 50)
+    return sorted(scores)[rank - 1] if rank <= len(scores) else math.inf
 
 
 def _evaluate(row: dict, multiplier: float, scale, field: str) -> dict:
@@ -108,7 +127,7 @@ def validate(root: Path) -> dict:
 
             models = {}
             for name, (field, scale) in model_defs.items():
-                multiplier = threshold(multiplier_rows, scale, nominal="0.90")
+                multiplier = _threshold(multiplier_rows, scale, field, nominal="0.90")
                 if not math.isfinite(multiplier):
                     raise ValueError(f"{source}/{holdout_id}/{name}: non-finite 90% multiplier")
                 models[name] = {
@@ -118,7 +137,9 @@ def validate(root: Path) -> dict:
 
             ice_rows = [*multiplier_rows, holdout]
             if all(row.get("ice_complete") is True for row in ice_rows):
-                ice_multiplier = threshold(multiplier_rows, lambda value: value, nominal="0.90")
+                ice_multiplier = _threshold(
+                    multiplier_rows, lambda value: value, "ice_mm", nominal="0.90"
+                )
                 models["ice"] = {
                     "assessable": True,
                     "multiplier": ice_multiplier,
