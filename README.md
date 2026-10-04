@@ -73,11 +73,28 @@ pytest
 
 Some research workflows require optional dependencies and source data described in the corresponding protocol or reproduction document.
 
+## Calibration-only development check
+
+A leave-one-anatomy-out development analysis used only the original Phase-A calibration cohort; it did not open the previously observed Phase-B evaluation records.
+
+At nominal 90%, the result was source-dependent:
+
+| Source | Scale | Mean coverage | Mean radius |
+| --- | --- | ---: | ---: |
+| Prostate-3T | constant | 96.8% | 2.31 mm |
+| Prostate-3T | affine | 98.0% | 2.66 mm |
+| Prostate-Diagnosis | constant | 98.9% | 4.01 mm |
+| Prostate-Diagnosis | affine | 95.5% | 3.15 mm |
+
+The affine scale is therefore not a uniform improvement: the simple constant radius is smaller in the 3T development folds, while the affine scale is smaller in the Diagnosis folds and still exceeds 90% mean coverage. The overlapping folds are development evidence, not an independent confirmation.
+
+[Read the calibration-only analysis](docs/m6_calibration_only_scale_validation.md)
+
 ## Current direction
 
-The completed studies show a useful but imperfect relationship between ensemble variability and true error. The next research decision is whether an adaptive error-scale model provides enough benefit over simpler constant or inverse-consistency-based alternatives to justify a fresh external validation study.
+A fresh validation study is justified only around the sharper question exposed by this result: **when does local adaptation improve the coverage/radius tradeoff over a constant bound and inverse-consistency error, and when does it not?** Independent landmark-based registration error is preferred over another outcome-selected synthetic study.
 
-No new registration result is claimed by that development work.
+No accepted M4–M6 result is changed by the development analysis.
 
 ## Limits
 
