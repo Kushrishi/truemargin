@@ -37,6 +37,11 @@ image. The held-out test cases have manual landmarks.
 The challenge-preprocessed images are the analysis inputs. The original-resolution
 8.1 GB archive is not required for this study.
 
+The Zenodo records are marked Open, but their rendered license field does not
+currently identify a specific redistribution license. Do not commit or
+redistribute the image/landmark archives in this repository. Re-check the
+dataset terms before any packaged data release.
+
 ## Frozen estimator
 
 Do not tune the estimator on lung landmark outcomes.
