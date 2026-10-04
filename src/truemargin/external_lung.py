@@ -14,7 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-_SCAN_PATTERN = re.compile(r"^case_(?P<case>\\d{3})_(?P<phase>exp|insp)\\.nii\\.gz$")
+_SCAN_PATTERN = re.compile(r"^case_(?P<case>\d{3})_(?P<phase>exp|insp)\.nii\.gz$")
 
 
 @dataclass(frozen=True)
@@ -68,9 +68,7 @@ def discover_training_pairs(root: Path) -> list[LungCTPair]:
         found = phases[case_id]
         missing = {"exp", "insp"} - set(found)
         if missing:
-            raise ValueError(
-                f"case_{case_id} is incomplete; missing: {', '.join(sorted(missing))}"
-            )
+            raise ValueError(f"case_{case_id} is incomplete; missing: {', '.join(sorted(missing))}")
 
         masks = root / "lungMasks"
         fixed_mask = masks / f"case_{case_id}_exp.nii.gz"
@@ -143,8 +141,7 @@ def inspect_pair(pair: LungCTPair) -> LungCTGeometry:
         raise ValueError(f"case_{pair.case_id}: image arrays contain non-finite values")
 
     extents = [
-        max(size - 1, 0) * spacing
-        for size, spacing in zip(fixed_size, fixed_spacing, strict=True)
+        max(size - 1, 0) * spacing for size, spacing in zip(fixed_size, fixed_spacing, strict=True)
     ]
     diagonal = float(math.sqrt(sum(value * value for value in extents)))
 
