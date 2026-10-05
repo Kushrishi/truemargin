@@ -1,6 +1,6 @@
 # Contribution review after M4–M6
 
-**Date:** 2026-10-03  
+**Date:** 2026-10-03
 **Decision:** prepare a bounded technical report; do not start M7 or a method-superiority manuscript yet. This is an internal scientific assessment, not independent peer review or a publication prediction.
 
 ## What the completed work establishes
