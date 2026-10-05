@@ -8,7 +8,7 @@ does not read the keypoints directory.
 
 Expected extracted training layout:
 
-\`\`\`text
+```text
 <root>/
   scans/
     case_001_exp.nii.gz
@@ -20,7 +20,7 @@ Expected extracted training layout:
     ...
   keypoints/
     ...
-\`\`\`
+```
 
 For each discovered pair it checks:
 
@@ -37,9 +37,9 @@ the current estimator assumes, preflight fails before registration.
 
 Run after downloading/extracting the official training archive:
 
-\`\`\`bash
+```bash
 python scripts/preflight_external_lung.py /path/to/extracted/training
-\`\`\`
+```
 
 The command expects 20 complete training pairs by default and emits JSON with
 "landmarks_accessed": false.

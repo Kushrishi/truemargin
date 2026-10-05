@@ -1,6 +1,6 @@
 # TrueMargin
 
-TrueMargin is a medical-image-computing research project asking a focused question:
+TrueMargin studies uncertainty in deformable image registration:
 
 > **When does local variability from deformable image registration contain useful information about true local spatial error?**
 
@@ -57,12 +57,12 @@ The repository preserves protocols, machine-readable results, implementation his
 
 ## Repository
 
-- `src/` — reusable analysis code
-- `scripts/` — experiment and verification entry points
-- `tests/` — numerical and invariant checks
-- `research/` — protocols and accepted result records
-- `docs/` — reports, methods, and interpretation
-- `results/` — retained derived outputs
+- `src/`: analysis code
+- `scripts/`: experiment and verification entry points
+- `tests/`: numerical and invariant checks
+- `research/`: protocols and accepted result records
+- `docs/`: reports, methods, and interpretation
+- `results/`: retained derived outputs
 
 For a development checkout with Python 3.12:
 
@@ -93,6 +93,10 @@ The affine scale is therefore not a uniform improvement: the simple constant rad
 ## Current direction
 
 A fresh validation study is justified only around the sharper question exposed by this result: **when does local adaptation improve the coverage/radius tradeoff over a constant bound and inverse-consistency error, and when does it not?** Independent landmark-based registration error is preferred over another outcome-selected synthetic study.
+
+The external lung CT protocol and training-image geometry preflight are implemented. Archive verification and estimator feasibility on training images come next, before manual test landmarks are read. No external-validation result is available.
+
+[External-validation protocol](docs/external_lung_validation_protocol.md) · [Training preflight](docs/external_lung_training_preflight.md)
 
 No accepted M4–M6 result is changed by the development analysis.
 
