@@ -2,7 +2,7 @@
 
 Updated October 4, 2026.
 
-The controlled known-deformation study and held-out calibration study are complete. Further scale development has produced source-dependent results. An external lung-CT validation protocol and training-image preflight are implemented, but that study has not run. No paper has been submitted or published.
+The controlled known-deformation study and held-out calibration study are complete. Further scale development has produced source-dependent results. An external lung-CT validation protocol and training-image preflight are implemented, but that study has not run. The dataset volume/pair count must be reconciled against the archive manifest before execution. No paper has been submitted or published.
 
 ## Question
 

@@ -47,3 +47,9 @@ The command expects 20 complete training pairs by default and emits JSON with
 This step does not establish estimator feasibility. The next step, after archive
 identity and geometry pass, is an operational estimator-only training preflight.
 Held-out manual test landmarks remain outside that step.
+
+## Dataset-count check before the external run
+
+The validation protocol describes 20 training volumes and 10 test volumes, while this command defaults to 20 complete training pairs. A volume count and a pair count are different units. Before registration, inspect the official archive manifest, document the actual pair identities and reconcile the protocol wording with the preflight expectation. The Zenodo record verifies the archive checksum but does not resolve the count in its page description. Do not change the expected count simply to make a failed preflight pass.
+
+This check is outstanding. No external validation result should be inferred from the existence of the preflight command.
