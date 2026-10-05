@@ -4,6 +4,10 @@ TrueMargin studies uncertainty in deformable image registration:
 
 > **When does local variability from deformable image registration contain useful information about true local spatial error?**
 
+**Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
+
+**Status:** controlled studies complete; prospective external landmark validation is next.
+
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
 [Visual study](https://kushrishi.com/research/truemargin) · [Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md)
