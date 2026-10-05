@@ -1,6 +1,6 @@
 # Registration spread, local error and conservative bounds
 
-**TrueMargin technical report — October 3, 2026**  
+**TrueMargin technical report, October 3, 2026**  
 This is a reproducible empirical case study, not a peer-reviewed paper or clinical validation.
 
 ## Question and design
