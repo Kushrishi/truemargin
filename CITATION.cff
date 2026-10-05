@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this software or its research records, cite this repository and the exact commit."
+type: software
+title: "TrueMargin"
+authors:
+  - family-names: Rishi
+    given-names: Kush
+repository-code: "https://github.com/Kushrishi/truemargin"
+url: "https://kushrishi.com"

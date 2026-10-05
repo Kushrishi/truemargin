@@ -6,6 +6,10 @@ TrueMargin studies uncertainty in deformable image registration:
 
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
+[Visual study](https://kushrishi.com/research/truemargin) · [Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md)
+
+![TrueMargin controlled association, blind spots and calibrated bounds](docs/figures/m4_m6_evidence.png)
+
 ## Main findings
 
 A controlled known-deformation study evaluated 30 cases across 10 held-out anatomies. The registration-hyperparameter ensemble produced a median anatomy-level Spearman association of **0.6841** with known local error, and all **10 of 10** anatomy-level associations were positive.
@@ -55,6 +59,13 @@ The resulting bounds are conservative, and the 95% thresholds are infinite under
 
 The repository preserves protocols, machine-readable results, implementation history, and negative findings so the reported conclusions can be checked without rewriting the experimental record.
 
+## Method
+
+1. Register each image pair with nine fixed hyperparameter settings.
+2. Measure local variation in the displacement fields.
+3. Compare that spread with known error and independent signals.
+4. Analyze blind spots and calibrated bounds separately.
+
 ## Repository
 
 - `src/`: analysis code
@@ -90,15 +101,15 @@ The affine scale is therefore not a uniform improvement: the simple constant rad
 
 [Read the calibration-only analysis](docs/m6_calibration_only_scale_validation.md)
 
-## Current direction
+## Next study
 
-A fresh validation study is justified only around the sharper question exposed by this result: **when does local adaptation improve the coverage/radius tradeoff over a constant bound and inverse-consistency error, and when does it not?** Independent landmark-based registration error is preferred over another outcome-selected synthetic study.
+Test whether local adaptation improves the coverage/radius tradeoff against a constant bound and inverse-consistency error on independent landmark-based registration error.
 
 The external lung CT protocol and training-image geometry preflight are implemented. Archive verification and estimator feasibility on training images come next, before manual test landmarks are read. No external-validation result is available.
 
 [External-validation protocol](docs/external_lung_validation_protocol.md) · [Training preflight](docs/external_lung_training_preflight.md)
 
-No accepted M4–M6 result is changed by the development analysis.
+The development analysis leaves the accepted M4 to M6 results unchanged.
 
 ## Limits
 

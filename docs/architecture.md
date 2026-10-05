@@ -92,13 +92,13 @@ ground-truth validation path.
 
 The project deliberately distinguishes:
 
-1. **mechanism viability** — can an estimator be computed reproducibly and is it
+1. **mechanism viability**: can an estimator be computed reproducibly and is it
    non-inert?
-2. **informativeness** — does a larger surrogate value rank larger known error?
-3. **calibration** — does a numerical uncertainty scale have the stated
+2. **informativeness**: does a larger surrogate value rank larger known error?
+3. **calibration**: does a numerical uncertainty scale have the stated
    coverage?
-4. **blind spots** — where is error high despite a low surrogate value?
-5. **robustness/generalization** — do conclusions survive deformation regimes,
+4. **blind spots**: where is error high despite a low surrogate value?
+5. **robustness/generalization**: do conclusions survive deformation regimes,
    anatomies, datasets, and registration families?
 
 Passing one layer does not imply the next.
