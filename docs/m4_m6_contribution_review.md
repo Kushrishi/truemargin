@@ -1,6 +1,6 @@
 # Contribution review after M4–M6
 
-**Date:** 2026-10-03  
+**Date:** 2026-10-03
 **Decision:** prepare a bounded technical report; do not start M7 or a method-superiority manuscript yet. This is an internal scientific assessment, not independent peer review or a publication prediction.
 
 ## What the completed work establishes
@@ -13,7 +13,7 @@
 
 The useful finding is the separation of operational variability, local ranking, numerical radius size and failure behavior. None of those axes alone establishes a dependable clinical error estimate. The estimator and scientific boundaries remain unchanged.
 
-## Closest research and novelty pressure
+## Related work
 
 Meyer et al. already use hyperparameter perturbations to construct registration ensembles and voxelwise uncertainty ellipsoids for dose accumulation. Our nine-member perturbation mechanism is not itself new. Their clinical application and our synthetic error audit answer different questions; we have not reproduced their pipeline and cannot rank the methods across studies. [Primary abstract](https://pubmed.ncbi.nlm.nih.gov/40239820/), DOI 10.1016/j.ijrobp.2025.04.004.
 
@@ -42,7 +42,7 @@ The comparison was chosen **after evaluation outcomes were observed**. It is not
 
 Mean radius here is the equal-anatomy average of each anatomy's mean radius. It differs from M6's median-of-anatomy-medians summary and retains large-radius tails. At nominal 90%, sigma has a smaller anatomy mean radius in only 1/15 3T and 2/15 Diagnosis anatomies. Its source mean radius is 2.11 and 3.62 times the respective constant radius. This does **not** establish statistical dominance: achieved coverage differs, the comparison is post-outcome, and no clinical radius tolerance has been justified. It establishes a limitation: adaptive efficiency has not been demonstrated, and high coverage alone does not resolve that question.
 
-The exploration has no tuned intercept, clipping, epsilon floor, source pooling, threshold sweep or evaluation-selected mapping. Do not use these results to replace the accepted primary study, claim coverage-matched superiority, or design a favorable stress axis. [Retained exploratory record](../results/m6_exploratory/constant_radius_comparison.json).
+The exploration has no tuned intercept, clipping, epsilon floor, source pooling, threshold sweep or evaluation-selected mapping. These exploratory results leave the accepted primary study unchanged and do not establish coverage-matched superiority. [Retained exploratory record](../results/m6_exploratory/constant_radius_comparison.json).
 
 Reproduce it from the repository root:
 
@@ -58,6 +58,6 @@ A focused technical report is justified now: a reproducible case study of one cl
 
 The resulting [technical report](technical_report.md) includes four evidence panels: M4 comparator associations, M5 case-level inversions and blind spots, M6 held-out coverage with radius tails, and the explicitly exploratory constant-radius comparison. Include exact protocol/result provenance, failure denominators and reproduction commands. Describe the synthetic target accurately and keep clinical claims out.
 
-Before a full manuscript or new result-bearing study, a domain reviewer would need to identify a distinct claim worth testing beyond this case study and one decisive missing experiment. Preparing that reviewer brief is authorized; sending it to anyone is not. No M7 protocol or execution request is created by this review. The 20 challenge leaderboard/test anatomies stay untouched.
+The completed report can form the basis of a manuscript, subject to an assessment of its contribution and venue suitability. It reports evidence about one ensemble rather than introducing a new uncertainty method.
 
-For the career portfolio, complete the report and release surface, then prioritize the bounded C++ inference/replay engineering application. TrueMargin remains available for a specific scientifically motivated extension; it should not become an open-ended attempt to manufacture novelty.
+Subsequent calibration-only development is documented in [the validation analysis](m6_calibration_only_scale_validation.md). The [external lung-CT protocol](external_lung_validation_protocol.md) proposes a separate study on new data. That extension has not produced results, and none of its future findings would change the completed study's methods or outcomes.
