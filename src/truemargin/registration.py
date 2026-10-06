@@ -111,6 +111,7 @@ def baseline_bspline_registration(
     center_first: bool = False,
     metric_bins: int = 50,
     gradient_convergence_tolerance: float = 1e-5,
+    progress_callback=None,
 ):
     """Classic deformable (B-spline) registration via SimpleITK.
 
@@ -188,6 +189,12 @@ def baseline_bspline_registration(
     )
     reg.SetInterpolator(sitk.sitkLinear)
     reg.SetInitialTransform(tx, inPlace=True)
+    if progress_callback is not None:
+        # Observation only: never changes optimizer parameters or execution.
+        reg.AddCommand(
+            sitk.sitkIterationEvent,
+            lambda: progress_callback(reg.GetOptimizerIteration(), reg.GetMetricValue()),
+        )
     reg.Execute(f, m)
 
     disp_filter = sitk.TransformToDisplacementFieldFilter()

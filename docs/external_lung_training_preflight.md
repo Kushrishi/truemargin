@@ -18,8 +18,7 @@ Expected extracted training layout:
     case_001_exp.nii.gz
     case_001_insp.nii.gz
     ...
-  keypoints/
-    ...
+  # keypoints are not needed or read by this command
 ```
 
 For each discovered pair it checks:
@@ -52,4 +51,4 @@ Held-out manual test landmarks remain outside that step.
 
 The validation protocol describes 20 training volumes and 10 test volumes, while this command defaults to 20 complete training pairs. A volume count and a pair count are different units. Before registration, inspect the official archive manifest, document the actual pair identities and reconcile the protocol wording with the preflight expectation. The Zenodo record verifies the archive checksum but does not resolve the count in its page description. Do not change the expected count simply to make a failed preflight pass.
 
-This check is outstanding. No external validation result should be inferred from the existence of the preflight command.
+**Resolved 2026-10-06:** the checksum-verified official archives contain 20 complete training pairs (001–020) and ten complete test pairs (021–030). The existing expected count remains unchanged. All twenty training pairs passed geometry inspection. The first unchanged-estimator operational member exceeded a prospective 180-second budget, so operational feasibility remains unresolved and no test-landmark outcome was opened. See the [archive and operational record](external_preflight_2026_10.md). No external validation result follows from these preflight checks.
