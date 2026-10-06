@@ -77,3 +77,12 @@ Archive identities and candidate test IDs are now known. The result-bearing free
 - frozen-run manifest authorizing outcome access: **NOT CREATED**.
 
 Do not label a document a completed freeze while hashes/tests/feasibility are missing. The next gate is adequate unchanged-estimator operational feasibility plus tested external coordinate/analysis tooling. Only then seal the full run and open manual test landmarks. No external association, comparator result or publication conclusion is available.
+# Optimizer diagnostics boundary
+
+The training probe now records SimpleITK's optimizer stop description, final
+iteration and metric through an observation-only completion hook. Earlier
+in-flight cohort processes retain their original interface and do **not**
+provide this stop description. Their `completed` status means execution
+returned a finite correctly shaped field, not necessarily optimizer convergence.
+Repeated iteration numbers can include line-search evaluations; do not count
+them as new optimizer iterations or alter the frozen optimizer settings.
