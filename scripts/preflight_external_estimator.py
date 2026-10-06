@@ -7,6 +7,7 @@ apply a prospective resource budget without changing estimator parameters.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import resource
 import sys
@@ -55,6 +56,10 @@ def main() -> None:
         "sitk_threads": sitk.ProcessObject.GetGlobalDefaultNumberOfThreads(),
         "input_shape_zyx": list(fixed.shape),
         "spacing_xyz": list(geometry.spacing_xyz),
+        "probe_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "estimator_source_sha256": hashlib.sha256(
+            Path(baseline_bspline_registration.__code__.co_filename).read_bytes()
+        ).hexdigest(),
     }
     try:
         print(json.dumps({**record, "event": "member_start"}), file=sys.stderr, flush=True)
