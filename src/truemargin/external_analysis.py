@@ -92,11 +92,16 @@ def aggregate_cases(cases, expected_ids, seed=20261006):
         if not isinstance(methods, dict) or "spread" not in methods:
             raise ValueError("case must contain target spread statistics")
         for record in methods.values():
-            if not isinstance(record, dict) or record.get("status") not in {
-                "complete",
-                "undefined",
-                "failed",
-            }:
+            if (
+                not isinstance(record, dict)
+                or not {"status", "rho", "blind_spots"} <= set(record)
+                or record.get("status")
+                not in {
+                    "complete",
+                    "undefined",
+                    "failed",
+                }
+            ):
                 raise ValueError("invalid case statistic status")
             rho = record.get("rho")
             if record["status"] == "complete":

@@ -95,3 +95,12 @@ def test_zero_correlations_keep_the_frozen_case_denominator():
     result = aggregate_cases(dict.fromkeys(ids, row), ids)
     assert result["positive_cases"] == 0 and result["case_count"] == 10
     assert result["sign_test_one_sided"] == 1.0
+
+
+@pytest.mark.parametrize("field", ["rho", "blind_spots"])
+def test_failure_records_require_explicit_null_fields(field):
+    ids = [str(i) for i in range(10)]
+    row = case_statistics([1, 2, 3], {"spread": None})
+    del row["spread"][field]
+    with pytest.raises(ValueError, match="status"):
+        aggregate_cases(dict.fromkeys(ids, row), ids)
