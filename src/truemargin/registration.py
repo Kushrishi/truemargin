@@ -112,6 +112,7 @@ def baseline_bspline_registration(
     metric_bins: int = 50,
     gradient_convergence_tolerance: float = 1e-5,
     progress_callback=None,
+    completion_callback=None,
 ):
     """Classic deformable (B-spline) registration via SimpleITK.
 
@@ -150,6 +151,9 @@ def baseline_bspline_registration(
             information. Defaults to the historical/current value of 50.
         gradient_convergence_tolerance: LBFGSB gradient convergence tolerance.
             Defaults to the historical/current value of 1e-5.
+        progress_callback, completion_callback: optional observation-only hooks.
+            Completion reports the optimizer stop description, final iteration
+            and metric; a returned finite field does not imply convergence.
 
     Returns a displacement field shaped (D, ...) matching the image grid.
     This returns the registration estimate used by downstream uncertainty/error studies.
@@ -196,6 +200,14 @@ def baseline_bspline_registration(
             lambda: progress_callback(reg.GetOptimizerIteration(), reg.GetMetricValue()),
         )
     reg.Execute(f, m)
+    if completion_callback is not None:
+        completion_callback(
+            {
+                "optimizer_stop_condition": reg.GetOptimizerStopConditionDescription(),
+                "optimizer_iteration": int(reg.GetOptimizerIteration()),
+                "optimizer_metric": float(reg.GetMetricValue()),
+            }
+        )
 
     disp_filter = sitk.TransformToDisplacementFieldFilter()
     disp_filter.SetReferenceImage(f)

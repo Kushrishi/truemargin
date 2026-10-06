@@ -84,6 +84,7 @@ def main() -> None:
             metric_bins=args.bins,
             gradient_convergence_tolerance=args.tolerance,
             progress_callback=progress,
+            completion_callback=record.update,
         )
         record.update(
             status="completed",
