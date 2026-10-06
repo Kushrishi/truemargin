@@ -58,11 +58,22 @@ def main() -> None:
     }
     try:
         print(json.dumps({**record, "event": "member_start"}), file=sys.stderr, flush=True)
+
         def progress(iteration, metric):
-            print(json.dumps({"event": "optimizer_progress", "case_id": args.case,
-                              "iteration": iteration, "metric": metric,
-                              "elapsed_seconds": time.perf_counter() - start}),
-                  file=sys.stderr, flush=True)
+            print(
+                json.dumps(
+                    {
+                        "event": "optimizer_progress",
+                        "case_id": args.case,
+                        "iteration": iteration,
+                        "metric": metric,
+                        "elapsed_seconds": time.perf_counter() - start,
+                    }
+                ),
+                file=sys.stderr,
+                flush=True,
+            )
+
         field = baseline_bspline_registration(
             fixed,
             moving,
@@ -87,7 +98,11 @@ def main() -> None:
         peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
     )
     print(json.dumps(record, sort_keys=True, indent=2, allow_nan=False))
-    if record["status"] != "completed" or not record.get("finite") or not record.get("expected_shape"):
+    if (
+        record["status"] != "completed"
+        or not record.get("finite")
+        or not record.get("expected_shape")
+    ):
         raise SystemExit(1)
 
 

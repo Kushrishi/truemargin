@@ -191,8 +191,10 @@ def baseline_bspline_registration(
     reg.SetInitialTransform(tx, inPlace=True)
     if progress_callback is not None:
         # Observation only: never changes optimizer parameters or execution.
-        reg.AddCommand(sitk.sitkIterationEvent, lambda: progress_callback(
-            reg.GetOptimizerIteration(), reg.GetMetricValue()))
+        reg.AddCommand(
+            sitk.sitkIterationEvent,
+            lambda: progress_callback(reg.GetOptimizerIteration(), reg.GetMetricValue()),
+        )
     reg.Execute(f, m)
 
     disp_filter = sitk.TransformToDisplacementFieldFilter()
