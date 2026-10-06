@@ -22,7 +22,7 @@ def physical_to_index_xyz(points, spacing, origin, direction):
         raise ValueError("invalid grid geometry")
     if not all(np.isfinite(x).all() for x in (points, spacing, origin, direction)):
         raise ValueError("nonfinite geometry")
-    if not np.allclose(direction.T @ direction, np.eye(3), atol=1e-8):
+    if not np.allclose(direction.T @ direction, np.eye(3), rtol=0.0, atol=1e-8):
         raise ValueError("direction must be orthonormal")
     return np.linalg.solve(direction, (points - origin).T).T / spacing
 
@@ -87,9 +87,41 @@ def bootstrap_median(values, seed=20261006):
 def aggregate_cases(cases, expected_ids, seed=20261006):
     if len(expected_ids) != 10 or len(set(expected_ids)) != 10 or set(cases) != set(expected_ids):
         raise ValueError("exact ten frozen case identities required")
+    for case_id in expected_ids:
+        methods = cases[case_id]
+        if not isinstance(methods, dict) or "spread" not in methods:
+            raise ValueError("case must contain target spread statistics")
+        for record in methods.values():
+            if (
+                not isinstance(record, dict)
+                or not {"status", "rho", "blind_spots"} <= set(record)
+                or record.get("status")
+                not in {
+                    "complete",
+                    "undefined",
+                    "failed",
+                }
+            ):
+                raise ValueError("invalid case statistic status")
+            rho = record.get("rho")
+            if record["status"] == "complete":
+                if isinstance(rho, bool) or not isinstance(rho, (int, float)):
+                    raise ValueError("complete correlation must be numerical")
+                if not np.isfinite(rho) or not -1 <= rho <= 1:
+                    raise ValueError("correlation must be finite and within [-1,1]")
+            elif rho is not None:
+                raise ValueError("undefined/failed correlation must be null")
+            blind = record.get("blind_spots")
+            if record["status"] == "failed":
+                if blind is not None:
+                    raise ValueError("failed signal cannot supply blind-spot count")
+            elif type(blind) is not int or blind < 0:
+                raise ValueError("blind-spot count must be a nonnegative integer")
     target = [cases[i]["spread"]["rho"] for i in expected_ids]
     if any(v is None for v in target):
         return {"status": "primary_not_assessable", "cases": cases}
+    if any(not {"ice", "residual", "jacobian"} <= set(cases[i]) for i in expected_ids):
+        raise ValueError("all frozen comparators must be recorded, including failures")
     positive = sum(v > 0 for v in target)
     result = {
         "status": "complete",
@@ -111,6 +143,6 @@ def aggregate_cases(cases, expected_ids, seed=20261006):
             "failed_or_undefined_case_ids": [i for i in expected_ids if i not in valid],
             "paired_differences": differences,
             "median_difference": float(np.median(differences)) if differences else None,
-            "paired_bootstrap_95": bootstrap_median(differences, seed) if differences else None,
+            "paired_bootstrap_95": (bootstrap_median(differences, seed) if differences else None),
         }
     return result

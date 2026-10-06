@@ -29,7 +29,12 @@ def test_case_hierarchy_sign_and_bootstrap():
     ids = [f"{i:03}" for i in range(21, 31)]
     row = case_statistics(
         [1, 2, 3, 4],
-        {"spread": [1, 2, 3, 4], "ice": [4, 3, 2, 1], "residual": None, "jacobian": [1, 1, 1, 1]},
+        {
+            "spread": [1, 2, 3, 4],
+            "ice": [4, 3, 2, 1],
+            "residual": None,
+            "jacobian": [1, 1, 1, 1],
+        },
     )
     result = aggregate_cases(dict.fromkeys(ids, row), ids)
     assert result["median_case_rho"] == 1
@@ -46,3 +51,56 @@ def test_undefined_target_not_silently_dropped():
     ids = [str(i) for i in range(10)]
     row = case_statistics([1, 2], {"spread": [1, 1]})
     assert aggregate_cases(dict.fromkeys(ids, row), ids)["status"] == "primary_not_assessable"
+
+
+@pytest.mark.parametrize("rho", [float("nan"), float("inf"), 1.01, -1.01, True, "0.8"])
+def test_malformed_case_correlations_cannot_be_aggregated(rho):
+    ids = [str(i) for i in range(10)]
+    row = case_statistics(
+        [1, 2, 3],
+        {name: [1, 2, 3] for name in ("spread", "ice", "residual", "jacobian")},
+    )
+    row["spread"]["rho"] = rho
+    with pytest.raises(ValueError):
+        aggregate_cases(dict.fromkeys(ids, row), ids)
+
+
+def test_missing_comparator_and_inconsistent_failure_are_rejected():
+    ids = [str(i) for i in range(10)]
+    row = case_statistics([1, 2, 3], {"spread": [1, 2, 3]})
+    with pytest.raises(ValueError, match="comparators"):
+        aggregate_cases(dict.fromkeys(ids, row), ids)
+    row["spread"]["status"] = "failed"
+    with pytest.raises(ValueError, match="null"):
+        aggregate_cases(dict.fromkeys(ids, row), ids)
+
+
+def test_direction_tolerance_is_absolute_and_reflection_is_valid():
+    with pytest.raises(ValueError, match="orthonormal"):
+        physical_to_index_xyz([[0, 0, 0]], [1, 1, 1], [0, 0, 0], np.diag([1.000001, 1, 1]))
+    # Medical image direction may be a reflected orthogonal basis.
+    np.testing.assert_allclose(
+        physical_to_index_xyz([[-2, 3, 4]], [1, 1, 1], [0, 0, 0], np.diag([-1, 1, 1])),
+        [[2, 3, 4]],
+    )
+
+
+def test_zero_correlations_keep_the_frozen_case_denominator():
+    ids = [str(i) for i in range(10)]
+    row = case_statistics(
+        [1, 2, 3],
+        {name: [1, 2, 3] for name in ("spread", "ice", "residual", "jacobian")},
+    )
+    row["spread"]["rho"] = 0.0
+    result = aggregate_cases(dict.fromkeys(ids, row), ids)
+    assert result["positive_cases"] == 0 and result["case_count"] == 10
+    assert result["sign_test_one_sided"] == 1.0
+
+
+@pytest.mark.parametrize("field", ["rho", "blind_spots"])
+def test_failure_records_require_explicit_null_fields(field):
+    ids = [str(i) for i in range(10)]
+    row = case_statistics([1, 2, 3], {"spread": None})
+    del row["spread"][field]
+    with pytest.raises(ValueError, match="status"):
+        aggregate_cases(dict.fromkeys(ids, row), ids)
