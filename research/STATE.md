@@ -1,8 +1,8 @@
 # Research status
 
-Updated October 4, 2026.
+Updated October 7, 2026.
 
-The controlled known-deformation study and held-out calibration study are complete. Further scale development has produced source-dependent results. An external lung-CT validation protocol and training-image preflight are implemented, but that study has not run. The dataset volume/pair count must be reconciled against the archive manifest before execution. No paper has been submitted or published.
+The controlled known-deformation study and held-out calibration study are complete. Further scale development has produced source-dependent results. An external lung-CT validation protocol and training-image preflight are implemented, but that study has not run. The original Learn2Reg outcome path stopped at unresolved authoritative landmark access/provenance. All ten authorized DIR-Lab fallback packets are acquired with landmarks sealed; image-only decoding is qualified. Operational feasibility and a prospective replacement amendment remain open. No paper has been submitted or published.
 
 ## Question
 
@@ -51,7 +51,7 @@ These overlapping development folds suggest source dependence, rather than a uni
 
 ## Next study
 
-The [external lung-CT protocol](../docs/external_lung_validation_protocol.md) specifies a new-data validation. The [training-image preflight](../docs/external_lung_training_preflight.md) checks image geometry without reading landmarks. Archive inventory and estimator feasibility still need verification before the study can proceed. There are no external-validation results yet.
+The [external lung-CT protocol](../docs/external_lung_validation_protocol.md) specifies a new-data validation. The [training-image preflight](../docs/external_lung_training_preflight.md) checks image geometry without reading landmarks. The [DIR-Lab source/decoder audit](DIRLAB_DECODER_AUDIT_2026_10.md) qualifies a prospective fallback without opening landmarks. The [largest-case runtime probe](DIRLAB_RUNTIME_FEASIBILITY_2026_10.md) exceeded its 600-second cap; full campaign compute/storage is not authorized. The original protocol remains historical and no final replacement amendment is frozen. There are no external-validation results yet.
 
 The useful research question is whether the fixed uncertainty signal and scale remain informative and efficient outside the prostate synthetic-deformation setting. A paper can report a well-supported limitation or positive result; its contribution and venue suitability still require assessment.
 
