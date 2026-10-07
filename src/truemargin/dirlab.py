@@ -61,7 +61,8 @@ def one_based_rl_ap_si_to_zero_based_index_xyz(
 
     DIR-Lab defines the coordinate rows in (RL, AP, SI) order and defines
     (1, 1, 1) at the centroid of the right-anterior-superior corner voxel.
-    This conversion therefore subtracts one from each coordinate without any
+    For the qualified raw-order RL/AP/SI decoder representation, this
+    conversion subtracts one from each coordinate without any
     axis permutation or sign choice.
 
     The function accepts an in-memory array only. It intentionally does not
