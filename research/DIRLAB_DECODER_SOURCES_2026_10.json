@@ -1,0 +1,453 @@
+{
+  "review_date": "2026-10-07",
+  "sources": [
+    {
+      "repo": "Project-MONAI/monai-physio",
+      "commit": "149306543b6690b428d75b9ff251957a2fc53ab5",
+      "path": "data/DirLab-4DCT/README.md",
+      "blob": "8584334eeda9647503808b98fabc7fbd17c9bc64"
+    },
+    {
+      "repo": "Project-MONAI/monai-physio",
+      "commit": "149306543b6690b428d75b9ff251957a2fc53ab5",
+      "path": "data/DirLab-4DCT/downloaded_data/Convert4DCTToMHD.py",
+      "blob": "025cfc594f7bb1557024b107ed14233c068e41c9"
+    },
+    {
+      "repo": "Project-MONAI/monai-physio",
+      "commit": "149306543b6690b428d75b9ff251957a2fc53ab5",
+      "path": "src/monai_physio/download_data.py",
+      "blob": "af077de60e87034c7c0c2f4d8380d06af5dc3ff9"
+    },
+    {
+      "repo": "hsokooti/RegNet",
+      "commit": "4e241008b51ae15aa0b3c2d554dcebe688371602",
+      "path": "functions/preprocessing/dirlab.py",
+      "blob": "f7c89848adc39ad480b05f0a05177322e8e3a7b7"
+    },
+    {
+      "repo": "IPMI-ICNS-UKE/dual-inr-dir",
+      "commit": "f7c8e833435ec9c6b7ebec6c9a8098b566709146",
+      "path": "scripts/convert_dirlab_4dct.py",
+      "blob": "670b8a675b9b90cb934d92e3ee364eacc78fcaf2"
+    },
+    {
+      "repo": "IPMI-ICNS-UKE/dual-inr-dir",
+      "commit": "f7c8e833435ec9c6b7ebec6c9a8098b566709146",
+      "path": "scripts/convert_dirlab_common.py",
+      "blob": "e325647160003d7adeb747e08c0270be1d107e08"
+    },
+    {
+      "repo": "SuperElastix/SuperElastix",
+      "commit": "f941d5428d39cbaafb0f680b5b456cb02e3a3fa4",
+      "path": "ContinuousRegistration/Source/datasets.py",
+      "blob": "a9c32cd25f0ff4c96e76641b69f890087e228971"
+    }
+  ],
+  "monai_headers": [
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T00.mhd",
+      "blob": "0efb536eb59084b1d5f996dc6117a0f1e520af2f"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T10.mhd",
+      "blob": "69c1c0f088bf6b43657b529952a781771b9fd9c1"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T20.mhd",
+      "blob": "8f1b290116a5c83e15d66e01fdfa02ada82c7c3a"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T30.mhd",
+      "blob": "c5f5fbe2c6fd79919c4c72d469f83c25d41b567e"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T40.mhd",
+      "blob": "0b0e9eab7bed267f2dcb7d77d007fab9d2b4b575"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T50.mhd",
+      "blob": "21b934ff977a1bd246ba8591262eccdc2c637faf"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T60.mhd",
+      "blob": "c976c0c0323a7a586a8cffd53770fce044b7c08e"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T70.mhd",
+      "blob": "7a5c45f297ef270eb7cfb290340a61d2096944d3"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T80.mhd",
+      "blob": "748d71253e8d07cd832f8fb899191daa8d6a6e97"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case10Pack_T90.mhd",
+      "blob": "78db654df9885ac775dff8ae1d14ea2772a12a1f"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T00.mhd",
+      "blob": "a48edee944c58563966bc3d92cac3c113dfaa01e"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T10.mhd",
+      "blob": "1857d5461ceb7f22aad3c46c33da0249a1d5db77"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T20.mhd",
+      "blob": "a15568e6f04b265bea580410737d5e983b272281"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T30.mhd",
+      "blob": "6cfbfd15d330aad4e106deb2cc43425ccaf1b9d3"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T40.mhd",
+      "blob": "f7147c1d29ecd40299237841820642a2d311f676"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T50.mhd",
+      "blob": "6483a11d7b0b6b5c4dc89729c13bd8ddf0c6a6e4"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T60.mhd",
+      "blob": "37cdc8010e2693526f8783067a0c86578a0d03f0"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T70.mhd",
+      "blob": "b0d21ca1994ad07d7c6fb37a19cf9cae0571ac23"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T80.mhd",
+      "blob": "93967ed456cf95b40fa80c006c93c8496ef38d36"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case1Pack_T90.mhd",
+      "blob": "1d12555bef6a2fb1f745c02b33343fd723b19e84"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T00.mhd",
+      "blob": "96f1e89482a76c7da1bc673e4c1918cc47533569"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T10.mhd",
+      "blob": "e0bae55213c7b2c9b14e73b10768ef66d8eef02c"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T20.mhd",
+      "blob": "bfc2b96072afa3061247c83f9584f09c018d788b"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T30.mhd",
+      "blob": "2011d3f5d1d7443c913a8535c37301c2089ceb1c"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T40.mhd",
+      "blob": "6f9ced3393b259b22a05defa3da49aa9c575903f"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T50.mhd",
+      "blob": "af12b3ba370fe8ce7370ad91c4202665432fbb5b"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T60.mhd",
+      "blob": "9fab5c7cb3b30eda526037b2a67303465d279cdc"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T70.mhd",
+      "blob": "a1d650162d599a6fe09626fcdb4e0082da726dfb"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T80.mhd",
+      "blob": "6275a6d96e8c8ee282a18559dca80c4a024d07b2"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case2Pack_T90.mhd",
+      "blob": "53cf919d3028978f3e5350e6423077d7d7907a0d"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T00.mhd",
+      "blob": "117a63b96600f02d6e9de19551acebda63dc53b4"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T10.mhd",
+      "blob": "a296f9ae41a7db17ef6754fa7cc7b2c7912ac77b"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T20.mhd",
+      "blob": "798e07344ace287e91d737834629667d9bf75ce7"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T30.mhd",
+      "blob": "eda08846233c08091fe48e377f63bb533dcd8118"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T40.mhd",
+      "blob": "d3f7507cfe933fb6e3fb961ef802dcb78a036146"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T50.mhd",
+      "blob": "e78bc8e8f73e22b90474b38fdbc74c317b6fbb40"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T60.mhd",
+      "blob": "5faede21c0599a85b8266c4442825951143dfdaa"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T70.mhd",
+      "blob": "9a424152507c6fa1542eacab3a46ff16346b780e"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T80.mhd",
+      "blob": "5ecec92b33e619564896f712626c120b3000a80e"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case3Pack_T90.mhd",
+      "blob": "976315d2f49ded8413fde8628c5c4dcd1e9b1f92"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T00.mhd",
+      "blob": "267078f41db616f253f68376542331661e642aaf"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T10.mhd",
+      "blob": "27abe642d46f5e077b80c4c8513c693355a780f1"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T20.mhd",
+      "blob": "cfa443e8512bb4beaaae0a7fac8988aff3bb1f22"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T30.mhd",
+      "blob": "26524b21e03dbe8b48eb32599d0fe00526106e99"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T40.mhd",
+      "blob": "55197375841bc610295af54c74d57f73aa889e6d"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T50.mhd",
+      "blob": "3fb3cb14f93d2933ea4db2f1f1572448caab01f2"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T60.mhd",
+      "blob": "654797a2cd9ac99f564d2b4cd89c6304c0b39dcd"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T70.mhd",
+      "blob": "d0d6968ef7263ea7dfd091a1968558ac58181e5c"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T80.mhd",
+      "blob": "c07af58899abc0b886e5e69d768497bebb431403"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case4Pack_T90.mhd",
+      "blob": "7142cdddea957629b2c2b1020abf1cfeefb86da9"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T00.mhd",
+      "blob": "6b8b3be8219dcf268a5340889b2ee0992ebeee23"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T10.mhd",
+      "blob": "2e89bbc852b4d2c17b058cd7e37be02eb01b6887"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T20.mhd",
+      "blob": "d7a3e80d26b047593e1d5730eb84488fba26ce52"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T30.mhd",
+      "blob": "78abcb6b357df5be5c1a48e9d9eaa74d4d71c1c9"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T40.mhd",
+      "blob": "1796e17349599ab79e0496212fa825604a6384e1"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T50.mhd",
+      "blob": "d5900def867b4f030edb671b862553da790e59a6"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T60.mhd",
+      "blob": "aeccb3b5664bcec5a8685c827e042718f73a6e5f"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T70.mhd",
+      "blob": "cf14add1d899d88ee1d9a77e2022cdd46b42f4b8"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T80.mhd",
+      "blob": "4e90974e9c488b476cf4e179f29f16b6bc193e0a"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case5Pack_T90.mhd",
+      "blob": "b8f18fbb6dd137c645b4025d1c42c12a3ad043af"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T00.mhd",
+      "blob": "4f956340bbdfbb8e024ea262cc7acc12f396ff44"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T10.mhd",
+      "blob": "1cd17e6599e84a92c8195c9bbf2a8df167e416b1"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T20.mhd",
+      "blob": "b5d7076e8a683b011c2058a724f1498d5f989bbc"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T30.mhd",
+      "blob": "7cb134712d0ff8fa793e4f53e0f8ccb1dc8f5526"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T40.mhd",
+      "blob": "7b3f2dc3a6be811a785691c0188a3b0747f4f088"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T50.mhd",
+      "blob": "58626d752254a5c7797b15743c025b2e6bc1dd83"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T60.mhd",
+      "blob": "da884bc77990d2754f84b78c5cb2c11005731a66"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T70.mhd",
+      "blob": "3f40968244987f397c295b3a23ee3b6cd72086cf"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T80.mhd",
+      "blob": "8928248293997f03d4148b52aef57d1d43188d09"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case6Pack_T90.mhd",
+      "blob": "7b7fb20e2a1566bb2dc5e02ec027155c30aa446d"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T00.mhd",
+      "blob": "7e9a4caac1a484242b53b9a93bde50b0ff8a32ee"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T10.mhd",
+      "blob": "6a37ac5632501650beb5fd079548770d3c93ed44"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T20.mhd",
+      "blob": "c3ebe135fc2499d1e3e669420473c007d64fe97a"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T30.mhd",
+      "blob": "fdb6e81fec0894e5921987c26b87df706b0248da"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T40.mhd",
+      "blob": "3da5551fdde9ffc8f48cf9fed3d7f1b8d4bbe3f5"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T50.mhd",
+      "blob": "258cfa32949aae54a2fa5e50c515c79818b42995"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T60.mhd",
+      "blob": "dbebb06f873f495d4a63591f684217996125be96"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T70.mhd",
+      "blob": "8d2415ecf7c4995df076a4ef6f658a6aa5ca6898"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T80.mhd",
+      "blob": "ff9b4559e7b6bd69f95656c048768bb2acf33a3c"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case7Pack_T90.mhd",
+      "blob": "605bc04bf1d6cefecc33e7a7b522a7ae90c6a44c"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T00.mhd",
+      "blob": "9854edb61d49eab3f8d29c1f8cb0987de8056acd"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T10.mhd",
+      "blob": "c9cb21b59d8a21e74501b66db8e16251a4de64c0"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T20.mhd",
+      "blob": "9a742b816f93968c51452305d854499053e307c3"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T30.mhd",
+      "blob": "be830ba061b0619c11a5ce434b000fb54bfc7f70"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T40.mhd",
+      "blob": "bdc3cf0243fc25cd8e720cbde18e6270221125fe"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T50.mhd",
+      "blob": "6ece1d4804dc25fc0e2c6355a9b0ef76d750d721"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T60.mhd",
+      "blob": "e4bd0e06b007f0e01d0c7013e28e049bc3aa66af"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T70.mhd",
+      "blob": "d75371a0cd1b77650cde41a6c89de69fbaea33fe"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T80.mhd",
+      "blob": "e156cf2a1cc4c9cc878a3a1820a66801cd9b0fe1"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case8Deploy_T90.mhd",
+      "blob": "d48f37f294a42e69c096af39dc36c32d7f0579a4"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T00.mhd",
+      "blob": "6f09e318d8c6fc866fa090b9fba2a2e9c447e99e"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T10.mhd",
+      "blob": "1dd562d37e5371dec5dddef9cf200d6426409b27"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T20.mhd",
+      "blob": "9972c4fb5cbe93f657e98223ee17261ae44ff017"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T30.mhd",
+      "blob": "437194a9f03b9475e4d6681cee902146beeda58b"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T40.mhd",
+      "blob": "e36d6a39cb77aa858c10e13a92cc96ce427fc7a3"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T50.mhd",
+      "blob": "e57002f9bc76eb1b86f116c61da020af9f7cd9b5"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T60.mhd",
+      "blob": "45eef91d8f692f11269daec2a36cd171905d1966"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T70.mhd",
+      "blob": "2f873dd54c26f5f64100bb0fe55ddfaf3fc5be4f"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T80.mhd",
+      "blob": "8c36455f2e0f732144afc7b27eceb52a988caa3a"
+    },
+    {
+      "path": "data/DirLab-4DCT/downloaded_data/Case9Pack_T90.mhd",
+      "blob": "15a3d2d6188e0e187b30de268c9f16a0a8d8e698"
+    }
+  ],
+  "itk_documentation": {
+    "commit": "812c951739e6103b1a7dd8d6a6670f71a721b6d7",
+    "path": "Documentation/docs/learn/metaio.md"
+  }
+}
