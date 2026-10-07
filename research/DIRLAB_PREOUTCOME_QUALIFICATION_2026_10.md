@@ -108,3 +108,13 @@ Before a formal DIR-Lab amendment can be frozen:
 Until every gate above is satisfied:
 
 **HELD-OUT ACCESS SAFE: NO**
+
+## 7 October authorized acquisition checkpoint
+
+One original official packet, `Case1Pack.zip`, was acquired through the password-gated link reached from the Emory 4DCT source. Its unchanged archive is 77,006,951 bytes, SHA-256 `5589732668c3694e46a3c0eda4ccaceb4e634de08c633bcfb0362644caf1287a`. Member-name/size inventory establishes the extreme T00/T50 image members, both 300-landmark files and the intermediate 75-landmark files. All ten phase image members have 12,320,768 uncompressed bytes, consistent with the public case-1 dimensions and 16-bit class. **No coordinate member was opened, parsed or extracted.** Images also remain undecoded pending storage semantics.
+
+The official coordinate-format PDF was preserved: 1,108,791 bytes, SHA-256 `8e022f4856d29b20c8d863146cef6726f56f8fdca97025f5ae4c1c5d37269b7b`. The official [MATLAB Utility Pack 1 PDF](https://med.emory.edu/departments/radiation-oncology/research-laboratories/deformable-image-registration/_files/matlab-utility-pack1.pdf) was consulted specifically for raw reading semantics. It states that the user supplies datatype, size and byte ordering and that implementation is locked `.p` code. This does not establish the distributed packets' signedness, endianness, traversal or intensity scaling. No utility software was acquired or run.
+
+The other nine packets remain unacquired; the case-2 link presents a separate password gate. Registration authorization is established by the user, but exact applicable access/use restrictions must remain recorded locally with the packets before qualification closes. Archives and protected payloads stay outside public Git. Transient Work storage is not an established persistent raw-data repository; retain the originals and local acquisition records in an authorized stable local data directory.
+
+No image decoding, runtime probe, prospective replacement amendment or outcome execution follows from this acquisition checkpoint. No public benchmark outcome statistics were used. **HELD-OUT ACCESS SAFE: NO.**
