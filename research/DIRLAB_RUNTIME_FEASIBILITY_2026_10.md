@@ -60,7 +60,7 @@ explicit implementation/memory audit before a campaign. Peak registration RSS an
 actual process CPU time were not captured by this first timeout harness; do not
 invent either from global host observations.
 
-The current Work host exposes an 8-GiB memory ceiling and eight CPU-equivalent
+At the original checkpoint, the Work host exposed an 8-GiB memory ceiling and eight CPU-equivalent
 quota cores. Protected originals/handoffs leave under one GiB free after the
 three-project work. Stream images from original archives; do not extract all phases.
 No safe multi-registration parallelism or full-field retention policy is established.
@@ -68,7 +68,7 @@ Default to one active registration until peak RSS is measured. Failed/timeout
 attempts remain identified and preserved; retries must use unchanged settings,
 fresh output names and declared budgets, never select a favorable run.
 
-## Required next decision
+## Historical next-decision request (7 October)
 
 Do not launch the 180-registration campaign. Authorize **one isolated largest-case
 member follow-up** with the same settings/two threads, a 45-minute wall cap,
@@ -81,3 +81,94 @@ and resource uncertainty. No automatic retry or full campaign follows.
 Operational feasibility is unresolved. The prospective replacement amendment and
 exact executable analysis freeze are not final. This is **not READY FOR OUTCOME
 UNSEALING** and does not request unsealing authorization.
+
+## Approved isolated follow-up — 8 October 2026 UTC
+
+The owner subsequently authorized exactly one 45-minute image-only worker, then
+explicitly authorized reacquisition of only official Case7 because the original
+protected handoff was unavailable. Acquisition used Emory's official Dropbox link,
+with manual owner password entry. The original archive matches 333,591,361 bytes
+and SHA-256 `8154f7f84ad927a135df11e6c10d5db8d2f7a92d346cf17978ed8069a569389a`.
+Only T50/T00 image members were read. Numerical landmark members remain sealed.
+
+The unchanged reviewed script SHA-256 is
+`42f7be3c0a4bfc4e10af34f8dc43b7834f8733e270a60767abd9a6acb7933d04`.
+Scientific source was exactly `89f9c7415dddec39a4c2b1ed9f91df73c4e91d2f`.
+Python 3.12.14, SimpleITK 2.5.6, NumPy 2.3.5, two SimpleITK threads, and the
+originally specified Case7 geometry/representation/member settings were verified
+before launch. No parallel registration, training, native build or inference ran;
+lightweight provenance/file checks and dependency downloads continued.
+
+### Measured facts
+
+The worker **timed out**, and the reviewed parent killed and waited for it.
+The parent exited successfully after preserving its report; that does not mean
+registration completed. The attempt is consumed and was not retried.
+
+| Observation | Measured value |
+| --- | ---: |
+| Configured worker wall cap | 2,700 s |
+| Whole worker wall, including startup and teardown | 2,700.163710 s |
+| Child process CPU time | 5,073.502990 s (1.4093 CPU-hours) |
+| Peak child RSS | 1,691,268 KiB (1.6129 GiB) |
+| Last observed optimizer iteration index | 4 |
+| Last callback registration elapsed time | 2,546.514454 s |
+| Callback count | 15, with repeated indices 0–4 |
+
+The complete callback sequence and unchanged resource report are in the
+[machine-readable evidence](DIRLAB_APPROVED_PROBE_2026_10_08.json).
+CPU uses the reviewed parent's `RUSAGE_CHILDREN` sum (worker plus the negligible
+Git source-check child); RSS is the largest child high-water mark. The controller
+records a null worker exit code on timeout, rather than the terminal signal.
+No explicit worker error was printed. There is no optimizer stop description,
+completed field, measured field shape/dtype/bytes or finite-field result.
+Registration wall is not separately finalized: 2,700 s is the worker budget,
+whereas 2,546.514454 s is directly observed registration progress. Callback
+indices do not establish a uniform iteration cost or convergence.
+
+This is incomplete operational evidence, **not scientific estimator failure**.
+The previous 600-second record is preserved, not replaced by an outcome claim.
+
+### Planning assumptions and unknowns
+
+The target remains 90 forward registrations, with a possible additional 90 reverse
+registrations for ICE. One censored member supplies no defensible finite estimate
+for either set's serial CPU-hours or completion wall time. In particular, its
+45-minute budget must not be multiplied by 180 and called a measured campaign
+lower bound: other cases, bins, tolerances and directions are unmeasured.
+Largest geometry does not prove longest optimization. Completed-run peak memory,
+field-generation overhead, safe concurrency and failure/retry costs remain unknown.
+Use one active registration until completion memory is measured; no campaign or
+reverse/member probe is authorized by this record.
+
+Float64 storage facts remain independent of the timeout. Full retention needs
+87,058,022,400 bytes before other outputs, exceeding this reconstructed workspace's
+approximately 28 GiB free disk. The largest nine-field case cache is
+7,700,742,144 bytes, plus 1,140,850,688 bytes for vector mean and scalar spread.
+Keeping both directional member caches together requires 15,401,484,288 bytes
+before summaries. The existing spatial-block helper is a candidate exact-formula
+memory-map path; no real field aggregation, eviction policy or campaign executor
+has been validated. No precision reduction or online replacement formula is used.
+A per-case retention design would have to preserve identities/failure records and
+validate means, spread and comparators before any declared field eviction.
+
+### Current decision
+
+Work has **not qualified as a full-campaign execution platform**: the approved
+budget did not complete one member, full retention exceeds disk, scratch persistence
+is insufficient for an uncheckpointed multi-day study, and completion memory and
+runtime are unknown. No out-of-memory or scientific registration failure is inferred.
+
+The smallest alternative is an existing owner-controlled personal CPU host with
+persistent storage, pinned software and the unchanged estimator. Full retention
+would need over 87 GB plus overhead; bounded per-case float64 retention is another
+execution-design option requiring review and validation. No paid provider is
+selected. A new completion-capable single-member budget/platform must be explicitly
+authorized before another worker; the present one-shot approval is exhausted.
+Do not authorize a material full campaign from these censored timings alone.
+Only Case7 is currently restored locally; the other nine packets also need an
+approved recovery/acquisition plan before campaign execution.
+
+**HELD-OUT ACCESS SAFE: NO.** No landmark outcomes, full campaign, reverse
+registrations, estimator change, provider contact or final prospective replacement
+amendment followed. This is not READY FOR OUTCOME UNSEALING.

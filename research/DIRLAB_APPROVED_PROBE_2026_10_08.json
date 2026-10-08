@@ -1,0 +1,119 @@
+{
+  "schema": "dirlab-approved-runtime-evidence-v1",
+  "date_utc": "2026-10-08",
+  "purpose": "image-only operational feasibility, not scientific estimator evaluation",
+  "reviewed_script_sha256": "42f7be3c0a4bfc4e10af34f8dc43b7834f8733e270a60767abd9a6acb7933d04",
+  "archive_filename": "Case7Pack.zip",
+  "archive_bytes": 333591361,
+  "source_page": "https://med.emory.edu/departments/radiation-oncology/research-laboratories/deformable-image-registration/downloads-and-reference-data/4dct.html",
+  "configuration": {
+    "case_id": "4DCT7",
+    "fixed": "T50",
+    "moving": "T00",
+    "representation": "raw-documented-RL-AP-SI",
+    "intensity": "stored scalar values",
+    "spacing_xyz_mm": [
+      0.97,
+      0.97,
+      2.5
+    ],
+    "mesh": 3,
+    "iterations": 15,
+    "centering": false,
+    "mattes_bins": 50,
+    "gradient_tolerance": 1e-05,
+    "SimpleITK": "2.5.6",
+    "NumPy": "2.3.5",
+    "Python": "3.12.14"
+  },
+  "environment": {
+    "os": "Ubuntu24.04.3 LTS Linux x86_64",
+    "memory_ceiling_bytes": 8589934592,
+    "cpu_quota_equivalent_cores": 8,
+    "heavy_workload_isolation": "no concurrent registration, training, native build or inference; lightweight provenance/file checks and downloads only"
+  },
+  "resources": {
+    "schema": "dirlab-image-only-probe-v1",
+    "source_commit": "89f9c7415dddec39a4c2b1ed9f91df73c4e91d2f",
+    "archive_sha256": "8154f7f84ad927a135df11e6c10d5db8d2f7a92d346cf17978ed8069a569389a",
+    "wall_cap_seconds": 2700,
+    "threads": 2,
+    "timed_out": true,
+    "exit_code": null,
+    "whole_worker_wall_seconds": 2700.1637100030002,
+    "process_cpu_seconds": 5073.50299,
+    "peak_rss_kib": 1691268,
+    "landmarks_opened": false,
+    "full_campaign_authorized": false
+  },
+  "progress_log_sha256": "f29fa485a3babd2c88289d92a9c67a371cdcb5aefcd9e5b9463718fcacba51f5",
+  "progress": [
+    {
+      "iteration": 0,
+      "registration_elapsed_seconds": 198.43092228500063
+    },
+    {
+      "iteration": 0,
+      "registration_elapsed_seconds": 393.44683958800124
+    },
+    {
+      "iteration": 0,
+      "registration_elapsed_seconds": 393.44961916600005
+    },
+    {
+      "iteration": 1,
+      "registration_elapsed_seconds": 621.060583456001
+    },
+    {
+      "iteration": 1,
+      "registration_elapsed_seconds": 846.4209206659998
+    },
+    {
+      "iteration": 1,
+      "registration_elapsed_seconds": 846.4240904930011
+    },
+    {
+      "iteration": 2,
+      "registration_elapsed_seconds": 1058.6316892720006
+    },
+    {
+      "iteration": 2,
+      "registration_elapsed_seconds": 1282.6795418110014
+    },
+    {
+      "iteration": 2,
+      "registration_elapsed_seconds": 1282.681604067
+    },
+    {
+      "iteration": 3,
+      "registration_elapsed_seconds": 1512.7589801350005
+    },
+    {
+      "iteration": 3,
+      "registration_elapsed_seconds": 1822.4092847780012
+    },
+    {
+      "iteration": 3,
+      "registration_elapsed_seconds": 1822.4118702260002
+    },
+    {
+      "iteration": 4,
+      "registration_elapsed_seconds": 2037.227866534
+    },
+    {
+      "iteration": 4,
+      "registration_elapsed_seconds": 2546.510433704001
+    },
+    {
+      "iteration": 4,
+      "registration_elapsed_seconds": 2546.514453793001
+    }
+  ],
+  "worker_state_after_report": "terminated and reaped by reviewed parent; no worker remains",
+  "optimizer_stop_description": null,
+  "completed_field": null,
+  "retry_count": 0,
+  "approved_attempt_consumed": true,
+  "held_out_access_safe": false,
+  "campaign_feasibility": "unresolved; no defensible finite completion-time estimate"
+}
