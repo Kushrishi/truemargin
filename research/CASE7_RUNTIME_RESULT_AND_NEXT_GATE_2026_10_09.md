@@ -51,7 +51,7 @@ retention. RAM needed for completion is unmeasured. The known Case 7 float64 fie
 is 855,638,016 bytes, not an upper bound on working memory. The
 [bounded-retention design](DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md) estimates
 about 20.6 GB for both summary directions plus active image cache, before
-overhead; retaining all 180 float64 fields instead requires about 487 GB. These
+overhead; retaining all 180 float64 fields instead requires 87,058,022,400 bytes (about 87.1 GB). These
 are storage arithmetic, not measured campaign performance or a campaign approval.
 
 HELD-OUT ACCESS SAFE remains **NO**. Numerical landmark access, ensemble/full
