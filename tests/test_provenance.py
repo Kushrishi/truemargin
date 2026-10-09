@@ -1,3 +1,10 @@
+import errno
+import os
+import subprocess
+import sys
+from pathlib import Path
+from zipfile import BadZipFile
+
 import numpy as np
 import pytest
 
@@ -114,3 +121,82 @@ def test_git_sha_change_alone_does_not_invalidate_identical_code(tmp_path) -> No
     later_commit_same_code = _manifest(repo)
     loaded = provenance.load_checkpoint(path, expected_manifest=later_commit_same_code)
     np.testing.assert_array_equal(loaded["err"], np.array([1.0]))
+
+
+@pytest.mark.parametrize("existing", [False, True])
+@pytest.mark.parametrize("failure", ["write", "sync", "replace"])
+def test_failed_save_never_publishes_partial_checkpoint(tmp_path, monkeypatch, existing, failure):
+    manifest = _manifest(_make_repo(tmp_path))
+    path = tmp_path / "case.npz"
+    if existing:
+        provenance.save_checkpoint(path, arrays={"err": np.array([1.0])}, manifest=manifest)
+    before = path.read_bytes() if existing else None
+
+    def fail(*args, **kwargs):
+        if failure == "write":
+            args[0].write(b"partial archive")
+        raise OSError(errno.ENOSPC, "injected save failure")
+
+    if failure == "write":
+        monkeypatch.setattr(provenance.np, "savez", fail)
+    elif failure == "sync":
+        monkeypatch.setattr(provenance.os, "fsync", fail)
+    else:
+        monkeypatch.setattr(provenance.os, "replace", fail)
+    with pytest.raises(OSError, match="injected save failure"):
+        provenance.save_checkpoint(path, arrays={"err": np.array([2.0])}, manifest=manifest)
+    assert (path.read_bytes() if path.exists() else None) == before
+    assert not list(tmp_path.glob(".case.npz.*.tmp"))
+    if existing:
+        loaded = provenance.load_checkpoint(path, expected_manifest=manifest)
+        np.testing.assert_array_equal(loaded["err"], [1.0])
+
+
+def test_successful_save_replaces_previous_checkpoint_and_preserves_suffix(tmp_path):
+    manifest = _manifest(_make_repo(tmp_path))
+    path = tmp_path / "case"
+    for value in (1.0, 2.0):
+        provenance.save_checkpoint(path, arrays={"err": np.array([value])}, manifest=manifest)
+        loaded = provenance.load_checkpoint(tmp_path / "case.npz", expected_manifest=manifest)
+        np.testing.assert_array_equal(loaded["err"], [value])
+    assert not path.exists()
+    assert not list(tmp_path.glob(".case.npz.*.tmp"))
+
+
+def test_abrupt_process_exit_leaves_previous_checkpoint_readable(tmp_path):
+    manifest = _manifest(_make_repo(tmp_path))
+    path = tmp_path / "case.npz"
+    provenance.save_checkpoint(path, arrays={"err": np.array([1.0])}, manifest=manifest)
+    before = path.read_bytes()
+    # Exit inside the write without Python finally/atexit cleanup, as on termination.
+    code = """
+import os, sys
+import numpy as np
+from truemargin import provenance
+def interrupted_write(target, **payload):
+    target.write(b'partial archive')
+    target.flush()
+    os._exit(17)
+provenance.np.savez = interrupted_write
+provenance.save_checkpoint(sys.argv[1], arrays={'err': np.array([2.0])}, manifest={})
+"""
+    env = dict(os.environ, PYTHONPATH=str(Path(provenance.__file__).parents[1]))
+    result = subprocess.run([sys.executable, "-c", code, str(path)], env=env, timeout=20)
+    assert result.returncode == 17
+    assert path.read_bytes() == before
+    assert len(list(tmp_path.glob(".case.npz.*.tmp"))) == 1
+    loaded = provenance.load_checkpoint(path, expected_manifest=manifest)
+    np.testing.assert_array_equal(loaded["err"], [1.0])
+    # A subsequent normal save ignores the abandoned temporary file.
+    provenance.save_checkpoint(path, arrays={"err": np.array([3.0])}, manifest=manifest)
+    loaded = provenance.load_checkpoint(path, expected_manifest=manifest)
+    np.testing.assert_array_equal(loaded["err"], [3.0])
+
+
+def test_truncated_checkpoint_is_not_accepted(tmp_path):
+    manifest = _manifest(_make_repo(tmp_path))
+    path = tmp_path / "case.npz"
+    provenance.save_checkpoint(path, arrays={"err": np.array([1.0])}, manifest=manifest)
+    path.write_bytes(path.read_bytes()[:16])
+    with pytest.raises(BadZipFile):
+        provenance.load_checkpoint(path, expected_manifest=manifest)

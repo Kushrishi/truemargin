@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import tempfile
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
@@ -186,13 +187,39 @@ def save_checkpoint(
     arrays: Mapping[str, np.ndarray],
     manifest: Mapping[str, Any],
 ) -> None:
-    """Save arrays and their provenance together in one non-pickle ``.npz`` file."""
+    """Publish a complete checkpoint by replacing a file on the same filesystem.
+
+    Failed writes leave the previous checkpoint intact. An abrupt process exit may
+    leave a temporary file, which readers must not treat as a checkpoint. This is
+    local atomic publication, not verification of a remote copy or power-loss
+    durability of the parent directory.
+    """
     manifest_dict = dict(manifest)
     payload: dict[str, Any] = dict(arrays)
     if PROVENANCE_KEY in payload:
         raise ValueError(f"{PROVENANCE_KEY!r} is reserved for checkpoint provenance.")
     payload[PROVENANCE_KEY] = np.asarray(_canonical_json(manifest_dict))
-    np.savez(path, **payload)
+    destination = Path(path)
+    # Preserve numpy.savez's filename convention when given a path without .npz.
+    if not str(destination).endswith(".npz"):
+        destination = Path(f"{destination}.npz")
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w+b",
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+            dir=destination.parent,
+            delete=False,
+        ) as target:
+            temporary = Path(target.name)
+            np.savez(target, **payload)
+            target.flush()
+            os.fsync(target.fileno())
+        os.replace(temporary, destination)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
     print(
         "checkpoint provenance: "
         f"path={path} "

@@ -22,6 +22,14 @@ exactly. These tests use no real image or reference values and perform no
 registration. They establish these exercised layouts, not universal bitwise
 equivalence across platforms or arbitrary arrays.
 
+The existing NPZ checkpoint writer now stages a file in the destination directory,
+flushes and syncs it, then atomically replaces the destination. Synthetic failure
+tests cover partial writes, disk-full errors, sync/replacement failures, truncated
+archives and abrupt process exit. Failed saves preserve the previous checkpoint;
+an abrupt exit can leave an ignored temporary file. This qualifies local NPZ
+publication only. It does not implement NPY member retention, optimizer resume,
+remote transfer verification or parent-directory durability after power loss.
+
 ## Exact payload arithmetic from public geometry
 
 For V voxels, a three-component float64 member has 24V bytes. Nine members have
