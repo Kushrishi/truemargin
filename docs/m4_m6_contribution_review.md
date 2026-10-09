@@ -61,3 +61,53 @@ The resulting [technical report](technical_report.md) includes four evidence pan
 The completed report can form the basis of a manuscript, subject to an assessment of its contribution and venue suitability. It reports evidence about one ensemble rather than introducing a new uncertainty method.
 
 Subsequent calibration-only development is documented in [the validation analysis](m6_calibration_only_scale_validation.md). The [external lung-CT protocol](external_lung_validation_protocol.md) proposes a separate study on new data. That extension has not produced results, and none of its future findings would change the completed study's methods or outcomes.
+
+## Closure outline and execution decision — 9 October 2026
+
+Working report question: **When does a fixed registration ensemble provide useful
+local error information, and when do ranking, calibration and practical precision
+diverge?** This is a framing of the retained empirical study, not a new method,
+theorem or publication claim. The technical report already contains the core
+evidence; do not multiply reports or rerun completed experiments to fill sections.
+
+| Report component | Retained evidence | Claim boundary |
+| --- | --- | --- |
+| Estimator and design | Frozen nine-member grid, geometry and anatomy-aware sampling | Hyperparameter ensembles are established methodology |
+| Ranking and comparators | M4 anatomy association and paired ICE comparison | Informative in this setting; no established superiority to ICE |
+| Failures | M5 inversions, blind spots and method-specific denominators | Same retained cases, not an independent replication |
+| Calibration and precision | Sealed M6 thresholds, coverage and radius tails | Synthetic design; infinite 95% bounds are not useful finite guarantees |
+| Development checks | Constant-radius exploration and calibration-only scale validation | Separately labeled; no post-outcome confirmatory efficiency claim |
+| Operational limits | Saved Case 7 cap termination | No completed external registration or landmark result |
+
+Closest-work comparison must retain Meyer, CONReg, uncertainty/applicability,
+hierarchical conformal and ICE work above. Additional context includes
+[Luo et al.'s transformation-versus-label uncertainty distinction](https://arxiv.org/abs/1803.05266)
+and [lung-CT uncertainty prediction from multiple feature categories](https://pubmed.ncbi.nlm.nih.gov/38658497/).
+These are adjacent questions, not methods reproduced here. This follow-up reviewed
+the former author's manuscript and the latter abstract; it is not an exhaustive
+novelty review. A bounded case study remains the current defensible contribution.
+
+The [three-hour runtime record and proposed next gate](../research/CASE7_RUNTIME_RESULT_AND_NEXT_GATE_2026_10_09.md)
+should be resolved before committing campaign resources. The saved worker reached
+iteration 11 of a configured maximum 15 without a completion record. Across
+successive last-per-iteration records, the median gap was 878.8274 seconds;
+process CPU/wall ratio was 1.70145. These observations describe progress, not a
+completion forecast. Repeated callback records are not extra optimizer iterations.
+
+Next decision: identify an existing persistent host, record hardware/free resources
+and explicitly authorize or decline the proposed six-hour, single-worker,
+two-thread, unchanged-estimator attempt. Nothing here changes the script or
+launches a worker. A second timeout ends automatic cap extension. A completed
+central member would still leave member/case variation and campaign cost unknown.
+The probe does not retain field bytes; campaign retention needs separate review.
+
+If execution is affordable, freeze a DIR-Lab replacement amendment and its
+case/source/coordinate/failure/comparator identities before any landmark access.
+The external question remains ranking/failure transfer, not lung calibration or
+clinical benefit. If unaffordable, close the external attempt with its censored
+resource result and finish the existing bounded report. A cheaper estimator would
+require a separate prospective protocol rather than rewriting the accepted study.
+
+Manuscript preparation can proceed using existing figures and evidence. Submission,
+venue suitability, expert review and external-study execution remain separate
+decisions. No outreach or publication occurred. HELD-OUT ACCESS SAFE remains NO.
