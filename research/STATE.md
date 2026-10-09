@@ -1,6 +1,6 @@
 # Research status
 
-Updated October 8, 2026 UTC.
+Updated October 9, 2026 UTC.
 
 The controlled known-deformation study and held-out calibration study are complete. Further scale development has produced source-dependent results. An external lung-CT validation protocol and training-image preflight are implemented, but that study has not run. The original Learn2Reg outcome path stopped at unresolved authoritative landmark access/provenance. All ten authorized DIR-Lab fallback packets are acquired with landmarks sealed; image-only decoding is qualified. Operational feasibility and a prospective replacement amendment remain open. No paper has been submitted or published.
 
@@ -51,9 +51,19 @@ These overlapping development folds suggest source dependence, rather than a uni
 
 ## Next study
 
-The [external lung-CT protocol](../docs/external_lung_validation_protocol.md) specifies a new-data validation. The [training-image preflight](../docs/external_lung_training_preflight.md) checks image geometry without reading landmarks. The [DIR-Lab source/decoder audit](DIRLAB_DECODER_AUDIT_2026_10.md) qualifies a prospective fallback without opening landmarks. The [largest-case runtime history](DIRLAB_RUNTIME_FEASIBILITY_2026_10.md) preserves the 600-second observation and isolated 2,700-second timeout. The later [three-hour Case 7 result and next resource gate](CASE7_RUNTIME_RESULT_AND_NEXT_GATE_2026_10_09.md) records an explicit supervisor timeout: 10,800.25 wall seconds, 18,376.05 CPU seconds and 1.62 GiB child peak RSS. No completion, optimizer stop or final field facts were saved. Its one-shot approval is consumed; a persistent-host six-hour single-probe proposal is not authorization. Full campaign compute/storage remains unresolved and unauthorized. No numerical landmarks were accessed; HELD-OUT ACCESS SAFE remains NO. The original protocol remains historical and no final replacement amendment is frozen. There are no external-validation results yet.
+The [external lung-CT protocol](../docs/external_lung_validation_protocol.md) specifies a new-data validation. The [training-image preflight](../docs/external_lung_training_preflight.md) checks image geometry without reading landmarks. The [DIR-Lab source/decoder audit](DIRLAB_DECODER_AUDIT_2026_10.md) qualifies a prospective fallback without opening landmarks. The [largest-case runtime history](DIRLAB_RUNTIME_FEASIBILITY_2026_10.md) preserves the 600-second observation and isolated 2,700-second timeout. The later [three-hour Case 7 result and next resource gate](CASE7_RUNTIME_RESULT_AND_NEXT_GATE_2026_10_09.md) records an explicit supervisor timeout: 10,800.25 wall seconds, 18,376.05 CPU seconds and 1.62 GiB child peak RSS. No completion, optimizer stop or final field facts were saved. A later six-hour attempt last saved optimizer index 13 at 7,128.9363 registration seconds before runtime disconnection; no saved terminal result establishes completion or timeout. Its final wall/CPU/RSS, optimizer stop and field production remain unknown.
 
-The useful research question is whether the fixed uncertainty signal and scale remain informative and efficient outside the prostate synthetic-deformation setting. A paper can report a well-supported limitation or positive result; its contribution and venue suitability still require assessment.
+The completed-member producer and local copy/readback verification are implemented.
+Remote retention and a completed real-image field are not yet qualified. The next
+resource milestone is one retained member with terminal measurements, followed by
+an explicit study budget. This is not optimizer-resume support. Full campaign
+execution remains pending. Numerical landmarks remain sealed; HELD-OUT ACCESS SAFE
+remains NO. The original protocol is historical; the final replacement amendment
+must be settled before outcome-bearing execution.
+
+The external question is error ranking and failure behavior against the declared
+comparators. A new calibration-efficiency study would require its own design.
+There are no external-validation results yet.
 
 ## Limits and records
 

@@ -1,4 +1,8 @@
-# Research status
+# Historical research status — 2 October 2026
+
+This is a pre-result snapshot. For completed calibration results and current work,
+read [Research status](STATE.md). The historical gate descriptions below do not
+define the current execution state.
 
 **Updated:** 2026-10-02  
 **Active milestone:** M6 numerical calibration  

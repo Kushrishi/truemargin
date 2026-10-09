@@ -6,7 +6,7 @@ TrueMargin studies uncertainty in deformable image registration:
 
 **Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
 
-**Status:** synthetic studies are complete. An image-only lung-registration runtime probe is underway; external landmark-based accuracy validation remains incomplete.
+**Status:** synthetic studies are complete. The latest image-only lung-registration attempt has no verified terminal result; retained-field feasibility and external landmark-based validation remain incomplete.
 
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
@@ -111,13 +111,17 @@ The affine scale is therefore not a uniform improvement: the simple constant rad
 
 ## Next study
 
-Test whether local adaptation improves the coverage/radius tradeoff against a constant bound and inverse-consistency error on independent landmark-based registration error.
+Evaluate whether the unchanged sensitivity signal ranks measured registration
+error on independent lung CT cases, against inverse consistency, image residual
+and Jacobian signals. External calibration is a separate question.
 
-The external lung CT protocol and training-image geometry preflight are implemented. Archive verification and estimator feasibility on training images come next, before manual test landmarks are read. No external-validation result is available.
+Image-only decoding is qualified. Before the external study, one completed
+real-image field must be retained and reopened independently of its runtime, and
+the full study's compute/storage budget must be established. The later Case 7
+runtime disconnected without saved terminal evidence; its outcome is unverified.
+No external-validation result is available and numerical landmarks remain sealed.
 
-[External-validation protocol](docs/external_lung_validation_protocol.md) · [Training preflight](docs/external_lung_training_preflight.md)
-
-The development analysis leaves the original ranking, failure and calibration results unchanged.
+[Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
 
 ## Limits
 

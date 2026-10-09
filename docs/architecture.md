@@ -84,7 +84,8 @@ ground-truth validation path.
 | registration | `registration.py` | B-spline registration and historical uncertainty mechanisms |
 | candidate surrogate | `hyperparameter.py`, `ensemble.py` | fixed estimator definitions and member validation |
 | error / calibration | `calibration.py` | displacement error, association/calibration primitives |
-| geometry helpers | `synthetic.py` | synthetic utilities retained for historical/general tests |
+| external geometry | `dirlab.py`, `dirlab_reader.py`, `external_analysis.py` | image-only decoding, coordinate contracts and patient-level analysis |
+| retained fields | `registration_member.py`, `field_checkpoint.py`, `member_retention.py` | completed fields, attempt records and verified copies |
 | provenance | `provenance.py` | source/config/data fingerprints for checkpoints |
 | experiment runners | `scripts/` | prospective experiment execution and reporting |
 
@@ -120,8 +121,8 @@ Its scalar `sigma` is an RMS spread of displacement fields across this
 deterministic hyperparameter grid. It is a **sensitivity surrogate**, not a
 Bayesian posterior standard deviation.
 
-The current known-ground-truth study tests whether that surrogate is informative
-about true local spatial error before any calibration claim is considered.
+The completed known-deformation and calibration studies evaluate this surrogate.
+See [current status](../research/STATE.md) for results and the external-study boundary.
 
 ## Provenance contract
 
@@ -152,9 +153,9 @@ anatomy.
 
 ## Historical material
 
-Superseded manuscript/product framing and older exploratory narratives are
-preserved under `archive/` for provenance. They are not the current
-architecture or scientific source of truth.
+Historical experiment records remain in `research/`, `docs/` and Git history.
+Dated protocols describe their own execution scope; [current status](../research/STATE.md)
+identifies completed results and active work.
 
 ## Non-goals
 
