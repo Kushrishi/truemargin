@@ -1,5 +1,10 @@
 # Reproduction
 
+The controlled studies are complete. [Current status](../research/STATE.md) links
+the accepted result reports. Historical execution gates below describe those
+original runs; they are not a request to rerun completed experiments or open new
+held-out data.
+
 ## Environment
 
 TrueMargin currently targets Python 3.12.
