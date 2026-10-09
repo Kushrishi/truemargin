@@ -139,6 +139,12 @@ def aggregate_cases(cases, expected_ids, seed=20261006):
         valid = [i for i in expected_ids if cases[i][method]["rho"] is not None]
         differences = [cases[i]["spread"]["rho"] - cases[i][method]["rho"] for i in valid]
         result["comparators"][method] = {
+            "comparison_scope": (
+                "full_cohort"
+                if len(valid) == len(expected_ids)
+                else "assessable_subset" if valid else "not_assessable"
+            ),
+            "full_cohort_assessable": len(valid) == len(expected_ids),
             "assessable_case_ids": valid,
             "failed_or_undefined_case_ids": [i for i in expected_ids if i not in valid],
             "paired_differences": differences,
