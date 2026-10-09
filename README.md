@@ -6,13 +6,17 @@ TrueMargin studies uncertainty in deformable image registration:
 
 **Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
 
-**Status:** controlled studies complete; prospective external landmark validation is next.
+**Status:** synthetic studies are complete. An image-only lung-registration runtime probe is underway; external landmark-based accuracy validation remains incomplete.
 
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
 [Visual study](https://kushrishi.com/research/truemargin) · [Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md)
 
 ![TrueMargin controlled association, blind spots and calibrated bounds](docs/figures/m4_m6_evidence.png)
+
+## Reading the results
+
+Registration spread measures how much nine registrations disagree about a point’s displacement. A positive rank correlation means points with more disagreement tend to have larger known errors; it does not mean the disagreement equals the error. Coverage is the fraction of sampled errors inside a calibrated bound. Radius is the size of that bound in millimetres: high coverage can still require bounds too large to be useful. Here, patient-level summaries prevent spatial samples from being counted as independent patients.
 
 ## Main findings
 
@@ -113,7 +117,7 @@ The external lung CT protocol and training-image geometry preflight are implemen
 
 [External-validation protocol](docs/external_lung_validation_protocol.md) · [Training preflight](docs/external_lung_training_preflight.md)
 
-The development analysis leaves the accepted M4 to M6 results unchanged.
+The development analysis leaves the original ranking, failure and calibration results unchanged.
 
 ## Limits
 
