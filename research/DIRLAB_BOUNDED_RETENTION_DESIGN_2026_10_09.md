@@ -30,6 +30,15 @@ an abrupt exit can leave an ignored temporary file. This qualifies local NPZ
 publication only. It does not implement NPY member retention, optimizer resume,
 remote transfer verification or parent-directory durability after power loss.
 
+`open_verified_field_cache` now reopens a complete NPY cache using caller-supplied
+expected member identities and original SHA-256 digests. It rejects missing,
+duplicate or unexpected members, damaged copies, wrong shapes/dtypes and unsupported
+layouts before returning read-only maps in the declared order. A synthetic
+nine-member copy/readback test reproduces the original mean/spread exactly.
+Expected metadata must come from reviewed producer provenance, and mapped files
+must remain immutable. This helper does not generate producer manifests, implement
+member saving, or qualify a remote storage provider.
+
 ## Exact payload arithmetic from public geometry
 
 For V voxels, a three-component float64 member has 24V bytes. Nine members have
