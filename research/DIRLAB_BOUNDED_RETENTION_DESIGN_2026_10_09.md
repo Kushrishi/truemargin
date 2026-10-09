@@ -36,8 +36,22 @@ duplicate or unexpected members, damaged copies, wrong shapes/dtypes and unsuppo
 layouts before returning read-only maps in the declared order. A synthetic
 nine-member copy/readback test reproduces the original mean/spread exactly.
 Expected metadata must come from reviewed producer provenance, and mapped files
-must remain immutable. This helper does not generate producer manifests, implement
-member saving, or qualify a remote storage provider.
+must remain immutable. This helper does not generate producer manifests or qualify
+a remote storage provider.
+
+`save_field_checkpoint` supplies a separate local saving primitive for completed
+finite fields with contiguous spatial axes, including interleaved SimpleITK vector
+views. It exclusively claims a new directory, writes a C-order unchanged-dtype NPY
+with bounded byte buffers, syncs and hashes its bytes, then publishes a provenance NPZ
+completion marker. Failed/interrupted directories are preserved and cannot be
+silently overwritten or automatically retried. `read_field_checkpoint_record`
+checks the marker against expected provenance and layout; the existing verified
+cache loader must then verify payload bytes before aggregation. Synthetic tests
+exercise interrupted field/marker writes, sync failures, abrupt exit, non-clobber,
+provenance mismatches and exact nine-member summary parity. This is not integrated
+with a registration executor and does not provide optimizer resume. The caller
+must supply reviewed case, direction, input, configuration and source identities,
+and retain stop/resource/failure records separately. No real field was saved.
 
 ## Exact payload arithmetic from public geometry
 
