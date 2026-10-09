@@ -41,7 +41,11 @@ def test_case_hierarchy_sign_and_bootstrap():
     assert result["sign_test_one_sided"] == 1 / 1024
     assert result["median_bootstrap_95"] == [1, 1]
     assert result["comparators"]["ice"]["paired_differences"] == [2] * 10
+    assert result["comparators"]["ice"]["comparison_scope"] == "full_cohort"
+    assert result["comparators"]["ice"]["full_cohort_assessable"] is True
     assert result["comparators"]["residual"]["failed_or_undefined_case_ids"] == ids
+    assert result["comparators"]["residual"]["comparison_scope"] == "not_assessable"
+    assert result["comparators"]["residual"]["full_cohort_assessable"] is False
     assert bootstrap_median([-0.2, 0.3, 0.7]) == bootstrap_median([-0.2, 0.3, 0.7])
     with pytest.raises(ValueError):
         aggregate_cases({ids[0]: row}, ids)
@@ -51,6 +55,30 @@ def test_undefined_target_not_silently_dropped():
     ids = [str(i) for i in range(10)]
     row = case_statistics([1, 2], {"spread": [1, 1]})
     assert aggregate_cases(dict.fromkeys(ids, row), ids)["status"] == "primary_not_assessable"
+
+
+def test_one_failed_comparator_keeps_target_and_labels_the_paired_subset():
+    ids = [str(i) for i in range(10)]
+    cases = {
+        case_id: case_statistics(
+            [1, 2, 3],
+            {name: [1, 2, 3] for name in ("spread", "ice", "residual", "jacobian")},
+        )
+        for case_id in ids
+    }
+    cases[ids[-1]]["ice"] = {"status": "failed", "rho": None, "blind_spots": None}
+    result = aggregate_cases(cases, ids)
+    assert result["status"] == "complete"
+    assert result["case_count"] == 10
+    assert result["positive_cases"] == 10
+    ice = result["comparators"]["ice"]
+    assert ice["comparison_scope"] == "assessable_subset"
+    assert ice["full_cohort_assessable"] is False
+    assert ice["assessable_case_ids"] == ids[:-1]
+    assert ice["failed_or_undefined_case_ids"] == ids[-1:]
+    assert ice["paired_differences"] == [0.0] * 9
+    assert ice["paired_bootstrap_95"] == [0.0, 0.0]
+    assert result["comparators"]["jacobian"]["comparison_scope"] == "full_cohort"
 
 
 @pytest.mark.parametrize("rho", [float("nan"), float("inf"), 1.01, -1.01, True, "0.8"])
