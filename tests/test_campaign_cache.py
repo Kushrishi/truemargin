@@ -3,6 +3,7 @@
 import copy
 import json
 import shutil
+import zipfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -11,10 +12,12 @@ import pytest
 
 from truemargin import campaign_cache as campaign
 from truemargin import ensemble
+from truemargin import member_transport as transport
 from truemargin import registration_member as producer
 from truemargin.ensemble import summarize_fields
 from truemargin.hyperparameter import CONFIGS, config_id
 from truemargin.member_retention import retain_registration_member
+from truemargin.provenance import _sha256_file
 
 
 @pytest.fixture
@@ -235,3 +238,185 @@ def test_invalid_field_fails_full_scan(value):
 def test_invalid_block_size_rejected_without_io(block):
     with pytest.raises(ValueError, match="block_voxels"):
         campaign.summarize_campaign_group([], block_voxels=block)
+
+
+@pytest.fixture
+def packet(group, tmp_path):
+    member = group[0]
+    manifest = tmp_path / "expected-manifest.json"
+    receipt = tmp_path / "producer-receipt.json"
+    manifest.write_text(json.dumps(member.expected_manifest))
+    receipt.write_text(json.dumps(member.receipt))
+    pins = dict(manifest_sha256=_sha256_file(manifest), receipt_sha256=_sha256_file(receipt))
+    path = tmp_path / "packet.zip"
+    transport.pack_member(member.directory, manifest, receipt, path, **pins)
+    return path, pins, member
+
+
+def test_transport_cli_recovers_without_original_or_registration(packet, tmp_path, monkeypatch):
+    path, pins, member = packet
+    member.directory.rename(tmp_path / "original-offline")
+    monkeypatch.setattr(
+        producer, "baseline_bspline_registration", lambda *a, **k: pytest.fail("must not register")
+    )
+    staging, destination, report = [tmp_path / n for n in ("staging", "recovered", "report.json")]
+    args = [
+        "recover",
+        "--packet",
+        str(path),
+        "--staging",
+        str(staging),
+        "--destination",
+        str(destination),
+        "--report",
+        str(report),
+    ]
+    for name, value in pins.items():
+        args += ["--" + name.replace("_", "-"), value]
+    assert transport.main(args) == 0
+    saved = json.loads(report.read_text())
+    assert saved["status"] == "recovered_verified"
+    assert saved["producer_git_sha"] == member.expected_manifest["git_sha"]
+    assert saved["field_sha256"] == member.receipt["files"]["field/field.npy"]["sha256"]
+    assert saved["readback_after_staging_renamed"]
+    assert saved["host_distinctness"] == "requires_independent_producer_host_record"
+    assert saved["held_out_access_safe"] is False
+    assert not staging.exists()
+    assert transport.main(args) == 2
+
+
+@pytest.mark.parametrize("change", ["extra", "traversal", "duplicate", "symlink", "size", "pin"])
+def test_transport_rejects_bad_packet_before_claim(packet, tmp_path, change):
+    path, pins, _ = packet
+    modified = tmp_path / "modified.zip"
+    with zipfile.ZipFile(path) as source, zipfile.ZipFile(modified, "w") as target:
+        for info in source.infolist():
+            data = source.read(info)
+            if change == "size" and info.filename == "member/progress.jsonl":
+                data += b"extra"
+            if change == "symlink" and info.filename == "member/started.json":
+                info.external_attr = 0o120777 << 16
+            target.writestr(info, data)
+        if change in {"extra", "traversal", "duplicate"}:
+            name = {
+                "extra": "landmarks.txt",
+                "traversal": "../outside",
+                "duplicate": "member/started.json",
+            }[change]
+            target.writestr(name, b"unexpected")
+    if change == "pin":
+        pins["manifest_sha256"] = "0" * 64
+    destination = tmp_path / "unpacked"
+    with pytest.raises(ValueError):
+        transport.unpack_member(modified, destination, **pins)
+    assert not destination.exists()
+
+
+def test_transport_tamper_cannot_be_accepted_with_same_size(packet, tmp_path):
+    path, pins, _ = packet
+    modified = tmp_path / "tampered.zip"
+    with zipfile.ZipFile(path) as source, zipfile.ZipFile(modified, "w") as target:
+        for info in source.infolist():
+            data = source.read(info)
+            if info.filename == "member/field/field.npy":
+                data = data[:-1] + bytes([data[-1] ^ 1])
+            target.writestr(info, data)
+    destination = tmp_path / "rejected"
+    with pytest.raises(ValueError, match="independent receipt"):
+        transport.unpack_member(modified, destination, **pins)
+    assert (destination / "field/field.npy.partial").exists()
+    assert not (destination / "completed.json").exists()
+
+
+def test_transport_interruption_preserved_and_existing_attempt_refused(
+    packet, tmp_path, monkeypatch
+):
+    path, pins, _ = packet
+    destination = tmp_path / "interrupted-transport"
+
+    def interrupt(reader, writer, length):
+        writer.write(reader.read(8))
+        raise OSError("synthetic interrupted transfer")
+
+    monkeypatch.setattr(shutil, "copyfileobj", interrupt)
+    with pytest.raises(OSError):
+        transport.unpack_member(path, destination, **pins)
+    assert (destination / "started.json.partial").stat().st_size == 8
+    assert not (destination / "completed.json").exists()
+    with pytest.raises(FileExistsError):
+        transport.unpack_member(path, destination, **pins)
+
+
+def test_transport_records_cannot_self_authenticate():
+    with pytest.raises(ValueError, match="independent pin"):
+        transport._pinned_record(b'{"changed":true}', "0" * 64)
+    import hashlib
+
+    data = b'{"a":1,"a":2}'
+    with pytest.raises(ValueError, match="duplicate JSON"):
+        transport._pinned_record(data, hashlib.sha256(data).hexdigest())
+
+
+def test_outcome_blind_grid_cost_and_diversity(group, monkeypatch):
+    monkeypatch.setattr(
+        campaign, "summarize_fields_blockwise", lambda *a, **k: pytest.fail("no summary allocation")
+    )
+    report = campaign.describe_campaign_group(list(reversed(group)), block_voxels=5)
+    assert len(report["members"]) == 9
+    assert len(report["pairwise_field_differences"]) == 36
+    assert report["raw_field_payload_bytes"] == 9 * 72 * 8
+    assert report["mean_spread_payload_bytes"] == 24 * 4 * 8
+    assert report["full_campaign_authorized"] is False
+    assert report["numerical_landmarks_opened"] is False
+    assert all(row["producer_peak_rss_bytes"] is None for row in report["members"])
+    assert all(row["iteration_cap_observed"] is False for row in report["members"])
+    arrays = [np.load(member.directory / "field/field.npy") for member in group]
+    from itertools import combinations
+
+    for row, (left, right) in zip(
+        report["pairwise_field_differences"], combinations(range(9), 2), strict=True
+    ):
+        delta = arrays[left] - arrays[right]
+        np.testing.assert_allclose(
+            row["rms_vector_difference_mm"], np.sqrt(np.mean(np.sum(delta**2, axis=0)))
+        )
+        np.testing.assert_allclose(
+            row["maximum_vector_difference_mm"], np.sqrt(np.max(np.sum(delta**2, axis=0)))
+        )
+
+
+def test_outcome_blind_grid_cannot_describe_survivors(group):
+    with pytest.raises(ValueError, match="exactly nine"):
+        campaign.describe_campaign_group(group[:-1])
+
+
+@pytest.mark.parametrize("collision", ["destination", "report", "existing", "dangling"])
+def test_transport_offline_collision_rejected_before_copy(packet, tmp_path, collision):
+    path, pins, _ = packet
+    staging = tmp_path / "staging"
+    offline = tmp_path / "staging-offline"
+    destination, report = tmp_path / "restored", tmp_path / "report.json"
+    if collision == "destination":
+        destination = offline
+    elif collision == "report":
+        report = offline / "report.json"
+    elif collision == "existing":
+        offline.mkdir()
+    else:
+        offline.symlink_to(tmp_path / "missing")
+    args = [
+        "recover",
+        "--packet",
+        str(path),
+        "--staging",
+        str(staging),
+        "--destination",
+        str(destination),
+        "--report",
+        str(report),
+    ]
+    for name, value in pins.items():
+        args += ["--" + name.replace("_", "-"), value]
+    assert transport.main(args) == 2
+    assert not staging.exists()
+    assert not report.is_file()

@@ -11,7 +11,11 @@ permissions:
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
     steps:
@@ -21,10 +25,15 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install system dependency
+      - name: Install Linux system dependency
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libopenslide0
+
+      - name: Install macOS system dependency
+        if: runner.os == 'macOS'
+        run: brew install openslide
 
       - name: Install package and research dependencies
         run: |
