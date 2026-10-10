@@ -18,15 +18,19 @@ outside the present scope.
 | Milestone | Status | Work and completion evidence | Decision afterward |
 | --- | --- | --- | --- |
 | Controlled studies | Complete | Known-deformation ranking, failure analysis and separate calibration/evaluation results are retained in the [technical report](../docs/technical_report.md). | Preserve the positive associations, case reversals, conservative bounds and failed comparator runs together. |
-| Recover one real-image registration | In progress | Obtain terminal wall time, CPU, peak RSS, optimizer stop and a complete field; copy it to persistent storage and verify its hashes from an independent runtime. | If the field or terminal evidence is missing, report the attempt as incomplete or unverified. Diagnose the specific failure before proposing another attempt. |
+| Recover one real-image registration | Latest attempt unverified; local execution qualification next | Saved progress exists, but no terminal result or verified field; Colab lists no active session. Qualify persistent local execution, then obtain terminal wall time, CPU, peak RSS, optimizer stop and a complete field with independent readback. | Preserve unknown outcomes. A new single-member run needs its own measured environment and durable output path; it is not an ensemble or external evaluation. |
 | Establish an affordable external study | Blocked by real-member recovery | Budget all prescribed forward members, reverse comparators, temporary arrays, retained fields and transfer time. State both measured inputs and uncertainty in the estimate. Finalize the DIR-Lab replacement amendment and coordinate/eligibility rules before outcome access. | Proceed only when the complete study fits an explicit resource budget. If it does not, document a prospective redesign or stop; do not silently weaken the fixed estimator. |
 | Evaluate external error ranking | Not started | Run the frozen sensitivity signal and declared inverse-consistency, image-residual and Jacobian comparators on the prescribed eligible cases. Retain failures, missingness, patient-level summaries and all denominators. | Assess informativeness, blind spots and comparative cost. Do not select only successful registrations or treat landmarks as independent patients. |
 | Deliver the evaluator and research report | Conditional on complete evidence | One documented supported-input workflow, explicit geometry/units, saved numerical outputs, reproducible figures, environment and data-access instructions. Contribution review against related work precedes a submission-ready manuscript. | A useful comparative or failure-analysis result may justify a paper. If novelty is insufficient, release a clearly bounded technical study rather than claiming a new method. |
 
 ## Immediate order
 
-1. Read the existing registration attempt's saved terminal evidence when available.
-2. Verify field retention independently and calculate the full-study resource estimate.
+1. Preserve the existing saved progress and unverified terminal status. Qualify a
+   persistent local environment, exact image/source identity, two-thread execution,
+   platform-correct resource measurements and durable output recovery. Keep the
+   fixed optimizer stopping rules; do not add an arbitrary elapsed-time cutoff.
+2. Obtain one completed, retained member under a separately recorded execution,
+   verify it independently and calculate the full-study resource estimate.
 3. Settle the replacement protocol before any external landmark-based evaluation.
 4. Execute and analyze that study only within its approved design and budget.
 5. Decide manuscript scope from the comparative findings; prepare LaTeX and archival

@@ -55,8 +55,13 @@ The [external lung-CT protocol](../docs/external_lung_validation_protocol.md) sp
 
 The completed-member producer and local copy/readback verification are implemented.
 Field-size copy and hash readback passed after Drive unmount/remount on 10 October.
-A separately recorded real-image attempt is in progress; a completed field and
-independent-runtime recovery are still unverified. The next
+A separately recorded retained attempt last saved worker elapsed time of
+18,738.8327 seconds and optimizer index 13; its terminal record, final resources
+and complete field were not found. Colab subsequently listed no active session.
+Its outcome remains unverified, not a demonstrated timeout or completion.
+Persistent local execution and recovery must be qualified before a new
+single-member run. Future execution should follow the fixed optimizer stopping
+rules without an arbitrary elapsed-time cutoff. The next
 resource milestone is one retained member with terminal measurements, followed by
 an explicit study budget. This is not optimizer-resume support. Full campaign
 execution remains pending. Numerical landmarks remain sealed; HELD-OUT ACCESS SAFE

@@ -119,8 +119,10 @@ and Jacobian signals. External calibration is a separate question.
 Image-only decoding is qualified. Before the external study, one completed
 real-image field must be retained and reopened independently of its runtime, and
 the full study's compute/storage budget must be established. A prior Case 7
-attempt disconnected without terminal evidence. Its final outcome remains unknown;
-a separately recorded attempt is addressing durable output retention.
+attempt disconnected without terminal evidence. The later retained attempt also
+has no saved terminal result, and Colab lists no active session. Completion,
+final resources and field retention remain unverified. The next step is to
+qualify persistent local execution and recovery before a new single-member run.
 No external-validation result is available and numerical landmarks remain sealed.
 
 [Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
