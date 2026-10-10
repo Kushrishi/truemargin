@@ -35,46 +35,29 @@ and registration error is:
 error(x) = ||u_est(x) - u_true(x)||_2
 ```
 
-## Active research path
+## Completed controlled-study path
 
-```text
-public TCIA T2 anatomy
-        +
-HECaP cancer-extent ROI
-        |
-        v
-crop source anatomy
-        |
-        v
-apply deterministic known B-spline deformation
-        |
-        +------> fixed synthetic image
-        |
-        +------> fixed-domain warped HECaP ROI
-        |
-        v
-run frozen registration-surrogate method
-        |
-        +------> estimated displacement field
-        |
-        +------> local surrogate spread / score
-        |
-        v
-sample 50 fixed-domain ROI locations
-        |
-        v
-compare surrogate with known local error
-        |
-        v
-case-level rank association
-        |
-        v
-anatomy-level aggregation and inference
+```mermaid
+flowchart TD
+    A["Real T2 anatomy and ROI"] --> B["Known synthetic deformation"]
+    B --> C["Frozen registration ensemble"]
+    B --> D["Known displacement and warped ROI"]
+    C --> E["Spread and registration error at sampled points"]
+    D --> E
+    E --> F["Case summaries and anatomy-level analysis"]
 ```
 
 The real-data zero-displacement analyses that motivated parts of the project are
 historical development evidence. They are not the current pointwise
 ground-truth validation path.
+
+## External-study preparation
+
+The next study uses real lung-image pairs. Image-only decoding, coordinate
+conversion, per-member field publication and bounded field-cache calculations
+are implemented. Runtime feasibility and independently recoverable fields remain
+prerequisites; these modules do not constitute a completed external evaluation.
+[The roadmap](../research/ROADMAP.md) defines those dependencies.
 
 ## Module boundaries
 
@@ -147,7 +130,7 @@ The project uses the public, de-identified TCIA
 checkpoints are excluded from ordinary Git history.
 
 The HECaP cancer-extent masks are used as spatial ROIs. They do not provide a
-measured T2-to-DCE displacement field. In the active known-GT study, exact
+measured T2-to-DCE displacement field. In the completed known-deformation study, exact
 correspondence is instead created by a synthetic transform applied to a real T2
 anatomy.
 

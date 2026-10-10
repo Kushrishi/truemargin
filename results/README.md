@@ -37,3 +37,16 @@ pointwise state in memory and generates anatomy-comparator and case-heterogeneit
 the requested output directory. Those larger derived outputs are intentionally not versioned. The
 analysis does not rerun registration, retune the estimator, change the ROI, or add a new
 confirmatory hypothesis test.
+
+## Calibration and evaluation
+
+- `m6_phase_a/`: calibration bundle, frozen input/geometry identities, protocol
+  copies, patient shards and aggregate thresholds.
+- `m6_phase_b/`: sealed-threshold evaluation bundle, numeric point records,
+  identities, protocol copies and aggregate coverage/radius summaries.
+- `m6_exploratory/`: explicitly post-primary comparisons and failure analysis.
+  These are not additional confirmatory studies.
+
+Use the [saved-evidence verification commands](../docs/reproduction.md) before
+relying on the bundles. M4–M6 are historical study identifiers, explained in the
+[research guide](../research/README.md).

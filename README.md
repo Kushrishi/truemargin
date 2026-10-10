@@ -60,6 +60,7 @@ The resulting bounds are conservative, and the 95% thresholds are infinite under
 
 - [Technical report](docs/technical_report.md)
 - [Known-ground-truth result](docs/hyperparameter_known_gt_result.md)
+- [Research evidence guide](research/README.md)
 - [Failure characterization](docs/m5_informativeness_characterization.md)
 - [Held-out calibration result](docs/m6_phase_b_evaluation_result.md)
 - [Calibration failure diagnostics](docs/m6_failure_diagnostics.md)
