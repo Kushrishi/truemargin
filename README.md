@@ -145,9 +145,8 @@ optimizer stopping and configuration diversity without numerical landmark
 outcomes, and qualify representative case/direction resource requirements
 before any 180-member campaign decision. The prospective external protocol
 and source/environment identities still require review. No external
-landmark-based result exists; numerical landmarks remain sealed. The
-[Case7 completion audit](https://github.com/Kushrishi/research-execution)
-is retained in the private execution repository.
+landmark-based result exists; numerical landmarks remain sealed. Completion
+and audit receipts are retained in the private execution repository.
 
 [Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
 
