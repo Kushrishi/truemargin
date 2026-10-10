@@ -119,15 +119,7 @@ def recover_campaign_member(
     return recovered
 
 
-def summarize_campaign_group(
-    members: Sequence[RetainedMember], *, block_voxels: int = 65536
-) -> tuple[np.ndarray, np.ndarray]:
-    """Require all nine configurations for one identified image pair and source.
-
-    Maps are read-only and the accepted blockwise formula is reused. Outputs
-    occupy one mean field and one scalar grid. No survivor-only estimate, field
-    publication, registration execution or landmark access is performed.
-    """
+def _verified_group(members: Sequence[RetainedMember], block_voxels: int):
     _block_size(block_voxels)
     if len(members) != len(CONFIGS):
         raise ValueError("exactly nine frozen members required")
@@ -164,4 +156,100 @@ def summarize_campaign_group(
         expected_shape=shape,
         expected_dtype=np.dtype("<f8"),
     )
+    return [by_config[config] for config in CONFIGS], records, fields
+
+
+def summarize_campaign_group(
+    members: Sequence[RetainedMember], *, block_voxels: int = 65536
+) -> tuple[np.ndarray, np.ndarray]:
+    """Require all nine configurations for one identified image pair and source.
+
+    Maps are read-only and the accepted blockwise formula is reused. Outputs
+    occupy one mean field and one scalar grid. No survivor-only estimate, field
+    publication, registration execution or landmark access is performed.
+    """
+    _, _, fields = _verified_group(members, block_voxels)
     return summarize_fields_blockwise(fields, block_voxels=block_voxels)
+
+
+def describe_campaign_group(
+    members: Sequence[RetainedMember], *, block_voxels: int = 65536
+) -> dict:
+    """Outcome-blind stopping, cost and field-diversity evidence for a full grid.
+
+    No images, landmarks, error metric, summary array or registration is used.
+    This describes retained execution; it neither selects settings nor authorizes
+    a full campaign. Consumer memory is block-bounded apart from read-only maps.
+    """
+    from itertools import combinations
+
+    from truemargin.member_retention import _json
+
+    ordered, records, fields = _verified_group(members, block_voxels)
+    observations = []
+    for member in ordered:
+        completed = _json(member.directory / "completed.json")
+        settings = member.expected_manifest["parameters"]["registration"]
+        optimizer = completed["optimizer"]
+        observations.append(
+            {
+                "member_id": member.expected_manifest["artifact_id"],
+                "metric_bins": settings["metric_bins"],
+                "gradient_convergence_tolerance": settings["gradient_convergence_tolerance"],
+                "optimizer": optimizer,
+                "iteration_cap_observed": optimizer.get("optimizer_iteration")
+                == settings["max_iterations"],
+                "registration_wall_seconds": completed["registration_wall_seconds"],
+                "registration_process_cpu_seconds": completed["registration_process_cpu_seconds"],
+                "producer_peak_rss_bytes": completed.get("peak_rss_bytes"),
+            }
+        )
+    differences = []
+    flat = [field.reshape(3, -1) for field in fields]
+    for left, right in combinations(range(len(fields)), 2):
+        total, maximum, equal = 0.0, 0.0, True
+        for start in range(0, flat[left].shape[1], block_voxels):
+            a = flat[left][:, start : start + block_voxels]
+            b = flat[right][:, start : start + block_voxels]
+            equal = equal and np.array_equal(a, b)
+            with np.errstate(over="ignore", invalid="ignore"):
+                squared = np.sum((a - b) ** 2, axis=0)
+            if not np.isfinite(squared).all():
+                raise ValueError("field difference magnitude overflow")
+            total += float(np.sum(squared, dtype=np.float64))
+            maximum = max(maximum, float(np.max(squared)))
+        if not np.isfinite(total):
+            raise ValueError("field difference reduction overflow")
+        differences.append(
+            {
+                "left_member_id": records[left].member_id,
+                "right_member_id": records[right].member_id,
+                "same_metric_bins": CONFIGS[left][0] == CONFIGS[right][0],
+                "exactly_equal_values": bool(equal),
+                "rms_vector_difference_mm": float(np.sqrt(total / flat[left].shape[1])),
+                "maximum_vector_difference_mm": float(np.sqrt(maximum)),
+            }
+        )
+    manifest = ordered[0].expected_manifest
+    return {
+        "schema": "registration-grid-feasibility/1",
+        "producer_git_sha": manifest["git_sha"],
+        "data_identity": manifest["data_identity"],
+        "producer_packages": manifest["parameters"]["packages"],
+        "member_field_sha256": {record.member_id: record.sha256 for record in records},
+        "block_voxels": block_voxels,
+        "members": observations,
+        "pairwise_field_differences": differences,
+        "raw_field_payload_bytes": sum(field.nbytes for field in fields),
+        "mean_spread_payload_bytes": fields[0].shape[1]
+        * fields[0].shape[2]
+        * fields[0].shape[3]
+        * 4
+        * 8,
+        "measured_scope": "one complete case-direction grid; no campaign forecast",
+        "numerical_landmarks_opened": False,
+        "registration_executed": False,
+        "convergence": "not_established",
+        "accuracy": "not_evaluated",
+        "full_campaign_authorized": False,
+    }

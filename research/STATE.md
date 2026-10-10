@@ -66,15 +66,22 @@ A retained float64 field of shape `[3,136,512,512]` passed whole-volume finite
 and displacement-magnitude checks, original/retained hashes and
 separate-process **same-host** readback. The field SHA-256 is
 `076f1b42fa89f56a6aed7a19513b2f1589eaeaa87bbabb6392f39b63a4c46640`.
-These are owner-supplied completion and audit receipts in the private
-`research-execution/runs/case7-mac-completion-20261010/` directory, not an
-independent second-host inspection by this repository's maintainers.
+The original Mac completion and audit receipts are retained in the private
+`research-execution/runs/case7-mac-completion-20261010/` directory. On October 10,
+a consumer on Linux independently reconstructed the transferred packet, verified
+the original manifest and retention-receipt hashes, recovered to a fresh directory,
+and read all 106,954,752 float64 components in a separate process. The field hash
+and full-volume displacement statistics matched the original audit exactly.
+The Mac producer identity comes from the owner's separately retained execution
+records; the Linux consumer identity is locally observed, not hardware-attested.
+See the [cross-host recovery evidence](CASE7_CROSS_HOST_RECOVERY_2026_10_10.md).
 
 The optimizer reported iteration 15 and
 `LBFGSBOptimizerv4: User requested`. A separate small synthetic investigation
 supports an iteration-cap interpretation, but does **not** prove convergence
-or landmark accuracy. A cross-host restoration, diversity/stopping assessment
-for the nine settings, representative forward/reverse-case runtime study and
+or landmark accuracy. Cross-host byte recovery is now demonstrated for this one
+member. Diversity/stopping assessment for the nine settings, representative
+forward/reverse-case runtime study and
 durable campaign controller remain open. This single member earns **no automatic
 180-slot campaign credit**. Prospective source, environment, resource and
 protocol gates precede additional campaign execution. Never infer a stalled

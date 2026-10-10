@@ -60,6 +60,48 @@ Linux/macOS tests do not establish real cross-host Case 7 recovery, power-loss
 durability, full-campaign feasibility or scientific accuracy. Those remain
 separate execution gates.
 
+## Pinned transport and second-host readback
+
+`python -m truemargin.member_transport pack --help` creates a bounded-memory ZIP
+containing only the five completed producer files and the expected manifest and
+receipt. It requires independently reviewed SHA-256 pins for both JSON records.
+It does not include image archives, numerical landmarks or unrelated local files.
+Never obtain the trusted pins from the packet being tested.
+
+On another host, `python -m truemargin.member_transport recover --help` accepts
+the same independent pins, strictly validates the packet allowlist and receipt
+sizes, unpacks into a fresh staging directory and reuses `recover_campaign_member`
+to copy into a separate fresh destination. It renames staging before repeating
+the full verified readback, then writes an exclusive report. Two uncompressed
+field copies plus the packet require storage. Interrupted or rejected attempts
+are preserved. There is no automatic registration retry or deletion.
+
+The report identifies consumer platform/Python, consumer module bytes, producer
+source and field identity. Establish host distinctness against a separately
+retained producer-host record; running this command twice on one host cannot
+establish cross-host recovery. This transport is not a claim of convergence,
+registration accuracy, clinical validation, campaign eligibility or power-loss
+durability. Hosted transport tests remain synthetic.
+
+## Outcome-blind grid feasibility diagnostics
+
+`describe_campaign_group(members)` reuses the exact-nine, common-identity and
+whole-field verification gates. It reads existing completion records and fields
+without executing registration, opening images/landmarks or allocating a full
+ensemble summary. It reports per-member optimizer records, registration wall/CPU
+time, producer RSS when recorded, raw/summary payload arithmetic, and all 36
+pairwise full-volume vector RMS/maximum differences. Output order is frozen.
+`same_metric_bins` identifies the nine within-bin tolerance comparisons.
+
+`iteration_cap_observed` only compares the reported index with the configured
+cap. Neither a stop string, identical fields, nor field variation demonstrates
+convergence or error accuracy. Unknown RSS remains null. Timing is one measured
+case/direction grid, not a 180-member forecast. A missing or rejected member
+prevents this complete-grid diagnostic; do not substitute a survivor estimate.
+Prospective representative forward/reverse measurements and final source,
+environment, storage, controller and study gates are still required. This helper
+does not authorize launches or changes to the frozen grid.
+
 The external-analysis aggregator also requires all comparator records before
 returning `primary_not_assessable`. Comparator failures remain explicit nulls;
 undefined target correlation is not permission to omit comparator evidence.
