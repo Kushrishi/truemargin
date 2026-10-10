@@ -117,11 +117,11 @@ def aggregate_cases(cases, expected_ids, seed=20261006):
                     raise ValueError("failed signal cannot supply blind-spot count")
             elif type(blind) is not int or blind < 0:
                 raise ValueError("blind-spot count must be a nonnegative integer")
+    if any(not {"ice", "residual", "jacobian"} <= set(cases[i]) for i in expected_ids):
+        raise ValueError("all frozen comparators must be recorded, including failures")
     target = [cases[i]["spread"]["rho"] for i in expected_ids]
     if any(v is None for v in target):
         return {"status": "primary_not_assessable", "cases": cases}
-    if any(not {"ice", "residual", "jacobian"} <= set(cases[i]) for i in expected_ids):
-        raise ValueError("all frozen comparators must be recorded, including failures")
     positive = sum(v > 0 for v in target)
     result = {
         "status": "complete",
