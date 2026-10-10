@@ -6,7 +6,7 @@ TrueMargin studies uncertainty in deformable image registration:
 
 **Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
 
-**Status:** synthetic studies are complete. Real-image runtime and field-retention qualification are in progress; external landmark-based validation has not started.
+**Status:** controlled studies are complete. One real-image Case7 registration member completed and passed same-host retained-field readback and a read-only integrity audit. Cross-host restoration, full-campaign feasibility and external landmark validation remain unverified; numerical held-out landmarks are sealed.
 
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
@@ -133,14 +133,20 @@ Evaluate whether the unchanged sensitivity signal ranks measured registration
 error on independent lung CT cases, against inverse consistency, image residual
 and Jacobian signals. External calibration is a separate question.
 
-Image-only decoding is qualified. Before the external study, one completed
-real-image field must be retained and reopened independently of its runtime, and
-the full study's compute/storage budget must be established. A prior Case 7
-attempt disconnected without terminal evidence. The later retained attempt also
-has no saved terminal result, and Colab lists no active session. Completion,
-final resources and field retention remain unverified. The next step is to
-qualify persistent local execution and recovery before a new single-member run.
-No external-validation result is available and numerical landmarks remain sealed.
+Image-only decoding is qualified. One Case7 registration member completed on a
+persistent Mac worker (33.88 minutes, 2.235 GiB peak RSS), with a full-field
+integrity audit and separate-process readback on the same host. The optimizer
+reached its configured 15-iteration cap; convergence and alignment accuracy
+are not established. Earlier Colab attempts remain separately recorded,
+including unknown terminal outcomes.
+
+Next, verify real cross-host restoration of this exact retained field, assess
+optimizer stopping and configuration diversity without numerical landmark
+outcomes, and qualify representative case/direction resource requirements
+before any 180-member campaign decision. The prospective external protocol
+and source/environment identities still require review. No external
+landmark-based result exists; numerical landmarks remain sealed. Completion
+and audit receipts are retained in the private execution repository.
 
 [Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
 
