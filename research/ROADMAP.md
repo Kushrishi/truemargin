@@ -1,29 +1,73 @@
-# Research roadmap
+# TrueMargin roadmap
 
-**Updated:** October 5, 2026
+Updated 10 October 2026. [Current evidence](STATE.md) · [Claims](CLAIMS.md)
 
-## Completed work
+## Purpose
 
-- **Known-error study:** 30 synthetic cases across 10 anatomies. All anatomy-level correlations were positive; median Spearman correlation was 0.6841. An advantage over inverse-consistency error was not established.
-- **Failure analysis:** 6 of 30 case-level correlations were negative. There were 39 high-error, low-uncertainty observations among 1,500 sampled locations.
-- **Held-out calibration:** 30 calibration and 30 evaluation anatomies across two acquisition sources. At nominal 90% coverage, mean anatomy-level coverage was 97.73% and 99.73%, with median radii of 3.93 mm and 4.36 mm. One anatomy reached 70.69 mm. The 95% thresholds were infinite; incomplete inverse-consistency results prevented the full-cohort calibrated comparison.
-- **Calibration-only scale analysis:** constant and adaptive scales traded radius size differently across sources. Adaptation did not provide a uniform improvement, and these development folds are not independent confirmation.
-- **Technical report:** methods, findings and limits are summarized in [the report](../docs/technical_report.md).
+Build a reproducible evaluation toolkit and empirical study of local registration
+quality: when does disagreement among registrations identify spatial error, when
+does it miss that error, and how does it compare with cheaper signals?
 
-## Next study: external lung CT landmarks
+The intended user is a registration researcher evaluating a quality signal.
+A publishable comparative study is the research goal. A clinical product,
+a new registration model and a claim that spread is calibrated probability are
+outside the present scope.
 
-The [external-study protocol](../docs/external_lung_validation_protocol.md) and training-image preflight are implemented. The experiment has not run.
+## Milestones and decisions
 
-Before execution, reconcile the dataset partition and expected pair count with the protocol, verify image and landmark identities, and confirm that coordinate conventions and eligibility checks are correct. Then test the fixed estimator and comparators on eligible landmark pairs. Report registration failures and missing observations alongside rank associations and error distributions.
+| Milestone | Status | Work and completion evidence | Decision afterward |
+| --- | --- | --- | --- |
+| Controlled studies | Complete | Known-deformation ranking, failure analysis and separate calibration/evaluation results are retained in the [technical report](../docs/technical_report.md). | Preserve the positive associations, case reversals, conservative bounds and failed comparator runs together. |
+| Recover one real-image registration | In progress | Obtain terminal wall time, CPU, peak RSS, optimizer stop and a complete field; copy it to persistent storage and verify its hashes from an independent runtime. | If the field or terminal evidence is missing, report the attempt as incomplete or unverified. Diagnose the specific failure before proposing another attempt. |
+| Establish an affordable external study | Blocked by real-member recovery | Budget all prescribed forward members, reverse comparators, temporary arrays, retained fields and transfer time. State both measured inputs and uncertainty in the estimate. Finalize the DIR-Lab replacement amendment and coordinate/eligibility rules before outcome access. | Proceed only when the complete study fits an explicit resource budget. If it does not, document a prospective redesign or stop; do not silently weaken the fixed estimator. |
+| Evaluate external error ranking | Not started | Run the frozen sensitivity signal and declared inverse-consistency, image-residual and Jacobian comparators on the prescribed eligible cases. Retain failures, missingness, patient-level summaries and all denominators. | Assess informativeness, blind spots and comparative cost. Do not select only successful registrations or treat landmarks as independent patients. |
+| Deliver the evaluator and research report | Conditional on complete evidence | One documented supported-input workflow, explicit geometry/units, saved numerical outputs, reproducible figures, environment and data-access instructions. Contribution review against related work precedes a submission-ready manuscript. | A useful comparative or failure-analysis result may justify a paper. If novelty is insufficient, release a clearly bounded technical study rather than claiming a new method. |
 
-This study asks whether the signal remains informative outside the original prostate-image setting. It does not establish clinical usefulness by itself. Any amendment to the external design must be recorded before inspecting estimator outcomes.
+## Immediate order
 
-## Publication
+1. Read the existing registration attempt's saved terminal evidence when available.
+2. Verify field retention independently and calculate the full-study resource estimate.
+3. Settle the replacement protocol before any external landmark-based evaluation.
+4. Execute and analyze that study only within its approved design and budget.
+5. Decide manuscript scope from the comparative findings; prepare LaTeX and archival
+   reproduction materials for that scope rather than drafting unsupported conclusions.
 
-The existing technical report provides a starting point. An external result could strengthen a comparative paper if it adds a clear finding beyond existing work. The contribution may concern limits or failure patterns rather than a superior uncertainty method. A manuscript or preprint has not been completed.
+Image decoding is qualified. Field-size copy and remount readback have passed,
+but those storage checks are not a completed real registration or independent
+runtime recovery. The current attempt is a feasibility prerequisite, not the
+external accuracy experiment. No additional worker is implied by this roadmap.
 
-The original challenge leaderboard and test subjects remain untouched. They come from the same challenge and are not an independent external dataset.
+## What would change the direction?
 
-## Research records
+- **Compute or retention failure:** repair the execution/storage problem first;
+  another full run is not the default response.
+- **No advantage over inverse consistency:** retain that finding. Investigate
+  whether the study establishes useful limits or complementary failure behavior;
+  do not tune against the evaluated external outcomes to obtain a win.
+- **Conservative or uninformative bounds:** keep coverage and radius together.
+  External calibration would need a separate adequately justified design; ten
+  lung cases do not automatically supply it.
+- **Insufficient novelty:** maintain the toolkit and publish the bounded technical
+  record. A manuscript is an outcome to earn, not a required label for the project.
 
-Frozen protocols, amendments and numerical result records retain the definitions used in each completed study. They are not changed to improve a later result. The [claims summary](CLAIMS.md) describes what the current evidence supports. The private `truemargin-lab` repository preserves historical work; active research is maintained here.
+## Relevant standards
+
+Reviewed 10 October 2026:
+
+- [RegUn](https://github.com/hsokooti/RegUn) predicts local registration error in
+  chest CT. It is relevant prior work for the target, not the same estimator.
+- [CONReg](https://doi.org/10.1007/s10278-026-01878-3), published 11 March 2026,
+  combines quantile regression and conformal prediction for registration.
+  Registration uncertainty and conformalization alone are not a novelty claim.
+- [uniGradICON](https://github.com/uncbiag/uniGradICON) provides installation,
+  executable registration commands, models and examples. Adopt its direct path
+  from input to output; its registration performance does not validate TrueMargin.
+
+## Evidence boundaries
+
+Frozen protocols, archived results and numerical definitions remain unchanged.
+The immediate external question is ranking and failure behavior. Clinical
+validity, external calibration and broad population guarantees are not established.
+Numerical external landmarks remain sealed: **HELD-OUT ACCESS SAFE: NO**.
+The existing package metadata restricts reuse to research; distribution licensing
+must be settled explicitly before presenting a generally reusable release.

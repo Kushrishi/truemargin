@@ -6,11 +6,11 @@ TrueMargin studies uncertainty in deformable image registration:
 
 **Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
 
-**Status:** synthetic studies are complete. The latest image-only lung-registration attempt has no verified terminal result; retained-field feasibility and external landmark-based validation remain incomplete.
+**Status:** synthetic studies are complete. Real-image runtime and field-retention qualification are in progress; external landmark-based validation has not started.
 
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
-[Visual study](https://kushrishi.com/research/truemargin) · [Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md)
+[Visual study](https://kushrishi.com/research/truemargin) · [Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md) · [Roadmap](research/ROADMAP.md)
 
 ![TrueMargin controlled association, blind spots and calibrated bounds](docs/figures/m4_m6_evidence.png)
 
@@ -117,8 +117,9 @@ and Jacobian signals. External calibration is a separate question.
 
 Image-only decoding is qualified. Before the external study, one completed
 real-image field must be retained and reopened independently of its runtime, and
-the full study's compute/storage budget must be established. The later Case 7
-runtime disconnected without saved terminal evidence; its outcome is unverified.
+the full study's compute/storage budget must be established. A prior Case 7
+attempt disconnected without terminal evidence. Its final outcome remains unknown;
+a separately recorded attempt is addressing durable output retention.
 No external-validation result is available and numerical landmarks remain sealed.
 
 [Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
