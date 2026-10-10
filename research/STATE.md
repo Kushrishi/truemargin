@@ -54,19 +54,32 @@ These overlapping development folds suggest source dependence, rather than a uni
 The [external lung-CT protocol](../docs/external_lung_validation_protocol.md) specifies a new-data validation. The [training-image preflight](../docs/external_lung_training_preflight.md) checks image geometry without reading landmarks. The [DIR-Lab source/decoder audit](DIRLAB_DECODER_AUDIT_2026_10.md) qualifies a prospective fallback without opening landmarks. The [largest-case runtime history](DIRLAB_RUNTIME_FEASIBILITY_2026_10.md) preserves the 600-second observation and isolated 2,700-second timeout. The later [three-hour Case 7 result and next resource gate](CASE7_RUNTIME_RESULT_AND_NEXT_GATE_2026_10_09.md) records an explicit supervisor timeout: 10,800.25 wall seconds, 18,376.05 CPU seconds and 1.62 GiB child peak RSS. No completion, optimizer stop or final field facts were saved. A later six-hour attempt last saved optimizer index 13 at 7,128.9363 registration seconds before runtime disconnection; no saved terminal result establishes completion or timeout. Its final wall/CPU/RSS, optimizer stop and field production remain unknown.
 
 The completed-member producer and local copy/readback verification are implemented.
-Field-size copy and hash readback passed after Drive unmount/remount on 10 October.
-A separately recorded retained attempt last saved worker elapsed time of
-18,738.8327 seconds and optimizer index 13; its terminal record, final resources
-and complete field were not found. Colab subsequently listed no active session.
-Its outcome remains unverified, not a demonstrated timeout or completion.
-Persistent local execution and recovery must be qualified before a new
-single-member run. Future execution should follow the fixed optimizer stopping
-rules without an arbitrary elapsed-time cutoff. The next
-resource milestone is one retained member with terminal measurements, followed by
-an explicit study budget. This is not optimizer-resume support. Full campaign
-execution remains pending. Numerical landmarks remain sealed; HELD-OUT ACCESS SAFE
-remains NO. The original protocol is historical; the final replacement amendment
-must be settled before outcome-bearing execution.
+Field-size copy and hash readback after Drive unmount/remount were qualified
+on 10 October. A separate retained Colab attempt last reported
+18,738.8327 seconds and optimizer index 13 but left no verified terminal
+record or complete field; its outcome remains unknown.
+
+A subsequent **persistent Mac execution of one Case7 member completed** under
+frozen source `fdaa8ae7b5aefa02e58c4f4acf4496835f7eaa3e`. The worker exited
+successfully after 2,032.658 seconds (33.88 minutes), with 2.235 GiB peak RSS.
+A retained float64 field of shape `[3,136,512,512]` passed whole-volume finite
+and displacement-magnitude checks, original/retained hashes and
+separate-process **same-host** readback. The field SHA-256 is
+`076f1b42fa89f56a6aed7a19513b2f1589eaeaa87bbabb6392f39b63a4c46640`.
+These are owner-supplied completion and audit receipts in the private
+`research-execution/runs/case7-mac-completion-20261010/` directory, not an
+independent second-host inspection by this repository's maintainers.
+
+The optimizer reported iteration 15 and
+`LBFGSBOptimizerv4: User requested`. A separate small synthetic investigation
+supports an iteration-cap interpretation, but does **not** prove convergence
+or landmark accuracy. A cross-host restoration, diversity/stopping assessment
+for the nine settings, representative forward/reverse-case runtime study and
+durable campaign controller remain open. This single member earns **no automatic
+180-slot campaign credit**. Prospective source, environment, resource and
+protocol gates precede additional campaign execution. Never infer a stalled
+worker is dead, automatically restart it or overwrite its outputs. Held-out
+numerical landmarks remain sealed; HELD-OUT ACCESS SAFE remains NO.
 
 The external question is error ranking and failure behavior against the declared
 comparators. A new calibration-efficiency study would require its own design.
