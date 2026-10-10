@@ -53,8 +53,25 @@ def test_case_hierarchy_sign_and_bootstrap():
 
 def test_undefined_target_not_silently_dropped():
     ids = [str(i) for i in range(10)]
-    row = case_statistics([1, 2], {"spread": [1, 1]})
+    row = case_statistics(
+        [1, 2],
+        {"spread": [1, 1], "ice": None, "residual": None, "jacobian": None},
+    )
     assert aggregate_cases(dict.fromkeys(ids, row), ids)["status"] == "primary_not_assessable"
+
+
+def test_undefined_target_still_requires_every_comparator():
+    ids = [str(i) for i in range(10)]
+    cases = {
+        case_id: case_statistics(
+            [1, 2],
+            {"spread": [1, 1], "ice": None, "residual": None, "jacobian": None},
+        )
+        for case_id in ids
+    }
+    del cases[ids[-1]]["ice"]
+    with pytest.raises(ValueError, match="comparators"):
+        aggregate_cases(cases, ids)
 
 
 def test_one_failed_comparator_keeps_target_and_labels_the_paired_subset():
