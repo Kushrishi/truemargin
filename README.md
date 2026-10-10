@@ -14,6 +14,23 @@ The project evaluates rank informativeness, failure modes, and numerical error b
 
 ![TrueMargin controlled association, blind spots and calibrated bounds](docs/figures/m4_m6_evidence.png)
 
+## Check the retained results
+
+From a checkout, using Python 3.12:
+
+```bash
+python scripts/verify_m6_phase_a_result.py results/m6_phase_a
+python scripts/verify_m6_phase_b_result.py results/m6_phase_b
+```
+
+These standard-library checks need no imaging data, registration run or landmark
+access. They verify the saved calibration and evaluation records, including
+hashes, cohort identity and numerical summaries. A mismatch exits nonzero.
+They do not reproduce the original registrations.
+
+[Full reproduction guide](docs/reproduction.md) ·
+[Retained outputs](results/README.md)
+
 ## Reading the results
 
 Registration spread measures how much nine registrations disagree about a point’s displacement. A positive rank correlation means points with more disagreement tend to have larger known errors; it does not mean the disagreement equals the error. Coverage is the fraction of sampled errors inside a calibrated bound. Radius is the size of that bound in millimetres: high coverage can still require bounds too large to be useful. Here, patient-level summaries prevent spatial samples from being counted as independent patients.
@@ -130,3 +147,9 @@ No external-validation result is available and numerical landmarks remain sealed
 ## Limits
 
 TrueMargin does not currently establish clinical validity, external-dataset validation, uniform reliability, superiority over inverse-consistency error, or a peer-reviewed publication.
+
+## Source distribution
+
+This public repository has no open-source license grant. Source distribution
+licensing must be resolved before a reusable package release; third-party data
+and software retain their own terms.
