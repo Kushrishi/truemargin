@@ -15,7 +15,6 @@ dependencies = [
     "numpy>=1.26,<3",
     "scipy>=1.11,<2",
     "matplotlib>=3.8,<4",
-    "scikit-image>=0.22,<0.25",
     "pyyaml>=6.0,<7",
 ]
 
@@ -26,10 +25,6 @@ realdata = [
 ]
 acquisition = [
     "idc-index==0.12.5",
-]
-tracking = [
-    "mlflow>=2.14,<3",
-    "dvc>=3.51,<4",
 ]
 dev = [
     "pytest>=8.0,<9",
