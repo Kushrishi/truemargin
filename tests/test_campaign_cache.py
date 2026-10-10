@@ -137,6 +137,43 @@ def test_interrupted_copy_preserved_without_retry(group, tmp_path, monkeypatch):
     )
 
 
+def test_source_change_during_recovery_cannot_replace_independent_receipt(
+    group, tmp_path, monkeypatch
+):
+    original = campaign.retain_registration_member
+
+    def changed_source(source, destination, **kwargs):
+        with (source / "progress.jsonl").open("a") as handle:
+            handle.write('{"unexpected_late_event":true}\n')
+        return original(source, destination, **kwargs)
+
+    monkeypatch.setattr(campaign, "retain_registration_member", changed_source)
+    destination = tmp_path / "changed-copy"
+    with pytest.raises(ValueError, match="independent receipt"):
+        campaign.recover_campaign_member(group[0], destination)
+    # A copy may exist, but it is not accepted against the independent record.
+    with pytest.raises(ValueError, match="producer receipt"):
+        campaign.verify_campaign_member(
+            campaign.RetainedMember(destination, group[0].expected_manifest, group[0].receipt)
+        )
+
+
+@pytest.mark.parametrize(
+    ("setting", "value"),
+    [
+        ("mesh_size", 4),
+        ("max_iterations", 16),
+        ("center_first", True),
+        ("metric_bins", 100),
+        ("gradient_convergence_tolerance", 1e-7),
+    ],
+)
+def test_off_protocol_configuration_rejected(group, setting, value):
+    group[0].expected_manifest["parameters"]["registration"][setting] = value
+    with pytest.raises(ValueError, match="frozen hyperparameter grid"):
+        campaign.summarize_campaign_group(group)
+
+
 @pytest.mark.parametrize(
     "change", ["missing", "duplicate", "direction", "source", "packages", "spacing"]
 )
