@@ -1,6 +1,6 @@
 # TrueMargin roadmap
 
-Updated 10 October 2026. [Current evidence](STATE.md) · [Claims](CLAIMS.md)
+Updated 11 October 2026. [Current evidence](STATE.md) · [Claims](CLAIMS.md)
 
 ## Purpose
 
@@ -18,28 +18,22 @@ outside the present scope.
 | Milestone | Status | Work and completion evidence | Decision afterward |
 | --- | --- | --- | --- |
 | Controlled studies | Complete | Known-deformation ranking, failure analysis and separate calibration/evaluation results are retained in the [technical report](../docs/technical_report.md). | Preserve the positive associations, case reversals, conservative bounds and failed comparator runs together. |
-| Recover one real-image registration | Latest attempt unverified; local execution qualification next | Saved progress exists, but no terminal result or verified field; Colab lists no active session. Qualify persistent local execution, then obtain terminal wall time, CPU, peak RSS, optimizer stop and a complete field with independent readback. | Preserve unknown outcomes. A new single-member run needs its own measured environment and durable output path; it is not an ensemble or external evaluation. |
-| Establish an affordable external study | Blocked by real-member recovery | Budget all prescribed forward members, reverse comparators, temporary arrays, retained fields and transfer time. State both measured inputs and uncertainty in the estimate. Finalize the DIR-Lab replacement amendment and coordinate/eligibility rules before outcome access. | Proceed only when the complete study fits an explicit resource budget. If it does not, document a prospective redesign or stop; do not silently weaken the fixed estimator. |
+| Recover real-image members | Two Case7 fields independently recovered | The first field passed [cross-host recovery](CASE7_CROSS_HOST_RECOVERY_2026_10_10.md). The matched `1e-4`/`1e-5` tolerance pair differed by only `4.10e-12 mm` vector RMS; both reached the 15-iteration cap. Earlier disconnected outcomes remain unknown. | Preserve the negative diversity result. Two members are not a complete nine-member ensemble, convergence or accuracy validation. |
+| Establish an affordable external study | Archive inventory and Mac identity preflight passed; RAM/launcher gate open | The owner verified ten original DIR-Lab archives and paired 300-landmark entry metadata. The prospective cohort is distinct from Learn2Reg. Resource feasibility and the prospective freeze still require review before outcome access. | A single image-only probe requires separate approval after the RAM/launcher gate; no full campaign is authorized. |
 | Evaluate external error ranking | Not started | Run the frozen sensitivity signal and declared inverse-consistency, image-residual and Jacobian comparators on the prescribed eligible cases. Retain failures, missingness, patient-level summaries and all denominators. | Assess informativeness, blind spots and comparative cost. Do not select only successful registrations or treat landmarks as independent patients. |
 | Deliver the evaluator and research report | Conditional on complete evidence | One documented supported-input workflow, explicit geometry/units, saved numerical outputs, reproducible figures, environment and data-access instructions. Contribution review against related work precedes a submission-ready manuscript. | A useful comparative or failure-analysis result may justify a paper. If novelty is insufficient, release a clearly bounded technical study rather than claiming a new method. |
 
-## Immediate order
+## Current gate
 
-1. Preserve the existing saved progress and unverified terminal status. Qualify a
-   persistent local environment, exact image/source identity, two-thread execution,
-   platform-correct resource measurements and durable output recovery. Keep the
-   fixed optimizer stopping rules; do not add an arbitrary elapsed-time cutoff.
-2. Obtain one completed, retained member under a separately recorded execution,
-   verify it independently and calculate the full-study resource estimate.
-3. Settle the replacement protocol before any external landmark-based evaluation.
-4. Execute and analyze that study only within its approved design and budget.
-5. Decide manuscript scope from the comparative findings; prepare LaTeX and archival
-   reproduction materials for that scope rather than drafting unsupported conclusions.
+The latest owner-performed Mac preflight passed original archive, reference field,
+candidate configuration and frozen source identities. Review available RAM and
+launcher readiness next. Any single image-only `bins32`/`tol1e-5` probe requires a
+separate authorization; the roadmap does not authorize execution.
 
-Image decoding is qualified. Field-size copy and remount readback have passed,
-but those storage checks are not a completed real registration or independent
-runtime recovery. The current attempt is a feasibility prerequisite, not the
-external accuracy experiment. No additional worker is implied by this roadmap.
+The ten-case archive/entry inventory is complete, while numerical landmarks remain
+sealed. Freeze any prospective DIR-Lab external analysis before outcome access,
+without relabeling the original Learn2Reg study or changing accepted outcomes.
+Full-cohort resources, scientific usefulness and landmark validation remain open.
 
 ## What would change the direction?
 
@@ -75,3 +69,4 @@ validity, external calibration and broad population guarantees are not establish
 Numerical external landmarks remain sealed: **HELD-OUT ACCESS SAFE: NO**.
 The existing package metadata restricts reuse to research; distribution licensing
 must be settled explicitly before presenting a generally reusable release.
+

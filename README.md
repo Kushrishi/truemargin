@@ -6,7 +6,7 @@ TrueMargin studies uncertainty in deformable image registration:
 
 **Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
 
-**Status:** controlled studies are complete. One real-image Case7 registration member completed and passed same-host retained-field readback and a read-only integrity audit. Cross-host restoration, full-campaign feasibility and external landmark validation remain unverified; numerical held-out landmarks are sealed.
+**Status:** controlled studies are complete. Two Case7 image-only members have independently recovered retained fields; the first also passed cross-host recovery. Changing tolerance from `1e-4` to `1e-5` produced only microscopic field differences, not useful ensemble diversity. The owner-verified ten-case DIR-Lab archive inventory and latest Mac identity preflight have passed. RAM/launcher readiness, full-campaign feasibility and external landmark validation remain open; numerical landmarks are sealed.
 
 The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
 
@@ -133,20 +133,23 @@ Evaluate whether the unchanged sensitivity signal ranks measured registration
 error on independent lung CT cases, against inverse consistency, image residual
 and Jacobian signals. External calibration is a separate question.
 
-Image-only decoding is qualified. One Case7 registration member completed on a
-persistent Mac worker (33.88 minutes, 2.235 GiB peak RSS), with a full-field
-integrity audit and separate-process readback on the same host. The optimizer
-reached its configured 15-iteration cap; convergence and alignment accuracy
-are not established. Earlier Colab attempts remain separately recorded,
-including unknown terminal outcomes.
+Image-only decoding is qualified. The first retained Case7 field passed
+[cross-host recovery](research/CASE7_CROSS_HOST_RECOVERY_2026_10_10.md).
+A matched tolerance comparison recovered a second member: vector RMS difference
+was `4.10e-12 mm`, with both members reaching their configured 15-iteration cap.
+These two fields supply no complete nine-member ensemble, no useful diversity
+from this tolerance change, and no convergence or alignment-accuracy claim.
+Earlier disconnected attempts retain their unknown terminal outcomes.
 
-Next, verify real cross-host restoration of this exact retained field, assess
-optimizer stopping and configuration diversity without numerical landmark
-outcomes, and qualify representative case/direction resource requirements
-before any 180-member campaign decision. The prospective external protocol
-and source/environment identities still require review. No external
-landmark-based result exists; numerical landmarks remain sealed. Completion
-and audit receipts are retained in the private execution repository.
+The owner-verified inventory covers ten original DIR-Lab case archives and their
+paired extreme-phase 300-landmark entries. This is a prospective external cohort
+pathway distinct from Learn2Reg; numerical coordinates remain sealed. The latest
+Mac read-only preflight passed archive, reference-field, candidate-configuration
+and frozen-source identities. RAM and launcher readiness still require review.
+The proposed single image-only `bins32`/`tol1e-5` member, a study freeze, any full
+campaign and landmark evaluation each require separate authorization. No external
+landmark-based result exists. Detailed completion and comparison receipts remain
+in the private execution repository.
 
 [Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
 
@@ -159,3 +162,4 @@ TrueMargin does not currently establish clinical validity, external-dataset vali
 This public repository has no open-source license grant. Source distribution
 licensing must be resolved before a reusable package release; third-party data
 and software retain their own terms.
+
