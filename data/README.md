@@ -1,12 +1,22 @@
 # Data
 
-Data are intentionally excluded from Git history. The repository contains only
-acquisition/identity instructions and code needed to reproduce the research
-pipeline.
+Raw images, segmentation labels and external landmarks are excluded from Git.
+The repository retains code, acquisition instructions and small numerical result
+records. The completed studies use two different data sources:
 
-## Primary collection
+- **M4–M5:** Prostate Fused-MRI-Pathology, with ten held-out anatomies and
+  three synthetic deformations per anatomy. The collection and layout below
+  describe this study.
+- **M6:** the NCI-ISBI 2013 Prostate Challenge training partition, drawn from
+  Prostate-3T and Prostate-Diagnosis. Its 60 anatomies were split into 30 for
+  calibration and 30 for evaluation. See the [M6 protocol](../docs/m6_calibration_protocol.md)
+  and [evaluation result](../docs/m6_phase_b_evaluation_result.md).
 
-The current study uses the public, de-identified TCIA
+External lung validation remains incomplete; see [current status](../research/STATE.md).
+
+## M4–M5 collection
+
+The M4–M5 study uses the public, de-identified TCIA
 **Prostate Fused-MRI-Pathology** collection:
 
 - 28 subjects with prostate MRI;
@@ -24,7 +34,7 @@ Current TCIA collection page:
 
 `https://www.cancerimagingarchive.net/collection/prostate-fused-mri-pathology/`
 
-The active experiment does **not** require the ~76.8 GB whole-slide pathology
+The M4–M5 experiment does **not** require the ~76.8 GB whole-slide pathology
 download. It uses the radiology image download (~4.7 GB) plus the small fused
 rad-path MHA/MATLAB resource containing the HECaP cancer-extent masks.
 
@@ -55,13 +65,13 @@ They are useful as **regions of interest**.
 They are **not** independently measured T2-to-DCE pointwise displacement
 ground truth.
 
-That distinction is central to the current project.
+That distinction is central to interpretation of this study.
 
 Earlier exploratory scripts sampled HECaP voxels while comparing T2/DCE
 registration against a zero-displacement reference assumption. Those analyses
 are retained only as historical development evidence.
 
-The current known-ground-truth study instead:
+The M4 known-ground-truth study instead:
 
 1. loads a real T2 anatomy and its matching HECaP ROI;
 2. creates a synthetic fixed image using a known B-spline transform;
@@ -69,7 +79,7 @@ The current known-ground-truth study instead:
 4. samples deterministic fixed-domain ROI locations; and
 5. evaluates estimated displacement against the exact known transform.
 
-## Current cohort split
+## M4 cohort split
 
 The registration-hyperparameter mechanism was promoted on five frozen subjects:
 
