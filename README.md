@@ -67,4 +67,4 @@ The [protocol](docs/external_lung_validation_protocol.md) and [study status](res
 
 Analysis code is in `src/`; experiment scripts are in `scripts/`; numerical tests are in `tests/`. Methods and study records are linked above.
 
-This public repository has no project-wide software licence grant. Third-party data and software retain their own terms.
+Original project software and associated documentation are available under the [MIT License](LICENSE). Third-party datasets, model weights, software and other materials retain their own licences and attribution requirements; the MIT licence does not relicense them.
