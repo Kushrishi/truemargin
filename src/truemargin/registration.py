@@ -1,12 +1,11 @@
 """
 registration.py
 ---------------
-Real-data registration lives here. On synthetic data you don't need this
-(synthetic.py already gives you an estimator). For the TCIA prostate step you
-plug a real method in and it hands its displacement field to calibration.py.
+SimpleITK B-spline registration and exploratory uncertainty estimators.
 
-Requires SimpleITK (pip install SimpleITK) for the baseline. ProsRegNet / RAPHIA /
-RAPSODI (Stanford PIMED, on GitHub) are the deep-learning upgrades -- wrap them here.
+Displacement fields feed the calibration and error-analysis helpers. Ensemble
+spread and objective curvature are sensitivity measures; neither establishes
+registration accuracy or calibrated coverage on its own.
 """
 
 from __future__ import annotations
@@ -118,9 +117,9 @@ def baseline_bspline_registration(
 
     Args:
         fixed, moving: image arrays to register.
-        mesh_size: control points per dimension for the B-spline grid. Cost
-            grows fast with this -- e.g. mesh_size=8 on a 3D volume means
-            8*8*8 = 512 control points (1536 free parameters to optimize).
+        mesh_size: mesh intervals per dimension for the B-spline grid.
+            With the default cubic spline, mesh_size=8 in 3D gives
+            (8+3)^3 = 1331 control points and 3993 parameters.
             Use a small value (e.g. 3-4) for quick dev/correctness checks on
             real 3D data, and only raise it once you know the pipeline works.
         max_iterations: cap on optimizer iterations. Also the main real-3D
@@ -140,7 +139,7 @@ def baseline_bspline_registration(
             explicitly pass spacing=(1.0, 1.0, 1.0) rather than relying on
             the default, to make that assumption visible at the call site.
         center_first: if True, rigidly translate the moving image so its
-            geometric center lines up with the fixed image's BEFORE running
+            intensity-weighted centroid lines up with the fixed image's before running
             the B-spline optimizer (see `_center_moving_on_fixed`). Opt-in
             (default False) so it doesn't silently change results for
             existing checkpoints -- found to fix a stochastic "images do not
@@ -239,7 +238,7 @@ def curvature_uncertainty(
     mc_samples: int = 30,
     mc_seed: int = 0,
 ):
-    """A second, more principled uncertainty estimate: instead of asking "how
+    """An exploratory curvature-based sensitivity estimate: instead of asking "how
     much do several perturbed registration attempts disagree" (see
     ensemble_uncertainty), ask "if I nudge the found answer slightly, how much
     worse does the alignment get?"
@@ -421,8 +420,10 @@ def curvature_uncertainty(
     # the ACTUAL transform's displacement field for each (via the same
     # disp_filter used for u_mean, which is already exercised and tested
     # elsewhere in this codebase), and taking the per-voxel standard
-    # deviation across samples is an unbiased, exact-in-expectation estimate
-    # of the correctly propagated per-axis sigma field -- no hand-derivation
+    # deviation across samples gives a Monte Carlo estimate
+    # of the propagated per-axis sigma field as sample count grows. The finite-
+    # sample standard deviation is biased; it is not an unbiased estimator.
+    # No hand-derivation
     # of individual B-spline basis weights is needed, because the real
     # interpolation machinery is doing the (correct) linear combination on
     # each sampled draw, and only the SUMMARY STATISTIC across draws (a
@@ -474,8 +475,8 @@ def ensemble_uncertainty(
     """A first, cheap uncertainty estimate: register several perturbed inputs and
     take the per-voxel spread of the resulting displacement fields as sigma.
 
-    This is the crude baseline you IMPROVE in the thesis (correlation-aware models,
-    proper probabilistic registration, conformal prediction).
+    This is the historical absolute-intensity perturbation baseline. Explicit
+    relative-intensity perturbation is available in ``truemargin.ensemble``.
 
     mesh_size / max_iterations / spacing pass straight through to
     baseline_bspline_registration -- see there for why these matter a lot on
