@@ -75,6 +75,12 @@ def test_conformal_radius_exact_order_statistic():
     assert q_hat2 == 8.0
 
 
+@pytest.mark.parametrize("alpha", [-0.1, 0.0, 1.0, 1.2, np.nan, np.inf, -np.inf])
+def test_conformal_radius_rejects_invalid_alpha(alpha):
+    with pytest.raises(ValueError, match="alpha must be finite and strictly between 0 and 1"):
+        cal.conformal_radius(np.arange(1.0, 11.0), np.ones(10), alpha=alpha)
+
+
 def test_conformal_radius_infinite_when_not_enough_calibration_points():
     # If k exceeds n, this construction has no finite calibration order statistic
     # for the requested ordinary split-conformal level.

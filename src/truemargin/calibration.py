@@ -207,6 +207,9 @@ def conformal_radius(
     low-sigma observations must be reported separately and cannot be silently removed
     to improve coverage.
     """
+    alpha = float(alpha)
+    if not np.isfinite(alpha) or not 0.0 < alpha < 1.0:
+        raise ValueError("alpha must be finite and strictly between 0 and 1")
     keep = sigma_cal >= min_sigma
     if keep.sum() == 0:
         raise ValueError(
