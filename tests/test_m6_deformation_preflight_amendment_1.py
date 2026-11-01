@@ -8,6 +8,7 @@ import runpy
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 AMENDED_PATH = ROOT / "scripts" / "m6_deformation_preflight_amendment_1.py"
@@ -100,11 +101,40 @@ def test_amendment_does_not_change_deformation_primitive():
     make_source = BASE["make_source_image"]
     source = make_source(np.zeros((40, 42, 44), dtype=np.float32), (1.1, 0.9, 2.0))
     seed = 123456789
-    amended_transform = BASE["make_known_transform"](source, seed)
+    amended_transform = AMENDED["BASE"]["make_known_transform"](source, seed)
     base_transform = BASE["make_known_transform"](source, seed)
     np.testing.assert_array_equal(
         np.asarray(amended_transform.GetParameters()), np.asarray(base_transform.GetParameters())
     )
+
+
+def test_amended_geometry_calls_base_transform_with_patient_seed(monkeypatch):
+    base = AMENDED["preflight_geometry"].__globals__["BASE"]
+    image, label, source = object(), object(), object()
+    crop = np.zeros((3, 4, 5))
+    mask = np.ones_like(crop, dtype=bool)
+    spacing = (1.0, 2.0, 3.0)
+    patient = "Prostate3T-01-0006"
+    calls = []
+
+    def prepare(actual_image, actual_label):
+        assert actual_image is image and actual_label is label
+        return crop, mask, spacing
+
+    def make_source(actual_crop, actual_spacing):
+        assert actual_crop is crop and actual_spacing == spacing
+        return source
+
+    def stop_at_transform(actual_source, seed):
+        calls.append((actual_source, seed))
+        raise RuntimeError("synthetic transform boundary")
+
+    monkeypatch.setitem(base, "prepare_anatomy", prepare)
+    monkeypatch.setitem(base, "make_source_image", make_source)
+    monkeypatch.setitem(base, "make_topology_safe_known_transform", stop_at_transform)
+    with pytest.raises(RuntimeError, match="synthetic transform boundary"):
+        AMENDED["preflight_geometry"](patient, "calibration", "synthetic", image, label)
+    assert calls == [(source, BASE["deterministic_seed"](patient, "deformation"))]
 
 
 def test_amendment_wrapper_has_no_result_bearing_truemargin_imports():
