@@ -1,165 +1,68 @@
 # TrueMargin
 
-TrueMargin studies uncertainty in deformable image registration:
+Controlled experiments on uncertainty in deformable image registration.
 
-> **When does local variability from deformable image registration contain useful information about true local spatial error?**
+**Question:** does variation between registrations help identify local alignment error?
 
-**Current result:** median anatomy-level Spearman correlation **0.6841**, with **6 of 30 case-level reversals** and **39 of 1,500 high-error, low-spread observations**. Useful information and meaningful failure modes coexist.
+The controlled studies are complete. Further external validation is deferred; no external landmark-based result is available. This is research software, not a clinical product.
 
-**Status:** controlled studies are complete. Two Case7 image-only members have independently recovered retained fields; the first also passed cross-host recovery. Changing tolerance from `1e-4` to `1e-5` produced only microscopic field differences, not useful ensemble diversity. The owner-verified ten-case DIR-Lab archive inventory and latest Mac identity preflight have passed. RAM/launcher readiness, full-campaign feasibility and external landmark validation remain open; numerical landmarks are sealed.
+[Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md) · [Study records](research/README.md)
 
-The project evaluates rank informativeness, failure modes, and numerical error bounds separately. It is research software, not a clinical product or medical device.
+![Controlled associations, failure cases and calibrated error bounds](docs/figures/m4_m6_evidence.png)
 
-[Visual study](https://kushrishi.com/research/truemargin) · [Technical report](docs/technical_report.md) · [Reproduction](docs/reproduction.md) · [Roadmap](research/ROADMAP.md)
+## Findings
 
-![TrueMargin controlled association, blind spots and calibrated bounds](docs/figures/m4_m6_evidence.png)
+A fixed nine-setting registration ensemble was evaluated on 30 synthetic-deformation cases across 10 held-out anatomies. Analysis used anatomy-level summaries rather than treating all 1,500 sampled locations as independent subjects.
 
-## Check the retained results
+| Signal | Median anatomy-level Spearman correlation with known error |
+| --- | ---: |
+| Ensemble spread | 0.6841 |
+| Inverse-consistency error | 0.7203 |
+| Image residual | 0.2851 |
+| Jacobian deviation | 0.1689 |
 
-From a checkout, using Python 3.12:
+Ensemble spread contained useful rank information, but no advantage over inverse-consistency error was established. Six of 30 case-level associations were negative. The analysis retained 39 high-error, low-spread observations across 11 cases and seven anatomies.
+
+A separate study used 30 calibration and 30 evaluation anatomies across two sources. At nominal 90% coverage, observed mean anatomy-level coverage was 97.73% and 99.73%, with median anatomy radii of 3.93 mm and 4.36 mm. One anatomy had a 70.69 mm median radius. The bounds were conservative; 95% thresholds were infinite under the finite-sample construction. Reverse-registration failures prevented the planned full-cohort calibrated comparison with inverse-consistency error.
+
+These results do not establish clinical validity, external generalization or uniformly useful error bounds. A later calibration-only analysis found source-dependent effects, not a consistent improvement.
+
+## Check the saved results
+
+From a checkout with Python 3.12:
 
 ```bash
 python scripts/verify_m6_phase_a_result.py results/m6_phase_a
 python scripts/verify_m6_phase_b_result.py results/m6_phase_b
 ```
 
-These standard-library checks need no imaging data, registration run or landmark
-access. They verify the saved calibration and evaluation records, including
-hashes, cohort identity and numerical summaries. A mismatch exits nonzero.
-They do not reproduce the original registrations.
+These standard-library checks verify saved records, identities and numerical summaries. They do not rerun the registrations and require no imaging data or landmark access.
 
-[Full reproduction guide](docs/reproduction.md) ·
-[Retained outputs](results/README.md)
-
-## Reading the results
-
-Registration spread measures how much nine registrations disagree about a point’s displacement. A positive rank correlation means points with more disagreement tend to have larger known errors; it does not mean the disagreement equals the error. Coverage is the fraction of sampled errors inside a calibrated bound. Radius is the size of that bound in millimetres: high coverage can still require bounds too large to be useful. Here, patient-level summaries prevent spatial samples from being counted as independent patients.
-
-## Main findings
-
-A controlled known-deformation study evaluated 30 cases across 10 held-out anatomies. The registration-hyperparameter ensemble produced a median anatomy-level Spearman association of **0.6841** with known local error, and all **10 of 10** anatomy-level associations were positive.
-
-Direct comparator medians were:
-
-| Signal | Median anatomy Spearman |
-| --- | ---: |
-| Ensemble spread | 0.6841 |
-| Inverse-consistency error | 0.7203 |
-| Same-modality residual | 0.2851 |
-| Jacobian deviation | 0.1689 |
-
-The study supports local rank informativeness for ensemble spread in this setting, but does **not** establish superiority over inverse-consistency error.
-
-## Where it fails
-
-The aggregate result is not uniform. Reanalysis of the same 1,500 pointwise observations found:
-
-- 24 of 30 case-level spread/error associations were positive;
-- 6 of 30 were negative;
-- 39 of 1,500 observations met the high-error, low-spread blind-spot rule;
-- blind spots appeared in 11 of 30 cases and 7 of 10 anatomies.
-
-These failures are part of the result rather than cases removed after inspection.
-
-## Held-out error bounds
-
-A separate study used 30 calibration and 30 evaluation anatomies, stratified across two source regimes.
-
-At nominal 90%:
-
-- empirical equal-anatomy coverage was **97.73%** and **99.73%**;
-- median anatomy radii were **3.93 mm** and **4.36 mm**;
-- one evaluation anatomy had a **70.69 mm** median radius.
-
-The resulting bounds are conservative, and the 95% thresholds are infinite under the study's finite-sample construction. The planned full-cohort calibrated comparison with inverse-consistency error was not assessable because of retained reverse-registration failures.
-
-## Read the research
-
-- [Technical report](docs/technical_report.md)
-- [Known-ground-truth result](docs/hyperparameter_known_gt_result.md)
-- [Research evidence guide](research/README.md)
-- [Failure characterization](docs/m5_informativeness_characterization.md)
-- [Held-out calibration result](docs/m6_phase_b_evaluation_result.md)
-- [Calibration failure diagnostics](docs/m6_failure_diagnostics.md)
-- [Reproducible result records](research/)
-
-The repository preserves protocols, machine-readable results, implementation history, and negative findings so the reported conclusions can be checked without rewriting the experimental record.
-
-## Method
-
-1. Register each image pair with nine fixed hyperparameter settings.
-2. Measure local variation in the displacement fields.
-3. Compare that spread with known error and independent signals.
-4. Analyze blind spots and calibrated bounds separately.
-
-## Repository
-
-- `src/`: analysis code
-- `scripts/`: experiment and verification entry points
-- `tests/`: numerical and invariant checks
-- `research/`: protocols and accepted result records
-- `docs/`: reports, methods, and interpretation
-- `results/`: retained derived outputs
-
-For a development checkout with Python 3.12:
+For development:
 
 ```bash
 python -m pip install -e ".[dev]"
 pytest
 ```
 
-Some research workflows require optional dependencies and source data described in the corresponding protocol or reproduction document.
+Full experiments require the dependencies and source data documented in the [reproduction guide](docs/reproduction.md).
 
-## Calibration-only development check
+## Read the evidence
 
-A leave-one-anatomy-out development analysis used only the original Phase-A calibration cohort; it did not open the previously observed Phase-B evaluation records.
+- [Known-error study and comparators](docs/hyperparameter_known_gt_result.md)
+- [Failure analysis](docs/m5_informativeness_characterization.md)
+- [Held-out calibration results](docs/m6_phase_b_evaluation_result.md) and [failure diagnostics](docs/m6_failure_diagnostics.md)
+- [Calibration-only development analysis](docs/m6_calibration_only_scale_validation.md)
+- [Retained outputs](results/README.md)
 
-At nominal 90%, the result was source-dependent:
+## Deferred external study
 
-| Source | Scale | Mean coverage | Mean radius |
-| --- | --- | ---: | ---: |
-| Prostate-3T | constant | 96.8% | 2.31 mm |
-| Prostate-3T | affine | 98.0% | 2.66 mm |
-| Prostate-Diagnosis | constant | 98.9% | 4.01 mm |
-| Prostate-Diagnosis | affine | 95.5% | 3.15 mm |
+An independent lung-CT protocol and image-only preflight were prepared. Two retained Case7 fields were almost identical after a tolerance change, and both reached the configured iteration cap. This establishes neither convergence nor useful ensemble diversity. Numerical landmarks remain sealed.
 
-The affine scale is therefore not a uniform improvement: the simple constant radius is smaller in the 3T development folds, while the affine scale is smaller in the Diagnosis folds and still exceeds 90% mean coverage. The overlapping folds are development evidence, not an independent confirmation.
+The [external protocol](docs/external_lung_validation_protocol.md), [execution history](research/STATE.md) and [roadmap](research/ROADMAP.md) are retained for reproducibility. They describe prior work and conditional future steps, not a currently running campaign. No experiments or results were changed by this presentation update.
 
-[Read the calibration-only analysis](docs/m6_calibration_only_scale_validation.md)
+## Repository and licensing
 
-## Next study
+`src/` contains analysis code; `scripts/` contains experiment and verification entry points; `tests/` contains numerical checks. Methods, protocols and results remain under `docs/`, `research/` and `results/`.
 
-Evaluate whether the unchanged sensitivity signal ranks measured registration
-error on independent lung CT cases, against inverse consistency, image residual
-and Jacobian signals. External calibration is a separate question.
-
-Image-only decoding is qualified. The first retained Case7 field passed
-[cross-host recovery](research/CASE7_CROSS_HOST_RECOVERY_2026_10_10.md).
-A matched tolerance comparison recovered a second member: vector RMS difference
-was `4.10e-12 mm`, with both members reaching their configured 15-iteration cap.
-These two fields supply no complete nine-member ensemble, no useful diversity
-from this tolerance change, and no convergence or alignment-accuracy claim.
-Earlier disconnected attempts retain their unknown terminal outcomes.
-
-The owner-verified inventory covers ten original DIR-Lab case archives and their
-paired extreme-phase 300-landmark entries. This is a prospective external cohort
-pathway distinct from Learn2Reg; numerical coordinates remain sealed. The latest
-Mac read-only preflight passed archive, reference-field, candidate-configuration
-and frozen-source identities. RAM and launcher readiness still require review.
-The proposed single image-only `bins32`/`tol1e-5` member, a study freeze, any full
-campaign and landmark evaluation each require separate authorization. No external
-landmark-based result exists. Detailed completion and comparison receipts remain
-in the private execution repository.
-
-[Current status](research/STATE.md) · [External protocol](docs/external_lung_validation_protocol.md) · [Retention design](research/DIRLAB_BOUNDED_RETENTION_DESIGN_2026_10_09.md)
-
-## Limits
-
-TrueMargin does not currently establish clinical validity, external-dataset validation, uniform reliability, superiority over inverse-consistency error, or a peer-reviewed publication.
-
-## Source distribution
-
-This public repository has no open-source license grant. Source distribution
-licensing must be resolved before a reusable package release; third-party data
-and software retain their own terms.
-
+This public repository has no project-wide software licence grant. Third-party data and software retain their own terms. No peer-reviewed publication or clinical validation is claimed.
