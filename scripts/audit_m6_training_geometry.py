@@ -191,9 +191,17 @@ def image_geometry(image: sitk.Image) -> dict[str, Any]:
     }
 
 
+def label_values(array: np.ndarray) -> list[int | float]:
+    """Preserve label values for exact membership checks; reject nonfinite inputs."""
+    values = np.unique(array)
+    if not np.isfinite(values).all():
+        raise RuntimeError("Label values must be finite")
+    return values.tolist()
+
+
 def foreground_containment(label: sitk.Image, image: sitk.Image) -> dict[str, Any]:
     array = sitk.GetArrayFromImage(label)
-    values = sorted(int(value) for value in np.unique(array))
+    values = label_values(array)
     foreground_zyx = np.argwhere(array > 0)
     if foreground_zyx.size == 0:
         return {
@@ -240,7 +248,7 @@ def assess_geometry(patient_id: str, image: sitk.Image, label: sitk.Image) -> di
         label.GetPixelID(),
     )
     resampled_array = sitk.GetArrayFromImage(resampled)
-    resampled_values = sorted(int(value) for value in np.unique(resampled_array))
+    resampled_values = label_values(resampled_array)
     resampled_foreground = int(np.count_nonzero(resampled_array))
     criteria = {
         "three_dimensional": True,
