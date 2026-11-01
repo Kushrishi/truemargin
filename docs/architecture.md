@@ -53,11 +53,12 @@ ground-truth validation path.
 
 ## External-study preparation
 
-The next study uses real lung-image pairs. Image-only decoding, coordinate
+The deferred external study was prepared for real lung-image pairs. Image-only decoding, coordinate
 conversion, per-member field publication and bounded field-cache calculations
 are implemented. Runtime feasibility and independently recoverable fields remain
 prerequisites; these modules do not constitute a completed external evaluation.
-[The roadmap](../research/ROADMAP.md) defines those dependencies.
+[Current status](../research/STATE.md) records where this work stopped; the
+[roadmap](../research/ROADMAP.md) preserves the conditional study plan.
 
 ## Module boundaries
 
