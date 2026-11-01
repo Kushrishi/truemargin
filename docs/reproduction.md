@@ -79,6 +79,19 @@ The remaining commands describe the original controlled-study execution. Use
 its pinned source and protocol when reproducing it; editing a run request is not
 an installation step. The external study has a separate design.
 
+## Historical Phase A input-access boundary
+
+The Phase A runner and workflow call `label_members()` on the full 60-subject
+training-label archive before selecting a calibration subject. That helper
+decompresses all label payloads, including those assigned to evaluation. The
+separate staging helper verifies only calibration payloads, but that narrower
+behavior does not describe the subsequent runner.
+
+The retained `evaluation_accessed: false` fields therefore cannot establish
+strict label-byte isolation. They describe the calibration execution record;
+this source review does not establish that evaluation registration outcomes
+were used for fitting. Original records and numerical results remain unchanged.
+
 ## Data
 
 See [data/README.md](../data/README.md) for the TCIA collection, expected local
