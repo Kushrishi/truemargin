@@ -1,22 +1,38 @@
 # Reproduction
 
 The controlled studies are complete. [Current status](../research/STATE.md) links
-the accepted result reports. Historical execution gates below describe those
-original runs; they are not a request to rerun completed experiments or open new
-held-out data.
+the result reports. Historical execution instructions below describe the original
+runs, not new experiments.
 
 ## Environment
 
-TrueMargin currently targets Python 3.12.
+Use Python 3.12 and a Git checkout. Tests that verify source provenance need the
+checkout's Git metadata; a downloaded source archive is not equivalent.
 
-For a development environment with the real-data registration dependencies:
+Install the OpenSlide system library before the Python dependencies. CI tests
+Ubuntu and macOS:
 
 ```bash
+# Ubuntu
+sudo apt-get update
+sudo apt-get install -y libopenslide0
+
+# macOS, using Homebrew
+brew install openslide
+```
+
+Run only the command for your operating system. From the repository root, create
+an isolated Python environment and install both dependency groups:
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
 python -m pip install -e ".[realdata,dev]"
 ```
 
-On Linux, OpenSlide also requires the system OpenSlide library. The public CI
-workflow installs it explicitly before the Python package.
+The `realdata` group supplies SimpleITK and the Python OpenSlide interface; the
+`dev` group supplies the test and code-checking tools. Installing `dev` alone is
+not sufficient for the full test suite.
 
 ## Software verification
 
@@ -29,7 +45,8 @@ mypy
 pytest
 ```
 
-These checks do not require the TCIA imaging dataset.
+These checks do not require the TCIA imaging dataset. They test the software;
+they do not rerun the completed imaging studies.
 
 ## Verify completed results without registration
 
@@ -40,12 +57,11 @@ python scripts/verify_m6_phase_a_result.py results/m6_phase_a
 python scripts/verify_m6_phase_b_result.py results/m6_phase_b
 ```
 
-These standard-library verifiers check retained calibration and evaluation
-records, hashes, cohort identities and numerical summaries. They do not download
-images, execute registration, refit thresholds or access external landmarks.
-The first command checks the 30-anatomy calibration record; the second checks the
-30-anatomy evaluation record against sealed thresholds. A mismatch exits nonzero.
-This verifies the saved evidence, not a fresh reproduction of image registration.
+These standard-library verifiers check saved records, hashes, cohort identities
+and numerical summaries. They do not download images, execute registration,
+refit thresholds or access external landmarks. The first command checks the
+30-anatomy calibration record; the second checks the separate 30-anatomy
+evaluation record against the saved thresholds. A mismatch exits nonzero.
 
 To redraw the descriptive figure from committed outputs:
 
@@ -53,21 +69,20 @@ To redraw the descriptive figure from committed outputs:
 python scripts/plot_m4_m6_evidence.py . /tmp/truemargin-evidence
 ```
 
-This writes PNG and SVG files. It requires the package's plotting dependencies
-and does not run an experiment. See the [evidence guide](../research/README.md)
-for study names and the [results index](../results/README.md) for retained files.
+This writes PNG and SVG files using the package's plotting dependencies. See the
+[research guide](../research/README.md) and [results index](../results/README.md)
+for the study names and saved files.
 
 ## Historical execution instructions
 
 The remaining commands describe the original controlled-study execution. Use
 its pinned source and protocol when reproducing it; editing a run request is not
-an installation step. The current external study has a separate design.
+an installation step. The external study has a separate design.
 
 ## Data
 
-See `data/README.md` for the public TCIA collection, expected local layout,
-HECaP ROI role, and the frozen promotion/held-out anatomy split. Imaging data
-remain outside Git.
+See [data/README.md](../data/README.md) for the TCIA collection, expected local
+layout, HECaP ROI role and original anatomy split. Imaging data remain outside Git.
 
 ## Known-ground-truth execution
 
