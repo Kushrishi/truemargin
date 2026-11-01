@@ -7,6 +7,7 @@ import runpy
 import zipfile
 from pathlib import Path
 
+import pytest
 import SimpleITK as sitk
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "audit_m6_training_geometry.py"
@@ -106,3 +107,31 @@ def test_unknown_label_value_blocks_eligibility():
     result = assess("ProstateDx-01-0055", _image(), label)
     assert result["criteria"]["label_values_allowed"] is False
     assert result["eligible"] is False
+
+
+@pytest.mark.parametrize("value", [-0.5, 0.5, 1.5, 2.5])
+def test_fractional_label_values_are_not_truncated(value):
+    label = sitk.Cast(_label(), sitk.sitkFloat32)
+    label[5, 5, 1] = value
+    result = _fn("assess_geometry")("ProstateDx-01-0055", _image(), label)
+    assert result["criteria"]["label_values_allowed"] is False
+    assert result["criteria"]["resampled_values_allowed"] is False
+    assert value in result["foreground"]["label_values"]
+    assert value in result["resampled_label_values"]
+    assert result["eligible"] is False
+
+
+@pytest.mark.parametrize("value", [1.0, 2.0])
+def test_integral_float_label_values_remain_eligible(value):
+    label = sitk.Cast(_label(), sitk.sitkFloat32)
+    label[5, 5, 1] = value
+    result = _fn("assess_geometry")("ProstateDx-01-0055", _image(), label)
+    assert result["eligible"] is True
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_nonfinite_label_values_fail_with_clear_error(value):
+    label = sitk.Cast(_label(), sitk.sitkFloat32)
+    label[5, 5, 1] = value
+    with pytest.raises(RuntimeError, match="Label values must be finite"):
+        _fn("assess_geometry")("ProstateDx-01-0055", _image(), label)
