@@ -15,6 +15,6 @@ large images, registration fields and temporary outputs outside Git.
 
 Use the [research guide](research/README.md) to distinguish current guidance from
 historical records. Public explanations should define study identifiers and
-separate measured results from proposed capabilities. The current repository
-license metadata is research-restricted; this guide does not grant additional
-reuse rights.
+separate measured results from proposed capabilities. Original software
+contributions are covered by the [MIT License](LICENSE); preserve third-party
+notices and terms.

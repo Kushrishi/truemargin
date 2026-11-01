@@ -1,6 +1,6 @@
 # TrueMargin roadmap
 
-Updated 11 October 2026. [Current evidence](STATE.md) · [Claims](CLAIMS.md)
+Updated 1 November 2026 (licensing only). [Current evidence](STATE.md) · [Claims](CLAIMS.md)
 
 ## Purpose
 
@@ -67,6 +67,6 @@ Frozen protocols, archived results and numerical definitions remain unchanged.
 The immediate external question is ranking and failure behavior. Clinical
 validity, external calibration and broad population guarantees are not established.
 Numerical external landmarks remain sealed: **HELD-OUT ACCESS SAFE: NO**.
-The existing package metadata restricts reuse to research; distribution licensing
-must be settled explicitly before presenting a generally reusable release.
+Original project software is available under the [MIT License](../LICENSE).
+Third-party data, model weights and software retain their own terms.
 
