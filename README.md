@@ -38,14 +38,16 @@ python scripts/verify_m6_phase_b_result.py results/m6_phase_b
 
 These commands check the saved results without downloading images or rerunning registrations.
 
-For development:
+## Development
+
+Use Python 3.12 and a Git checkout. The full test suite requires the imaging dependencies as well as the development tools. First install the OpenSlide system library using the [platform setup instructions](docs/reproduction.md), then run:
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[realdata,dev]"
 pytest
 ```
 
-Full experiments require the dependencies and data in the [reproduction guide](docs/reproduction.md).
+This matches the dependency groups used by CI. Full experiments also require the source data described in the reproduction guide.
 
 ## Detailed results
 
