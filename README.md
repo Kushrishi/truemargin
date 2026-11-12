@@ -1,6 +1,6 @@
 # TrueMargin
 
-Experiments on uncertainty in deformable image registration.
+Experiments on whether disagreement between different image alignments reveals where those alignments are wrong. Image registration aligns scans so corresponding structures can be compared.
 
 **Question:** does variation between registrations help identify local alignment error?
 
@@ -11,6 +11,8 @@ The controlled studies are complete. External landmark validation was not comple
 ![Controlled associations, failure cases and calibrated error bounds](docs/figures/m4_m6_evidence.png)
 
 ## Findings
+
+The variation between repeated alignments is called **ensemble spread**. **Inverse-consistency error** checks whether aligning forward and then backward returns to the starting location. Spearman correlation measures whether larger signal values tend to accompany larger known errors; it is not a percentage accuracy.
 
 A nine-setting registration ensemble was evaluated on 30 synthetic-deformation cases across 10 anatomies. Results were summarized by anatomy rather than treating all 1,500 sampled locations as independent subjects.
 
@@ -23,7 +25,7 @@ A nine-setting registration ensemble was evaluated on 30 synthetic-deformation c
 
 Spread contained useful information, but did not show an advantage over inverse-consistency error. Six case-level correlations were negative. There were 39 high-error, low-spread observations across 11 cases and seven anatomies.
 
-A separate study used 30 calibration and 30 evaluation anatomies. At nominal 90% coverage, observed mean anatomy-level coverage was 97.73% and 99.73% for the two sources, with median anatomy radii of 3.93 mm and 4.36 mm. One anatomy had a 70.69 mm median radius. The bounds were conservative, and the 95% thresholds were infinite under the finite-sample construction. Reverse-registration failures prevented the full-cohort calibrated comparison with inverse-consistency error.
+Calibration uses separate examples to set an error-bound radius. Coverage is the fraction of sampled errors within that radius; high coverage can still require an unhelpfully large radius. A separate study used 30 calibration and 30 evaluation anatomies. At nominal 90% coverage, observed mean anatomy-level coverage was 97.73% and 99.73% for the two sources, with median anatomy radii of 3.93 mm and 4.36 mm. One anatomy had a 70.69 mm median radius. The bounds were conservative, and the 95% thresholds were infinite under the finite-sample construction. Reverse-registration failures prevented the full-cohort calibrated comparison with inverse-consistency error.
 
 A later calibration-only analysis found source-dependent effects, not a consistent improvement. These controlled results do not establish clinical validity or external generalization.
 
