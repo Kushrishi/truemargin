@@ -1,8 +1,8 @@
 # TrueMargin
 
-Experiments on whether disagreement between different image alignments reveals where those alignments are wrong. Image registration aligns scans so corresponding structures can be compared.
+TrueMargin tests whether differences between image registrations help identify spatial alignment error. Image registration aligns corresponding structures across scans, but several alignments can agree and still be wrong.
 
-**Question:** does variation between registrations help identify local alignment error?
+**Question:** Does registration disagreement track known error better than a forward-and-back consistency check?
 
 The controlled studies are complete. External landmark validation was not completed. This is research software, not a clinical product.
 
